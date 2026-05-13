@@ -1,0 +1,141 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ExamPortal — Candidate Login</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+    <style>
+      body {
+        font-family: 'DM Sans', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background: #f3f4f7;
+      }
+
+      .card {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        width: 350px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        font-family: 'Syne', sans-serif;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        outline: none;
+        box-sizing: border-box;
+        font-family: 'DM Sans', sans-serif;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        font-family: 'DM Sans', sans-serif;
+      }
+
+      button:disabled {
+        background: gray;
+        cursor: not-allowed;
+      }
+
+      .error {
+        color: red;
+        display: none;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+
+  <body>
+
+  <div class="card">
+    <h2>Candidate Login</h2>
+
+    <input type="text"     id="name"     placeholder="Full Name"/>
+    <input type="password" id="password" placeholder="CDC Number"/>
+
+    <button id="loginBtn">Sign In</button>
+
+    <p class="error" id="err"></p>
+  </div>
+
+  <script>
+    document.getElementById("loginBtn").addEventListener("click", doLogin);
+
+    // Allow pressing Enter to login
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") doLogin();
+    });
+
+    async function doLogin() {
+      const name     = document.getElementById("name").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const err      = document.getElementById("err");
+      const btn      = document.getElementById("loginBtn");
+
+      err.style.display = "none";
+
+      if (!name || !password) {
+        err.innerText = "Please enter all fields";
+        err.style.display = "block";
+        return;
+      }
+
+      try {
+        btn.disabled  = true;
+        btn.innerText = "Signing in...";
+
+        const res = await fetch("http://localhost:3005/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, password })
+        });
+
+        const data = await res.json();
+        console.log("LOGIN RESPONSE:", data);
+
+        if (res.ok && data.success) {
+          // Store full user object including token
+          sessionStorage.setItem("examUser", JSON.stringify(data.user));
+          window.location.href = "exam.html";
+        } else {
+          err.innerText     = data.message || "Invalid login";
+          err.style.display = "block";
+        }
+
+      } catch (e) {
+        console.error(e);
+        err.innerText     = "Server not reachable";
+        err.style.display = "block";
+      }
+
+      btn.disabled  = false;
+      btn.innerText = "Sign In";
+    }
+  </script>
+
+  </body>
+  </html>

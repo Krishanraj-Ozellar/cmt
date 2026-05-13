@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Admin Panel</title>
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- AutoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f5f5f5;
+  padding:20px;
+}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+}
+
+.card{
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:20px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+h1,h2{
+  margin-bottom:15px;
+}
+
+input,select,button{
+  width:100%;
+  padding:12px;
+  margin-bottom:10px;
+  border-radius:5px;
+  border:1px solid #ccc;
+}
+
+button{
+  background:#007bff;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#0056b3;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+}
+
+table th,
+table td{
+  border:1px solid #ddd;
+  padding:10px;
+  text-align:left;
+  font-size:14px;
+}
+
+table th{
+  background:#007bff;
+  color:white;
+}
+
+.action-btn{
+  padding:8px 10px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  color:white;
+  margin-right:5px;
+}
+
+.delete-btn{
+  background:red;
+}
+
+.reset-btn{
+  background:orange;
+}
+
+.download-btn{
+  background:green;
+}
+
+.logout-btn{
+  background:#222;
+}
+
+.hidden{
+  display:none;
+}
+
+@media(max-width:768px){
+
+  table{
+    font-size:12px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- LOGIN -->
+  <div id="loginCard" class="card">
+
+    <h1>Admin Login</h1>
+
+    <input type="text" id="adminName" placeholder="Admin Name">
+
+    <input type="password" id="adminPassword" placeholder="Password">
+
+    <button onclick="adminLogin()">Login</button>
+
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="adminPanel" class="hidden">
+
+    <!-- CREATE USER -->
+    <div class="card">
+
+      <h2>Create User</h2>
+
+      <input type="text" id="name" placeholder="Name">
+
+      <input type="password" id="password" placeholder="Password">
+
+      <input type="text" id="rank" placeholder="Rank">
+
+      <input type="text" id="cdcNumber" placeholder="CDC Number">
+
+      <button onclick="createUser()">Create User</button>
+
+    </div>
+
+    <!-- USERS -->
+    <div class="card">
+
+      <h2>Users</h2>
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Rank</th>
+            <th>CDC</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="usersTable"></tbody>
+
+      </table>
+
+    </div>
+
+    <!-- RESULTS -->
+    <div class="card">
+
+      <h2>Results</h2>
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Rank</th>
+            <th>CDC</th>
+            <th>Score</th>
+            <th>Correct</th>
+            <th>Wrong</th>
+            <th>Skipped</th>
+            <th>Status</th>
+            <th>PDF</th>
+          </tr>
+        </thead>
+
+        <tbody id="resultsTable"></tbody>
+
+      </table>
+
+    </div>
+
+    <button class="logout-btn" onclick="logoutAdmin()">
+      Logout
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+const API = "http://localhost:3005";
+
+let adminName = "";
+let adminPassword = "";
+
+
+// ─────────────────────────────
+// ADMIN LOGIN
+// ─────────────────────────────
+
+async function adminLogin(){
+
+  adminName = document.getElementById('adminName').value;
+
+  adminPassword = document.getElementById('adminPassword').value;
+
+  const res = await fetch(`${API}/api/admin/login`,{
+
+    method:'POST',
+
+    headers:{
+      'Content-Type':'application/json'
+    },
+
+    body:JSON.stringify({
+      name:adminName,
+      password:adminPassword
+    })
+
+  });
+
+  const data = await res.json();
+
+  if(data.success){
+
+    document.getElementById('loginCard').classList.add('hidden');
+
+    document.getElementById('adminPanel').classList.remove('hidden');
+
+    loadUsers();
+
+    loadResults();
+
+  }else{
+
+    alert(data.message);
+
+  }
+
+}
+
+
+// ─────────────────────────────
+// CREATE USER
+// ─────────────────────────────
+
+async function createUser(){
+
+  const name = document.getElementById('name').value;
+
+  const password = document.getElementById('password').value;
+
+  const rank = document.getElementById('rank').value;
+
+  const cdcNumber = document.getElementById('cdcNumber').value;
+
+  const res = await fetch(`${API}/api/users`,{
+
+    method:'POST',
+
+    headers:{
+      'Content-Type':'application/json'
+    },
+
+    body:JSON.stringify({
+      name,
+      password,
+      rank,
+      cdcNumber
+    })
+
+  });
+
+  const data = await res.json();
+
+  if(data.success){
+
+    alert("User created");
+
+    loadUsers();
+
+    document.getElementById('name').value = "";
+
+    document.getElementById('password').value = "";
+
+    document.getElementById('rank').value = "";
+
+    document.getElementById('cdcNumber').value = "";
+
+  }else{
+
+    alert(data.message);
+
+  }
+
+}
+
+
+// ─────────────────────────────
+// LOAD USERS
+// ─────────────────────────────
+
+async function loadUsers(){
+
+  const res = await fetch(`${API}/api/users`);
+
+  const data = await res.json();
+
+  let html = "";
+
+  data.users.forEach(user => {
+
+    html += `
+      <tr>
+
+        <td>${user.id}</td>
+
+        <td>${user.name}</td>
+
+        <td>${user.rank || '-'}</td>
+
+        <td>${user.cdcnumber || '-'}</td>
+
+        <td>
+
+          <button
+            class="action-btn reset-btn"
+            onclick="resetPassword(${user.id})">
+
+            Reset Password
+
+          </button>
+
+          <button
+            class="action-btn delete-btn"
+            onclick="deleteUser(${user.id})">
+
+            Delete
+
+          </button>
+
+        </td>
+
+      </tr>
+    `;
+
+  });
+
+  document.getElementById('usersTable').innerHTML = html;
+
+}
+
+
+// ─────────────────────────────
+// DELETE USER
+// ─────────────────────────────
+
+async function deleteUser(id){
+
+  if(!confirm("Delete this user?")) return;
+
+  const res = await fetch(`${API}/api/users/${id}`,{
+    method:'DELETE'
+  });
+
+  const data = await res.json();
+
+  if(data.success){
+
+    alert("User deleted");
+
+    loadUsers();
+
+  }
+
+}
+
+
+// ─────────────────────────────
+// RESET PASSWORD
+// ─────────────────────────────
+
+async function resetPassword(id){
+
+  const newPassword = prompt("Enter new password");
+
+  if(!newPassword) return;
+
+  const res = await fetch(`${API}/api/users/${id}/password`,{
+
+    method:'PATCH',
+
+    headers:{
+      'Content-Type':'application/json',
+      'x-admin-name':adminName,
+      'x-admin-password':adminPassword
+    },
+
+    body:JSON.stringify({
+      newPassword
+    })
+
+  });
+
+  const data = await res.json();
+
+  alert(data.message);
+
+}
+
+
+// ─────────────────────────────
+// LOAD RESULTS
+// ─────────────────────────────
+
+async function loadResults(){
+
+  const res = await fetch(`${API}/api/results`);
+
+  const data = await res.json();
+
+  let html = "";
+
+  data.results.forEach(result => {
+
+    html += `
+      <tr>
+
+        <td>${result.id}</td>
+
+        <td>${result.user_name}</td>
+
+        <td>${result.rank || '-'}</td>
+
+        <td>${result.cdcnumber || '-'}</td>
+
+        <td>${result.score}%</td>
+
+        <td>${result.correct}</td>
+
+        <td>${result.wrong}</td>
+
+        <td>${result.skipped}</td>
+
+        <td>
+
+          ${
+            result.passed
+            ? '<span style="color:green;font-weight:bold">PASS</span>'
+            : '<span style="color:red;font-weight:bold">FAIL</span>'
+          }
+
+        </td>
+
+        <td>
+
+          <button
+            class="action-btn download-btn"
+            onclick="downloadPDF(${result.id})">
+
+            Download PDF
+
+          </button>
+
+        </td>
+
+      </tr>
+    `;
+
+  });
+
+  document.getElementById('resultsTable').innerHTML = html;
+
+}
+
+
+// ─────────────────────────────
+// DOWNLOAD PDF
+// ─────────────────────────────
+
+async function downloadPDF(id){
+
+  const res = await fetch(`${API}/api/results`);
+
+  const data = await res.json();
+
+  const result = data.results.find(r => r.id === id);
+
+  if(!result){
+
+    alert("Result not found");
+
+    return;
+
+  }
+
+  const { jsPDF } = window.jspdf;
+
+  const doc = new jsPDF();
+
+  // ─────────────────────────
+  // LOAD LOGO
+  // ─────────────────────────
+
+  const logo = "2025-07-24-removebg-preview.png";
+
+  try{
+
+    const img = await loadImage(logo);
+
+    doc.addImage(img,'PNG',14,10,55,20);
+
+  }catch(err){
+
+    console.log("Logo not loaded");
+
+  }
+
+  // ─────────────────────────
+  // COMPANY NAME
+  // ─────────────────────────
+
+  doc.setFont("helvetica","bold");
+
+  doc.setFontSize(18);
+
+  doc.setTextColor(230,90,40);
+
+  doc.text(
+    "Ozellar Marine Pvt. Ltd.",
+    105,
+    18,
+    { align:"center" }
+  );
+
+  doc.setFont("helvetica","normal");
+
+  doc.setFontSize(9);
+
+  doc.setTextColor(80);
+
+  doc.text(
+    "4th Floor, Developed Plots Estate, Anejas Towers, B-Block, Plot No. 4 & 5,",
+    105,
+    25,
+    { align:"center" }
+  );
+
+  doc.text(
+    "Perungudi, Chennai, Tamil Nadu 600096",
+    105,
+    30,
+    { align:"center" }
+  );
+
+  // ─────────────────────────
+  // TITLE
+  // ─────────────────────────
+
+  doc.setDrawColor(230,90,40);
+
+  doc.setLineWidth(0.7);
+
+  doc.line(14,38,196,38);
+
+  doc.setFont("helvetica","bold");
+
+  doc.setFontSize(20);
+
+  doc.setTextColor(0);
+
+  doc.text(
+    "COMPETENCY REPORT",
+    105,
+    50,
+    { align:"center" }
+  );
+
+  // ─────────────────────────
+  // TABLE
+  // ─────────────────────────
+
+  doc.autoTable({
+
+    startY:62,
+
+    head:[
+      ['Field','Details']
+    ],
+
+    body:[
+
+      ['Candidate Name', result.user_name || '-'],
+
+      ['Rank', result.rank || '-'],
+
+      ['CDC Number', result.cdcnumber || '-'],
+
+      ['Score', result.score + '%'],
+
+      ['Correct Answers', String(result.correct)],
+
+      ['Wrong Answers', String(result.wrong)],
+
+      ['Skipped Questions', String(result.skipped)],
+
+      ['Status', result.passed ? 'PASS' : 'FAIL']
+
+    ],
+
+    theme:'grid',
+
+    styles:{
+      fontSize:11,
+      cellPadding:4
+    },
+
+    headStyles:{
+      fillColor:[230,90,40],
+      textColor:255,
+      fontStyle:'bold'
+    },
+
+    alternateRowStyles:{
+      fillColor:[245,245,245]
+    },
+
+    columnStyles:{
+      0:{
+        fontStyle:'bold',
+        cellWidth:60
+      }
+    }
+
+  });
+
+  // ─────────────────────────
+  // STATUS
+  // ─────────────────────────
+
+  let finalY = doc.lastAutoTable.finalY + 15;
+
+  doc.setFontSize(16);
+
+  doc.setFont("helvetica","bold");
+
+  if(result.passed){
+
+    doc.setTextColor(0,150,0);
+
+    doc.text(
+      "STATUS : PASS",
+      14,
+      finalY
+    );
+
+  }else{
+
+    doc.setTextColor(220,0,0);
+
+    doc.text(
+      "STATUS : FAIL",
+      14,
+      finalY
+    );
+
+  }
+
+  // ─────────────────────────
+  // FOOTER
+  // ─────────────────────────
+
+  doc.setFontSize(9);
+
+  doc.setTextColor(120);
+
+  doc.text(
+    "Generated on : " + new Date().toLocaleString(),
+    14,
+    285
+  );
+
+  doc.text(
+    "Ozellar Marine Pvt. Ltd.",
+    196,
+    285,
+    { align:"right" }
+  );
+
+  // ─────────────────────────
+  // SAVE PDF
+  // ─────────────────────────
+
+  doc.save(
+    `Ozellar_Result_${result.user_name}.pdf`
+  );
+
+}
+
+
+// ─────────────────────────────
+// IMAGE LOADER
+// ─────────────────────────────
+
+function loadImage(src){
+
+  return new Promise((resolve,reject)=>{
+
+    const img = new Image();
+
+    img.crossOrigin = "Anonymous";
+
+    img.onload = function(){
+
+      const canvas = document.createElement("canvas");
+
+      canvas.width = img.width;
+
+      canvas.height = img.height;
+
+      const ctx = canvas.getContext("2d");
+
+      ctx.drawImage(img,0,0);
+
+      resolve(
+        canvas.toDataURL("image/png")
+      );
+
+    };
+
+    img.onerror = reject;
+
+    img.src = src;
+
+  });
+
+}
+
+
+// ─────────────────────────────
+// LOGOUT
+// ─────────────────────────────
+
+function logoutAdmin(){
+
+  location.reload();
+
+}
+
+</script>
+
+</body>
+</html>

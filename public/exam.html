@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Exam Portal</title>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    padding: 20px;
+    margin: 0;
+  }
+
+  #examScreen, #res {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 620px;
+    margin: auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  #qtxt {
+    font-size: 18px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .opt {
+    padding: 12px 16px;
+    margin: 8px 0;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.15s;
+    font-size: 15px;
+  }
+
+  .opt:hover { border-color: #3b82f6; background: #eff6ff; }
+
+  .opt.sel {
+    background: #3b82f6;
+    color: #fff;
+    border-color: #3b82f6;
+  }
+
+  .nav-btns { margin-top: 20px; display: flex; gap: 10px; }
+
+  .nav-btns button, #submitBtn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .nav-btns button { background: #e5e7eb; color: #010c5d; }
+  .nav-btns button:hover { background: #d1d5db; }
+
+  #submitBtn {
+    display: block;
+    margin-top: 20px;
+    background: #ef4444;
+    color: white;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  #submitBtn:hover { background: #dc2626; }
+
+  #timerBox {
+    text-align: right;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ef4444;
+    margin-bottom: 10px;
+  }
+
+  #timerBox.warning { color: #f97316; animation: pulse 1s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+
+  #progressBar {
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    margin-bottom: 20px;
+  }
+
+  #progressFill {
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+
+  /* Result screen */
+  #res h2 { color: #1e3a5f; }
+  #res .stat-row { display: flex; gap: 15px; margin-top: 15px; }
+  #res .stat-box {
+    flex: 1;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .stat-box.correct  { background: #dcfce7; color: #166534; }
+  .stat-box.wrong    { background: #fee2e2; color: #991b1b; }
+  .stat-box.skipped  { background: #fef9c3; color: #854d0e; }
+
+  #scoreCircle {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: bold; color: white;
+    margin: 20px auto;
+  }
+
+  #dlBtn {
+    display: block;
+    margin-top: 20px;
+    padding: 12px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  /* Session kicked overlay */
+  #kickedOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #kickedOverlay.show { display: flex; }
+
+  #kickedBox {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 380px;
+  }
+
+  #kickedBox h3 { color: #ef4444; margin-bottom: 10px; }
+  #kickedBox p  { margin-bottom: 20px; color: #555; }
+  #kickedBox button {
+    padding: 10px 24px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- Session kicked overlay -->
+<div id="kickedOverlay">
+  <div id="kickedBox">
+    <h3>⚠️ Session Expired</h3>
+    <p>Your account was logged in from another device or browser. This session has been terminated.</p>
+    <button onclick="goToLogin()">Back to Login</button>
+  </div>
+</div>
+<!-- RESULT SCREEN -->
+<div id="res" style="display:none;">
+  <h2>Exam Submitted Successfully </h2>
+
+  <p><strong>Name:</strong> <span id="rname"></span></p>
+  <p><strong>Rank:</strong> <span id="rrank"></span></p>
+   <p><strong>Ozellar Marine:</strong> <span id="cname"></span></p>
+    <p><strong>4th Floor, Developed Plots Estate, Anejas Towers, B-Block, Plot No. 4 & 5, Perungudi, Chennai, Tamil Nadu 600096:</strong> <span id="cadrs"></span></p>
+  </div>
+
+  <h3 id="rmsg" style="margin-top:20px;"></h3>
+</div>
+<div id="examScreen">
+  <div id="timerBox">⏱ <span id="timeLeft">--:--</span></div>
+  <div id="progressBar"><div id="progressFill" style="width:0%"></div></div>
+
+  <h2 id="qtxt">Loading...</h2>
+  <div id="optsEl"></div>
+
+  <div class="nav-btns">
+    <button onclick="go(-1)">◀ Prev</button>
+    <button onclick="go(1)">Next ▶</button>
+  </div>
+<div></div>
+  <button id="submitBtn" onclick="confirmSubmit()">Submit Exam</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+// ─────────────────────────────────────────
+// QUESTIONS DATABASE
+// ─────────────────────────────────────────
+const QUESTIONS_BY_RANK = {
+  chief_officer: [
+    {
+      q: "What is the Chief Officer's primary responsibility?",
+      opts: ["Engine maintenance","Bridge watchkeeping","Cargo operations","Navigation only"],
+      ans: 2
+    }
+  ],
+
+  master: [
+    {
+      section: "1. Helm Orders",
+      q: "What is your fav Team?",
+      opts: ["RCB","CSK","MI","KKR"],
+      ans: 0
+    }
+  ],
+
+  second_officer: [
+    {
+      q: "What is the Second Officer?",
+      opts: ["2O","3O","4E","3E"],
+      ans: 1
+    },
+    {
+      q: "Master called?",
+      opts: ["Chief Officer","Chief Engineer","Second Officer","Master"],
+      ans: 3
+    }
+  ],
+
+  able_bodied_seaman: [
+    {
+      section: "1. Helm Orders",
+      q: "What does the helm order “Midships” mean?",
+      opts: [
+        "Turn the wheel fully to port",
+        "Keep the ship steady on course",
+        "Bring the rudder to zero position",
+        "Stop the steering gear"
+      ],
+      ans: 2
+    },
+    {
+      section: "2. Lookout Procedures",
+      q: "Which is the primary duty of a lookout?",
+      opts: [
+        "Leave bridge periodically",
+        "Maintain lookout by sight, hearing & all available means",
+        "Follow daylight procedures",
+        "Depend only on radar"
+      ],
+      ans: 1
+    },
+    {
+      section: "3. Cargo Watch Takeover",
+      q: ". When taking over cargo watch, the AB should FIRST",
+      opts: [
+        "Start cargo operations",
+        "Check cargo plan, ongoing operations and moorings",
+        "Leave the area if cargo is completed",
+        "Only follow orders from shore staff"
+      ],
+      ans: 1
+    },
+    {
+      section: "4. Corrosion Maintenance",
+      q: "The main cause of corrosion on deck structures is:",
+      opts: [
+        "Cargo weight",
+        "Heat from the sun",
+        "Coating breakdown exposing steel",
+        "Poor welding"
+      ],
+      ans: 2
+    },
+    {
+section: "5. Surface Preparation",
+      q: "Why is surface preparation important before painting?",
+      opts: [
+        "A. To improve paint colour",
+        "B. To reduce paint consumption",
+        "C. To ensure proper paint adhesion and durability",
+        "D. To speed up drying time"
+      ],
+      ans: 2
+    },
+    {
+section: "6. Marine Paint Varieties",
+      q: "Which paint is commonly used for corrosion protection on steel surfaces?",
+      opts: [
+        "A. Polyurethane paint",
+        "B. Epoxy paint",
+        "C. Acrylic paint",
+        "D. Enamel paint"
+      ],
+      ans: 1
+    },
+    {
+section: "7. Airless Spray Painting",
+      q: "One major advantage of airless spray painting is:",
+      opts: [
+        "A. No need for PPE",
+        "B. Thicker coating with better coverage",
+        "C. No surface preparation required",
+        "D. Faster rust formation"
+      ],
+      ans: 1
+    },
+
+{
+section: "8. DFT (Dry Film Thickness)",
+      q: "Why is maintaining correct DFT important?",
+      opts: [
+        "A. To reduce drying time",
+        "B. To avoid paint wastage only",
+        "C. To ensure proper corrosion protection",
+        "D. To improve paint gloss"
+      ],
+      ans:  2
+    },
+    {
+section: "9. Hydroblaster – Safety",
+      q: "While using a hydro blaster, which PPE is MOST important?",
+      opts: [
+        "A. Cotton gloves",
+        "B. Safety helmet only",
+        "C. Face shield, cut-resistant gloves, boots and apron",
+        "D. Ordinary shoes"
+      ],
+      ans: 2
+    },
+{
+section: "10. Lubrication Importance",
+      q: "Proper lubrication of deck machinery helps to:",
+      opts: [
+        "A. Increase noise",
+        "B. Reduce friction, wear and avoid breakdowns.",
+        "C. Increase fuel consumption",
+        "D. Delay operations"
+      ],
+      ans: 1
+    },
+{
+section: "11. Permit to Work System",
+      q: "Q11. A Permit to Work system is mainly used to:",
+      opts: [
+        "Increase paperwork",
+        "Allow faster job completion",
+        "Ensure work is carried out safely under controlled conditions",
+        "Replace risk assessments"
+      ],
+      ans: 2
+    },
+{
+section: "12. FFA",
+      q: "Q12. Which item is part of Fire Fighting Appliances (FFA)?",
+      opts: [
+        "Lifebuoy",
+        "Fire extinguisher",
+        "Lifejacket",
+        "Immersion suit"
+      ],
+      ans: 1
+    },
+{
+section: "13. Mooring Precautions",
+      q: "While mooring, snap-back zones should be:",
+      opts: [
+        "Clearly marked and kept clear of all personnel",
+        "Used for standing during operations",
+        "Ignored during calm weather",
+        "Used only by officers"
+      ],
+      ans: 0
+    },
+    {
+section: "14. Crane Wire Renewal",
+      q: "Before renewing a crane wire, the AB must ensure:",
+      opts: [
+        "Crane is under load",
+        "Power supply is isolated and hooks are secured",
+        "Only shore staff are present",
+        "Wire is greased"
+      ],
+      ans: 1
+    },
+    {
+section: "15. Hatch Cover Operation",
+      q: "Before operating hatch covers, the AB should:",
+      opts: [
+        "Start immediately to save time",
+        "Ensure area is clear and safety checks are done",
+        "Stand on the hatch cover",
+        "Operate without communication"
+      ],
+      ans: 1
+    },
+{
+section: "Q16. Helm Orders",
+      q: "Ease to 5° port means:",
+      opts: [
+        "Put rudder hard to port",
+        "Reduce rudder angle until 5° port",
+        "Shift helm to midships",
+        "Maintain present rudder angle"
+      ],
+      ans: 1
+    },
+{
+section: "Q17. ISPS",
+      q: "Security Level 1 means:",
+      opts: [
+        "Emergency",
+        "Heightened risk",
+        "Normal operations ",
+        "Complete Lockdown"
+      ],
+      ans: 2
+    },
+{
+section: "Q18. Gangway Watch",
+      q: "Primary duty is to:",
+      opts: [
+        "Assist cargo",
+        "Control access & record movements and maintain safe access",
+        "Assist store Pick up",
+        "Scrolling the Mobile Phone"
+      ],
+      ans: 1
+    },
+{
+section: "Q19. Cargo Hold Prep",
+      q: "Before loading, holds must be:",
+      opts: [
+        "Wet",
+        "Clean, dry, residue-free",
+        "Painted only",
+        "Inspected by stevedores only"
+      ],
+      ans: 1
+    },
+{
+section: "",
+      q: "What is the company’s standard Drugs & Alcohol (D&A) policy onboard?",
+      opts: [
+        "Alcohol allowed after working hours",
+        "Alcohol allowed with Master’s permission",
+        "Zero tolerance for non-compliance with company Policy",
+        "Alcohol allowed in port only"
+      ],
+      ans: 2
+    },
+{
+section: "",
+      q: "If an AB suspects a colleague is under the influence of alcohol, the AB should:",
+      opts: [
+        "Ignore the situation",
+        "Confront the person directly",
+        "Immediately inform the duty officer",
+        "Record it in the logbook later"
+      ],
+      ans: 2
+    },
+{
+section: "",
+      q: "As per MLC, the minimum rest hours required in any 24-hour period is:",
+      opts: [
+        "6 hours",
+        "8hours",
+        "10 hours",
+        "12 hours"
+      ],
+      ans: 2
+    },
+
+{
+section: "",
+      q: "Which of the following is a basic right of a seafarer under MLC?",
+      opts: [
+        "Free shore leave anytime",
+        "Proper accommodation, food, and medical care",
+        "Extra leave on request",
+        "Reduced working hours always"
+      ],
+      ans: 1
+    },
+{
+section: "",
+      q: "The main purpose of lubricating deck machinery is to:",
+      opts: [
+        "Improve appearance",
+        "Reduce friction , prevent wear and avoid breakdowns",
+        "Increase operating speed",
+        "Reduce manpower"
+      ],
+      ans: 1
+    },
+{
+section: "",
+      q: "Before lubricating moving machinery, the AB must ensure:",
+      opts: [
+        "Machinery is running normally",
+        "Guards are removed",
+        "Machinery is stopped or safely isolated",
+        "Lubrication is done quickly"
+      ],
+      ans: 2
+    },
+{
+section: "",
+      q: "A Permit to Work system is used to:",
+      opts: [
+        "Speed up maintenance",
+        "Control and manage hazardous work safely",
+        "Reduce documentation",
+        "Replace toolbox meetings"
+      ],
+      ans: 1
+    },
+
+{
+section: "",
+      q: "Which activity requires a Permit to Work?",
+      opts: [
+        "Deck washing",
+        "Greasing winches",
+        "Entry into enclosed spaces",
+        "Painting Pipelines"
+      ],
+      ans: 2
+    },
+{
+section: "",
+      q: "During mooring operations, personnel should:",
+      opts: [
+        "Stand close to ropes for control",
+        "Stand inside snap-back zones",
+        "Keep well clear of ropes under tension",
+        "Cross ropes when necessary"
+      ],
+      ans: 2
+    },
+{
+section: "1. SECURITY WATCH REQUIREMENT",
+      q: "Question: What is the primary responsibility of a seafarer on security watch duty?",
+      opts: [
+        "To maintain engine room logs and monitor machinery parameters",
+        "To detect and report any suspicious activities or unauthorized persons on board",
+        "To assist the chef in meal preparation during night hours",
+        "To conduct routine maintenance on deck equipment"
+      ],
+      ans: 1
+    },
+    {
+section: "30. WORK AT HEIGHT REQUIREMENT",
+      q: "Question: Before commencing work at height, which of the following is the MOST critical safety measure?",
+      opts: [
+        "Ensure the work area is well-lit and weather is favorable",
+        "Conduct risk assessment, use proper fall protection equipment, and obtain work permit",
+        "Inform the captain about the planned work schedule",
+        "Complete the work as quickly as possible to minimize exposure time"
+      ],
+      ans: 1
+    },
+
+{
+section: "31. SMOKING REGULATION",
+      q: "Question: Where is smoking permitted on board a vessel under normal operating conditions?",
+      opts: [
+        "In any outdoor area on deck during off-duty hours",
+        "Only in designated smoking areas as specified in the vessel's SMS",
+        "In the accommodation after obtaining permission from the duty officer",
+        "Anywhere below deck except the engine room"
+      ],
+      ans: 1
+    },
+{
+section: "32. COMPLAINT PROCEDURE",
+      q: "Question: If a crew member has a work-related complaint or grievance, what is the correct procedure?",
+      opts: [
+        "Wait until port arrival and complain to the port authority",
+        "Discuss with fellow crew members and take collective action",
+        "Follow the company's grievance procedure by reporting to immediate supervisor or designated person",
+        "Send an anonymous letter to the ship management company"
+      ],
+      ans: 2
+    },
+{
+section: "33. HAZARD IDENTIFICATION",
+      q: "Question: Which statement BEST describes a hazard in the workplace?",
+      opts: [
+        "An accident that has already occurred and caused injury",
+        "Any source or situation with potential to cause harm, injury, or damage",
+        "Only chemical substances that are flammable or toxic",
+        "Equipment that is older than 10 years and needs replacement"
+      ],
+      ans: 1
+    },
+{
+section: "SEAMANSHIP",
+      q: "what kind of rope to be used for pilot ladder man ropes?",
+      opts: [
+        "Nylon",
+        "Poly propylene",
+        "Manila",
+        "Composite"
+      ],
+      ans: 2
+    },
+{
+section: "",
+      q: "What safety watch to be followed while coal loading operations?",
+      opts: [
+        "Security watch",
+        "Fire watch",
+        "Mooring Watch",
+        "All the above"
+      ],
+      ans:3 
+    },
+
+
+  ]
+};
+// ─────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────
+let questions   = [];
+let answers     = [];
+let cur         = 0;
+let correct     = 0, wrong = 0, skipped = 0;
+let totalTime   = 3600; // 1 hour
+let timerInterval, pingInterval;
+let submitted   = false;
+let user        = null;
+
+// ─────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────
+function el(id) { return document.getElementById(id); }
+
+function normalizeRank(raw) {
+  return (raw || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function getAuthHeaders() {
+  return {
+    "Content-Type":    "application/json",
+    "x-session-token": user.token || "",
+    "x-user-id":       String(user.id || "")
+  };
+}
+
+function goToLogin() {
+  sessionStorage.clear();
+  window.location.href = "login.html";
+}
+
+// ─────────────────────────────────────────
+// SESSION PING — every 10 seconds
+// If another login happened, server returns 401 → kick this tab
+// ─────────────────────────────────────────
+function startPing() {
+  pingInterval = setInterval(async () => {
+    if (submitted) { clearInterval(pingInterval); return; }
+
+    try {
+      const res = await fetch("http://localhost:3005/api/ping", {
+        headers: getAuthHeaders()
+      });
+
+      if (res.status === 401) {
+        clearInterval(pingInterval);
+        clearInterval(timerInterval);
+        el("kickedOverlay").classList.add("show");
+      }
+    } catch (e) {
+      // Network hiccup — don't kick, just log
+      console.warn("Ping failed:", e.message);
+    }
+ }, 10000); // every 10 seconds
+}
+
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
+function init() {
+  user = JSON.parse(sessionStorage.getItem("examUser"));
+
+  if (!user || !user.id || !user.token) {
+    alert("No valid session found. Please login.");
+    goToLogin();
+    return;
+  }
+
+  const rankKey = normalizeRank(user.rank);
+
+  questions = QUESTIONS_BY_RANK[rankKey] || [];
+
+  if (!questions || questions.length === 0) {
+    el("qtxt").textContent =
+      `No questions found for rank: "${user.rank}"`;
+    return;
+  }
+
+  answers = new Array(questions.length).fill(null);
+
+  // HIDE SUBMIT BUTTON INITIALLY
+  el("submitBtn").style.display = "none";
+
+  renderQ();
+  startTimer();
+  startPing();
+}
+
+// ─────────────────────────────────────────
+// ─────────────────────────────────────────
+// RENDER QUESTION
+// ─────────────────────────────────────────
+function renderQ() {
+
+  const q = questions[cur];
+
+  el("qtxt").textContent =
+    `Q${cur + 1} of ${questions.length}: ${q.q}`;
+
+  // Progress bar
+  el("progressFill").style.width =
+    ((cur + 1) / questions.length * 100) + "%";
+
+  const box = el("optsEl");
+  box.innerHTML = "";
+
+  q.opts.forEach((opt, i) => {
+
+    const div = document.createElement("div");
+
+    div.className =
+      "opt" + (answers[cur] === i ? " sel" : "");
+
+    div.textContent = opt;
+
+    div.onclick = () => {
+      answers[cur] = i;
+      renderQ();
+    };
+
+    box.appendChild(div);
+
+  });
+
+  // SHOW SUBMIT BUTTON ONLY ON LAST QUESTION
+  if (cur === questions.length - 1) {
+
+    el("submitBtn").style.display = "block";
+
+  } else {
+
+    el("submitBtn").style.display = "none";
+
+  }
+
+}
+// ─────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────
+window.go = function(d) {
+  const n = cur + d;
+  if (n >= 0 && n < questions.length) { cur = n; renderQ(); }
+};
+
+// ─────────────────────────────────────────
+// TIMER
+// ─────────────────────────────────────────
+function startTimer() {
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    totalTime--;
+    updateTimerDisplay();
+    if (totalTime <= 60) el("timerBox").classList.add("warning");
+    if (totalTime <= 0)  { clearInterval(timerInterval); submit(); }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = String(Math.floor(totalTime / 60)).padStart(2, "0");
+  const s = String(totalTime % 60).padStart(2, "0");
+  el("timeLeft").textContent = `${m}:${s}`;
+}
+
+// ─────────────────────────────────────────
+// SUBMIT
+// ─────────────────────────────────────────
+window.confirmSubmit = function() {
+  if (confirm("Are you sure you want to submit the exam?")) submit();
+};
+
+async function submit() {
+  if (submitted) return;
+  submitted = true;
+
+  clearInterval(timerInterval);
+  clearInterval(pingInterval);
+
+  correct = 0; wrong = 0; skipped = 0;
+
+  questions.forEach((q, i) => {
+    if      (answers[i] === null)    skipped++;
+    else if (answers[i] === q.ans)   correct++;
+    else                             wrong++;
+  });
+
+  const score = Math.round((correct / questions.length) * 100);
+  const name  = user.name || "N/A";
+  const rank  = user.rank || "N/A";
+
+  // Save result to server (token-protected)
+  try {
+    const res = await fetch("http://localhost:3005/api/result", {
+      method:  "POST",
+      headers: getAuthHeaders(),
+      body:    JSON.stringify({
+        user_id:   user.id,
+        user_name: name,
+        rank,
+        score,
+        correct,
+        wrong,
+        skipped
+      })
+    });
+
+    if (res.status === 401) {
+      // Kicked mid-exam — still show result locally
+      console.warn("Session expired during submit");
+    }
+  } catch (err) {
+    console.error("Result save failed:", err);
+  }
+
+  // Show result screen
+  el("examScreen").style.display = "none";
+  el("res").style.display        = "block";
+
+  el("rname").textContent    = name;
+  el("rrank").textContent    = rank;
+  el("rcorrect").textContent = correct;
+  el("rwrong").textContent   = wrong;
+  el("rskipped").textContent = skipped;
+
+  const circle = el("scoreCircle");
+  circle.textContent       = score + "%";
+  circle.style.background  = score >= 50 ? "#22c55e" : "#ef4444";
+
+  el("rmsg").textContent = score >= 50
+    ? "🎉 Congratulations! You have PASSED the exam."
+    : "❌ You did not meet the passing score of 50%. Please try again.";
+
+  // Clear session so they can't re-enter exam
+  sessionStorage.removeItem("examUser");
+}
+
+
+// ─────────────────────────────────────────
+// START
+// ─────────────────────────────────────────
+init();
+
+});
+</script>
+
+</body>
+</html>
