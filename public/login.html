@@ -6,112 +6,302 @@
   <title>ExamPortal — Login</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-
-  <style>
-    body{
-      font-family:'DM Sans',sans-serif;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
-      margin:0;
-      background:#f3f4f7;
-    }
-
-    .card{
-      background:white;
-      padding:40px;
-      border-radius:15px;
-      width:380px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.1);
-    }
-
-    h2{
-      margin-bottom:20px;
-      font-family:'Syne',sans-serif;
-      text-align:center;
-    }
-
-    .tabs{
-      display:flex;
-      margin-bottom:20px;
-      border-radius:10px;
-      overflow:hidden;
-      border:1px solid #ddd;
-    }
-
-    .tab{
-      flex:1;
-      padding:12px;
-      text-align:center;
-      cursor:pointer;
-      background:#f1f1f1;
-      font-weight:bold;
-      transition:0.3s;
-    }
-
-    .tab.active{
-      background:#3b82f6;
-      color:white;
-    }
-
-    input{
-      width:100%;
-      padding:12px;
-      margin-top:10px;
-      margin-bottom:15px;
-      border-radius:8px;
-      border:1px solid #ccc;
-      outline:none;
-      box-sizing:border-box;
-      font-family:'DM Sans',sans-serif;
-    }
-
-    button{
-      width:100%;
-      padding:12px;
-      background:#3b82f6;
-      color:white;
-      border:none;
-      border-radius:8px;
-      cursor:pointer;
-      font-weight:bold;
-      font-family:'DM Sans',sans-serif;
-      transition:0.3s;
-    }
-
-    button:hover{
-      opacity:0.9;
-    }
-
-    button:disabled{
-      background:gray;
-      cursor:not-allowed;
-    }
-
-    .error{
-      color:red;
-      display:none;
-      margin-top:10px;
-      font-size:14px;
-      text-align:center;
-    }
-
-    .login-box{
-      display:none;
-    }
-
-    .login-box.active{
-      display:block;
-    }
-  </style>
+</style>
 </head>
 
 <body>
 
 <div class="card">
 
-  <h2>Exam Portal</h2>
+  <!-- LOGO -->
+  <div class="logo">OZ</div>
+
+  <!-- TITLE -->
+  <h2>Ozellar Competency Portal</h2>
+
+  <div class="sub">
+    Secure Examination & Assessment Platform
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+
+    <div class="tab active" onclick="switchTab('candidate')">
+      Candidate
+    </div>
+
+    <div class="tab" onclick="switchTab('admin')">
+      Admin
+    </div>
+
+  </div>
+
+  <!-- CANDIDATE LOGIN -->
+  <div id="candidateBox" class="login-box active">
+
+    <div class="input-group">
+      <label class="label">Full Name</label>
+      <input type="text" id="cname" placeholder="Enter your full name"/>
+    </div>
+
+    <div class="input-group">
+      <label class="label">CDC Number</label>
+      <input type="password" id="cpassword" placeholder="Enter CDC number"/>
+    </div>
+
+    <button id="candidateBtn">
+      Candidate Sign In
+    </button>
+
+  </div>
+
+  <!-- ADMIN LOGIN -->
+  <div id="adminBox" class="login-box">
+
+    <div class="input-group">
+      <label class="label">Admin Username</label>
+      <input type="text" id="adminUser" placeholder="Enter username"/>
+    </div>
+
+    <div class="input-group">
+      <label class="label">Admin Password</label>
+      <input type="password" id="adminPass" placeholder="Enter password"/>
+    </div>
+
+    <button id="adminBtn">
+      Admin Sign In
+    </button>
+
+  </div>
+
+  <!-- ERROR -->
+  <p class="error" id="err"></p>
+
+</div>
+
+<script>
+
+  // TAB SWITCH
+  function switchTab(type){
+
+    document.querySelectorAll(".tab").forEach(tab=>{
+      tab.classList.remove("active");
+    });
+
+    document.querySelectorAll(".login-box").forEach(box=>{
+      box.classList.remove("active");
+    });
+
+    if(type === "candidate"){
+
+      document.querySelectorAll(".tab")[0]
+        .classList.add("active");
+
+      document.getElementById("candidateBox")
+        .classList.add("active");
+
+    }else{
+
+      document.querySelectorAll(".tab")[1]
+        .classList.add("active");
+
+      document.getElementById("adminBox")
+        .classList.add("active");
+
+    }
+
+    document.getElementById("err").style.display = "none";
+  }
+
+  // ENTER KEY LOGIN
+  document.addEventListener("keydown", function(e){
+
+    if(e.key === "Enter"){
+
+      if(
+        document.getElementById("candidateBox")
+        .classList.contains("active")
+      ){
+        doCandidateLogin();
+      }else{
+        doAdminLogin();
+      }
+
+    }
+
+  });
+
+  // CANDIDATE LOGIN
+  document.getElementById("candidateBtn")
+    .addEventListener("click", doCandidateLogin);
+
+  async function doCandidateLogin(){
+
+    const name     = document.getElementById("cname").value.trim();
+
+    const password = document.getElementById("cpassword").value.trim();
+
+    const err      = document.getElementById("err");
+
+    const btn      = document.getElementById("candidateBtn");
+
+    err.style.display = "none";
+
+    if(!name || !password){
+
+      err.innerText = "Please enter all fields";
+
+      err.style.display = "block";
+
+      return;
+    }
+
+    try{
+
+      btn.disabled = true;
+
+      btn.innerText = "Signing in...";
+
+      const res = await fetch("http://localhost:3005/api/login", {
+
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+          name,
+          password
+        })
+
+      });
+
+      const data = await res.json();
+
+      console.log("CANDIDATE LOGIN:", data);
+
+      if(res.ok && data.success){
+
+        sessionStorage.setItem(
+          "examUser",
+          JSON.stringify(data.user)
+        );
+
+        window.location.href = "exam.html";
+
+      }else{
+
+        err.innerText = data.message || "Invalid login";
+
+        err.style.display = "block";
+      }
+
+    }catch(e){
+
+      console.error(e);
+
+      err.innerText = "Server not reachable";
+
+      err.style.display = "block";
+    }
+
+    btn.disabled = false;
+
+    btn.innerText = "Candidate Sign In";
+  }
+
+  // ADMIN LOGIN
+  document.getElementById("adminBtn")
+    .addEventListener("click", doAdminLogin);
+
+  async function doAdminLogin(){
+
+    const username = document.getElementById("adminUser").value.trim();
+
+    const password = document.getElementById("adminPass").value.trim();
+
+    const err      = document.getElementById("err");
+
+    const btn      = document.getElementById("adminBtn");
+
+    err.style.display = "none";
+
+    if(!username || !password){
+
+      err.innerText = "Please enter admin credentials";
+
+      err.style.display = "block";
+
+      return;
+    }
+
+    try{
+
+      btn.disabled = true;
+
+      btn.innerText = "Signing in...";
+
+      const res = await fetch("http://localhost:3005/api/admin-login", {
+
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+          username,
+          password
+        })
+
+      });
+
+      const data = await res.json();
+
+      console.log("ADMIN LOGIN:", data);
+
+      if(res.ok && data.success){
+
+        sessionStorage.setItem(
+          "adminUser",
+          JSON.stringify(data.admin)
+        );
+
+        window.location.href = "admin.html";
+
+      }else{
+
+        err.innerText = data.message || "Invalid admin login";
+
+        err.style.display = "block";
+      }
+
+    }catch(e){
+
+      console.error(e);
+
+      err.innerText = "Server not reachable";
+
+      err.style.display = "block";
+    }
+
+    btn.disabled = false;
+
+    btn.innerText = "Admin Sign In";
+  }
+
+</script>
+
+</body>
+</html>
+</head>
+
+<body>
+
+<div class="card">
+
+  <h2>Ozellar Competency Portal</h2>
 
   <!-- Tabs -->
   <div class="tabs">
