@@ -9,7 +9,8 @@ const crypto = require('crypto');
 const pool = require('./db');
 
 const app = express();
-const PORT = 3005;
+const PORT = process.env.PORT || 3005;
+ 
 
 // ─────────────────────────────────────
 // MIDDLEWARE
