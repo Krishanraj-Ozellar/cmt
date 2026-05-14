@@ -1,142 +1,343 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>ExamPortal — Candidate Login</title>
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ExamPortal — Login</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 
-    <style>
-      body {
-        font-family: 'DM Sans', sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        background: #f3f4f7;
-      }
+  <style>
+    body{
+      font-family:'DM Sans',sans-serif;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      margin:0;
+      background:#f3f4f7;
+    }
 
-      .card {
-        background: white;
-        padding: 40px;
-        border-radius: 15px;
-        width: 350px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      }
+    .card{
+      background:white;
+      padding:40px;
+      border-radius:15px;
+      width:380px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.1);
+    }
 
-      h2 {
-        margin-bottom: 20px;
-        font-family: 'Syne', sans-serif;
-      }
+    h2{
+      margin-bottom:20px;
+      font-family:'Syne',sans-serif;
+      text-align:center;
+    }
 
-      input {
-        width: 100%;
-        padding: 12px;
-        margin-top: 10px;
-        margin-bottom: 15px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        outline: none;
-        box-sizing: border-box;
-        font-family: 'DM Sans', sans-serif;
-      }
+    .tabs{
+      display:flex;
+      margin-bottom:20px;
+      border-radius:10px;
+      overflow:hidden;
+      border:1px solid #ddd;
+    }
 
-      button {
-        width: 100%;
-        padding: 12px;
-        background: #3b82f6;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-        font-family: 'DM Sans', sans-serif;
-      }
+    .tab{
+      flex:1;
+      padding:12px;
+      text-align:center;
+      cursor:pointer;
+      background:#f1f1f1;
+      font-weight:bold;
+      transition:0.3s;
+    }
 
-      button:disabled {
-        background: gray;
-        cursor: not-allowed;
-      }
+    .tab.active{
+      background:#3b82f6;
+      color:white;
+    }
 
-      .error {
-        color: red;
-        display: none;
-        margin-top: 10px;
-        font-size: 14px;
-      }
-    </style>
-  </head>
+    input{
+      width:100%;
+      padding:12px;
+      margin-top:10px;
+      margin-bottom:15px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      outline:none;
+      box-sizing:border-box;
+      font-family:'DM Sans',sans-serif;
+    }
 
-  <body>
+    button{
+      width:100%;
+      padding:12px;
+      background:#3b82f6;
+      color:white;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:bold;
+      font-family:'DM Sans',sans-serif;
+      transition:0.3s;
+    }
 
-  <div class="card">
-    <h2>Candidate Login</h2>
+    button:hover{
+      opacity:0.9;
+    }
 
-    <input type="text"     id="name"     placeholder="Full Name"/>
-    <input type="password" id="password" placeholder="CDC Number"/>
+    button:disabled{
+      background:gray;
+      cursor:not-allowed;
+    }
 
-    <button id="loginBtn">Sign In</button>
+    .error{
+      color:red;
+      display:none;
+      margin-top:10px;
+      font-size:14px;
+      text-align:center;
+    }
 
-    <p class="error" id="err"></p>
+    .login-box{
+      display:none;
+    }
+
+    .login-box.active{
+      display:block;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <h2>Exam Portal</h2>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('candidate')">
+      Candidate
+    </div>
+
+    <div class="tab" onclick="switchTab('admin')">
+      Admin
+    </div>
   </div>
 
-  <script>
-    document.getElementById("loginBtn").addEventListener("click", doLogin);
+  <!-- Candidate Login -->
+  <div id="candidateBox" class="login-box active">
 
-    // Allow pressing Enter to login
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Enter") doLogin();
+    <input type="text" id="cname" placeholder="Full Name"/>
+
+    <input type="password" id="cpassword" placeholder="CDC Number"/>
+
+    <button id="candidateBtn">Candidate Sign In</button>
+
+  </div>
+
+  <!-- Admin Login -->
+  <div id="adminBox" class="login-box">
+
+    <input type="text" id="adminUser" placeholder="Admin Username"/>
+
+    <input type="password" id="adminPass" placeholder="Admin Password"/>
+
+    <button id="adminBtn">Admin Sign In</button>
+
+  </div>
+
+  <p class="error" id="err"></p>
+
+</div>
+
+<script>
+
+  // TAB SWITCH
+  function switchTab(type){
+
+    document.querySelectorAll(".tab").forEach(tab=>{
+      tab.classList.remove("active");
     });
 
-    async function doLogin() {
-      const name     = document.getElementById("name").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const err      = document.getElementById("err");
-      const btn      = document.getElementById("loginBtn");
+    document.querySelectorAll(".login-box").forEach(box=>{
+      box.classList.remove("active");
+    });
 
-      err.style.display = "none";
-
-      if (!name || !password) {
-        err.innerText = "Please enter all fields";
-        err.style.display = "block";
-        return;
-      }
-
-      try {
-        btn.disabled  = true;
-        btn.innerText = "Signing in...";
-
-        // const res = await fetch("http://localhost:3005/api/login", {
-        const res = await fetch("/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, password })
-        });
-
-        const data = await res.json();
-        console.log("LOGIN RESPONSE:", data);
-
-        if (res.ok && data.success) {
-          // Store full user object including token
-          sessionStorage.setItem("examUser", JSON.stringify(data.user));
-          window.location.href = "exam.html";
-        } else {
-          err.innerText     = data.message || "Invalid login";
-          err.style.display = "block";
-        }
-
-      } catch (e) {
-        console.error(e);
-        err.innerText     = "Server not reachable";
-        err.style.display = "block";
-      }
-
-      btn.disabled  = false;
-      btn.innerText = "Sign In";
+    if(type === "candidate"){
+      document.querySelectorAll(".tab")[0].classList.add("active");
+      document.getElementById("candidateBox").classList.add("active");
+    }else{
+      document.querySelectorAll(".tab")[1].classList.add("active");
+      document.getElementById("adminBox").classList.add("active");
     }
-  </script>
 
-  </body>
-  </html>
+    document.getElementById("err").style.display = "none";
+  }
+
+  // ENTER KEY LOGIN
+  document.addEventListener("keydown", function(e){
+
+    if(e.key === "Enter"){
+
+      if(document.getElementById("candidateBox").classList.contains("active")){
+        doCandidateLogin();
+      }else{
+        doAdminLogin();
+      }
+
+    }
+
+  });
+
+  // CANDIDATE LOGIN
+  document.getElementById("candidateBtn")
+    .addEventListener("click", doCandidateLogin);
+
+  async function doCandidateLogin(){
+
+    const name     = document.getElementById("cname").value.trim();
+    const password = document.getElementById("cpassword").value.trim();
+    const err      = document.getElementById("err");
+    const btn      = document.getElementById("candidateBtn");
+
+    err.style.display = "none";
+
+    if(!name || !password){
+      err.innerText = "Please enter all fields";
+      err.style.display = "block";
+      return;
+    }
+
+    try{
+
+      btn.disabled = true;
+      btn.innerText = "Signing in...";
+
+      const res = await fetch("http://localhost:3005/api/login", {
+      // const res = await fetch("/api/login", {
+
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+          name,
+          password
+        })
+
+      });
+
+      const data = await res.json();
+
+      console.log("CANDIDATE LOGIN:", data);
+
+      if(res.ok && data.success){
+
+        sessionStorage.setItem(
+          "examUser",
+          JSON.stringify(data.user)
+        );
+
+        window.location.href = "exam.html";
+
+      }else{
+
+        err.innerText = data.message || "Invalid login";
+        err.style.display = "block";
+
+      }
+
+    }catch(e){
+
+      console.error(e);
+
+      err.innerText = "Server not reachable";
+      err.style.display = "block";
+
+    }
+
+    btn.disabled = false;
+    btn.innerText = "Candidate Sign In";
+  }
+
+  // ADMIN LOGIN
+  document.getElementById("adminBtn")
+    .addEventListener("click", doAdminLogin);
+
+  async function doAdminLogin(){
+
+    const username = document.getElementById("adminUser").value.trim();
+    const password = document.getElementById("adminPass").value.trim();
+    const err      = document.getElementById("err");
+    const btn      = document.getElementById("adminBtn");
+
+    err.style.display = "none";
+
+    if(!username || !password){
+      err.innerText = "Please enter admin credentials";
+      err.style.display = "block";
+      return;
+    }
+
+    try{
+
+      btn.disabled = true;
+      btn.innerText = "Signing in...";
+
+      const res = await fetch("http://localhost:3005/api/admin-login", {
+      // const res = await fetch("/api/admin-login", {
+
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+          username,
+          password
+        })
+
+      });
+
+      const data = await res.json();
+
+      console.log("ADMIN LOGIN:", data);
+
+      if(res.ok && data.success){
+
+        sessionStorage.setItem(
+          "adminUser",
+          JSON.stringify(data.admin)
+        );
+
+        window.location.href = "admin.html";
+
+      }else{
+
+        err.innerText = data.message || "Invalid admin login";
+        err.style.display = "block";
+
+      }
+
+    }catch(e){
+
+      console.error(e);
+
+      err.innerText = "Server not reachable";
+      err.style.display = "block";
+
+    }
+
+    btn.disabled = false;
+    btn.innerText = "Admin Sign In";
+  }
+
+</script>
+
+</body>
+</html>
+```

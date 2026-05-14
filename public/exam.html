@@ -691,8 +691,8 @@ function startPing() {
     if (submitted) { clearInterval(pingInterval); return; }
 
     try {
-      // const res = await fetch("http://localhost:3005/api/ping", {
-      await fetch("/api/ping", {
+      const res = await fetch("http://localhost:3005/api/ping", {
+      // await fetch("/api/ping", {
         headers: getAuthHeaders()
       });
 
@@ -843,8 +843,8 @@ async function submit() {
 
   // Save result to server (token-protected)
   try {
-    // const res = await fetch("http://localhost:3005/api/result", {
-    await fetch("/api/result", {
+    const res = await fetch("http://localhost:3005/api/result", {
+    // await fetch("/api/result", {
       method:  "POST",
       headers: getAuthHeaders(),
       body:    JSON.stringify({
