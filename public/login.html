@@ -9,7 +9,7 @@
 
   <style>
     body{
-      font-family:'DM Sans',Verdana;
+      font-family:'Verdana';
       display:flex;
       justify-content:center;
       align-items:center;
@@ -116,7 +116,7 @@
   <!-- Tabs -->
   <div class="tabs">
     <div class="tab active" onclick="switchTab('candidate')">
-      Candidate
+      Seafarer
     </div>
 
     <div class="tab" onclick="switchTab('admin')">
@@ -131,7 +131,7 @@
 
     <input type="password" id="cpassword" placeholder="CDC Number"/>
 
-    <button id="candidateBtn">Candidate Sign In</button>
+    <button id="candidateBtn">Seafarer Sign In</button>
 
   </div>
 
@@ -213,8 +213,8 @@
       btn.disabled = true;
       btn.innerText = "Signing in...";
 
-      const res = await fetch("http://localhost:3005/api/login", {
-      // const res = await fetch("/api/login", {
+      // const res = await fetch("http://localhost:3005/api/login", {
+      const res = await fetch("/api/login", {
 
         method:"POST",
 
@@ -286,8 +286,8 @@
       btn.disabled = true;
       btn.innerText = "Signing in...";
 
-      const res = await fetch("http://localhost:3005/api/admin-login", {
-      // const res = await fetch("/api/admin-login", {
+      // const res = await fetch("http://localhost:3005/api/admin-login", {
+      const res = await fetch("/api/admin-login", {
 
         method:"POST",
 

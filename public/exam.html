@@ -187,12 +187,43 @@
 </div>
 
 <!-- RESULT SCREEN -->
+
+<!-- RESULT SCREEN -->
 <div id="res" style="display:none;">
-  <h2>Exam Submitted Successfully </h2>
-   <p><strong>Ozellar Marine:</strong> <span id="cname"></span></p>
+
+  <h2>Exam Submitted Successfully</h2>
+
+  <p><strong>Company:</strong> Ozellar Marine</p>
   <p><strong>Name:</strong> <span id="rname"></span></p>
   <p><strong>Rank:</strong> <span id="rrank"></span></p>
-   </div>
+
+  <!-- SCORE CIRCLE -->
+  <div id="scoreCircle">0%</div>
+
+  <!-- STATS -->
+  <div class="stat-row">
+
+    <div class="stat-box correct">
+      Correct
+      <div id="rcorrect">0</div>
+    </div>
+
+    <div class="stat-box wrong">
+      Wrong
+      <div id="rwrong">0</div>
+    </div>
+
+    <div class="stat-box skipped">
+      Skipped
+      <div id="rskipped">0</div>
+    </div>
+
+  </div>
+
+  <!-- RESULT MESSAGE -->
+  <h3 id="rmsg" style="margin-top:20px;"></h3>
+
+</div>
 
 
   <h3 id="rmsg" style="margin-top:20px;"></h3>
@@ -220,7 +251,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // ─────────────────────────────────────────
 // QUESTIONS DATABASE
 // ─────────────────────────────────────────
-const QUESTIONS_BY_RANK = {
+const questionBank = {
   chief_officer: [
     {
       q: "What is the Chief Officer's primary responsibility?",
@@ -712,22 +743,31 @@ function startPing() {
 // INIT
 // ─────────────────────────────────────────
 function init() {
+
   user = JSON.parse(sessionStorage.getItem("examUser"));
 
   if (!user || !user.id || !user.token) {
+
     alert("No valid session found. Please login.");
+
     goToLogin();
+
     return;
+
   }
 
-  const rankKey = normalizeRank(user.rank);
+  // DIRECT RANK MATCH
+  const rankKey = user.rank;
 
-  questions = QUESTIONS_BY_RANK[rankKey] || [];
+  questions = questionBank[rankKey] || [];
 
   if (!questions || questions.length === 0) {
+
     el("qtxt").textContent =
       `No questions found for rank: "${user.rank}"`;
+
     return;
+
   }
 
   answers = new Array(questions.length).fill(null);
@@ -736,10 +776,12 @@ function init() {
   el("submitBtn").style.display = "none";
 
   renderQ();
-  startTimer();
-  startPing();
-}
 
+  startTimer();
+
+  startPing();
+
+}
 // ─────────────────────────────────────────
 // ─────────────────────────────────────────
 // RENDER QUESTION
