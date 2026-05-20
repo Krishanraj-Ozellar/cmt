@@ -691,7 +691,9 @@ let user        = null;
 // ─────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────
-function el(id) { return document.getElementById(id); }
+function el(id) { 
+  return document.getElementById(id); 
+}
 
 function normalizeRank(raw) {
   return (raw || "")
@@ -702,9 +704,9 @@ function normalizeRank(raw) {
 
 function getAuthHeaders() {
   return {
-    "Content-Type":    "application/json",
+    "Content-Type": "application/json",
     "x-session-token": user.token || "",
-    "x-user-id":       String(user.id || "")
+    "x-user-id": String(user.id || "")
   };
 }
 
@@ -722,8 +724,8 @@ function startPing() {
     if (submitted) { clearInterval(pingInterval); return; }
 
     try {
-      const res = await fetch("http://localhost:3005/api/ping", {
-      // await fetch("/api/ping", {
+      // const res = await fetch("http://localhost:3005/api/ping", {
+      await fetch("/api/ping", {
         headers: getAuthHeaders()
       });
 
@@ -757,9 +759,9 @@ function init() {
   }
 
   // DIRECT RANK MATCH
-  const rankKey = user.rank;
+  const rankKey = normalizeRank(user.rank);
 
-  questions = questionBank[rankKey] || [];
+questions = questionBank[rankKey] || [];
 
   if (!questions || questions.length === 0) {
 
