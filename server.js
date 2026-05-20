@@ -677,9 +677,6 @@ app.post('/api/result', requireAuth, async (req, res) => {
 
 // ─────────────────────────────────────
 // GET RESULTS
-
-// ─────────────────────────────────────
-// GET RESULTS
 // ─────────────────────────────────────
 
 app.get('/api/results', async (req, res) => {
@@ -731,6 +728,101 @@ app.get('/api/results', async (req, res) => {
 
 });
 
+// ─────────────────────────────────────
+// EDIT RESULT  ← NEW
+// ─────────────────────────────────────
+
+app.patch('/api/results/:id', async (req, res) => {
+
+  const adminName     = req.headers['x-admin-name'];
+  const adminPassword = req.headers['x-admin-password'];
+
+  if (
+
+    adminName     !== ADMIN.name ||
+    adminPassword !== ADMIN.password
+
+  ) {
+
+    return res.status(403).json({
+      success: false,
+      message: "Admin auth failed"
+    });
+
+  }
+
+  const { name, score, correct, wrong, skipped } = req.body;
+
+  if (
+
+    name      === undefined ||
+    score     === undefined ||
+    correct   === undefined ||
+    wrong     === undefined ||
+    skipped   === undefined
+
+  ) {
+
+    return res.status(400).json({
+      success: false,
+      message: "Missing fields"
+    });
+
+  }
+
+  const passed = Number(score) >= 50;
+  const total  = Number(correct) + Number(wrong) + Number(skipped);
+
+  try {
+
+    // update results table
+    await pool.query(
+
+      `
+      UPDATE results
+      SET
+        user_name = $1,
+        score     = $2,
+        correct   = $3,
+        wrong     = $4,
+        skipped   = $5,
+        total     = $6,
+        passed    = $7
+      WHERE id = $8
+      `,
+
+      [
+        name.trim(),
+        Number(score),
+        Number(correct),
+        Number(wrong),
+        Number(skipped),
+        total,
+        passed,
+        req.params.id
+      ]
+
+    );
+
+    res.json({
+      success: true,
+      message: "Result updated"
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+
+  }
+
+});
+
+// ─────────────────────────────────────
 // HOME
 // ─────────────────────────────────────
 

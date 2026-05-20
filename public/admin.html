@@ -3,211 +3,359 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
 <title>Admin Panel</title>
-
-<!-- jsPDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<!-- AutoTable -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
 <style>
+* { margin:0; padding:0; box-sizing:border-box; }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  padding: 20px;
 }
 
-body{
-  font-family:Arial,sans-serif;
-  background:#f5f5f5;
-  padding:20px;
+.container {
+  max-width: 1200px;
+  margin: auto;
 }
 
-.container{
-  max-width:1200px;
-  margin:auto;
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.card{
-  background:#fff;
-  padding:20px;
-  border-radius:10px;
-  margin-bottom:20px;
-  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+h1, h2 { margin-bottom: 15px; }
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
 }
 
-h1,h2{
-  margin-bottom:15px;
+button {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: none;
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
 }
 
-input,select,button{
-  width:100%;
-  padding:12px;
-  margin-bottom:10px;
-  border-radius:5px;
-  border:1px solid #ccc;
+button:hover { background: #0056b3; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
 }
 
-button{
-  background:#007bff;
-  color:#fff;
-  border:none;
-  cursor:pointer;
+table th, table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+  font-size: 14px;
 }
 
-button:hover{
-  background:#0056b3;
+table th {
+  background: #007bff;
+  color: white;
 }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
+/* ── Tab Nav ── */
+.tab-nav {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-table th,
-table td{
-  border:1px solid #ddd;
-  padding:10px;
-  text-align:left;
-  font-size:14px;
+.tab-btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  background: #e9ecef;
+  color: #555;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 0;
+  border-radius: 0;
+  transition: background 0.2s, color 0.2s;
+  width: auto;
 }
 
-table th{
-  background:#007bff;
-  color:white;
+.tab-btn:hover { background: #dee2e6; }
+
+.tab-btn.active {
+  background: #007bff;
+  color: #fff;
 }
 
-.action-btn{
-  padding:8px 10px;
-  border:none;
-  border-radius:5px;
-  cursor:pointer;
-  color:white;
-  margin-right:5px;
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Search bar ── */
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  align-items: center;
 }
 
-.delete-btn{
-  background:red;
+.search-bar input {
+  flex: 1;
+  margin: 0;
+  padding: 10px 14px;
 }
 
-.reset-btn{
-  background:orange;
+.search-bar button {
+  width: auto;
+  padding: 10px 20px;
+  margin: 0;
+  background: #007bff;
+  white-space: nowrap;
 }
 
-.download-btn{
-  background:green;
+.search-bar button:hover { background: #0056b3; }
+
+.clear-btn {
+  width: auto !important;
+  padding: 10px 16px !important;
+  margin: 0 !important;
+  background: #6c757d !important;
+  white-space: nowrap;
 }
 
-.logout-btn{
-  background:#222;
+.clear-btn:hover { background: #545b62 !important; }
+
+/* ── Action buttons ── */
+.action-btn {
+  padding: 7px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  margin: 2px;
+  font-size: 12px;
+  width: auto;
+  display: inline-block;
 }
 
-.hidden{
-  display:none;
+.delete-btn   { background: #dc3545; }
+.reset-btn    { background: #fd7e14; }
+.download-btn { background: #198754; }
+.edit-btn     { background: #0d6efd; }
+.logout-btn   { background: #222; }
+
+/* ── Stat chips ── */
+.stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  margin: 2px 1px;
+  white-space: nowrap;
 }
 
-@media(max-width:768px){
+.chip-correct { background: #d1f5d3; color: #1a6e22; }
+.chip-wrong   { background: #fde8e8; color: #a31c1c; }
+.chip-skip    { background: #f0f0f0; color: #555;    }
 
-  table{
-    font-size:12px;
-  }
+/* ── Pass / Fail ── */
+.pass-badge { color: #198754; font-weight: 700; }
+.fail-badge { color: #dc3545; font-weight: 700; }
 
+/* ── Result count ── */
+.result-count {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
 }
 
+.result-count span {
+  font-weight: 700;
+  color: #007bff;
+}
+
+/* ── Modal ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal-box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 28px;
+  width: 400px;
+  max-width: 95vw;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.modal-box h3 {
+  margin-bottom: 18px;
+  font-size: 18px;
+  color: #222;
+}
+
+.modal-box label {
+  font-size: 13px;
+  color: #555;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.modal-box input {
+  width: 100%;
+  padding: 9px 11px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.modal-grid input { margin-bottom: 0; }
+
+.modal-actions { display: flex; gap: 10px; }
+
+.modal-actions button {
+  flex: 1;
+  padding: 11px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.btn-save   { background: #e65a28; color: #fff; }
+.btn-save:hover { background: #c44a1e; }
+.btn-cancel { background: #eee; color: #333; }
+.btn-cancel:hover { background: #ddd; }
+
+@media (max-width: 768px) {
+  table { font-size: 12px; }
+  table th, table td { padding: 7px 6px; }
+  .modal-box { padding: 20px; }
+  .search-bar { flex-wrap: wrap; }
+  .search-bar input { min-width: 100%; }
+}
 </style>
 </head>
-
 <body>
 
 <div class="container">
 
-  <!-- LOGIN -->
-  <div id="loginCard" class="card">
-
-    <h1>Admin Login</h1>
-
-    <input type="text" id="adminName" placeholder="Admin Name">
-
-    <input type="password" id="adminPassword" placeholder="Password">
-
-    <button onclick="adminLogin()">Login</button>
-
+  <!-- TAB BUTTONS -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('users')">&#128100; Users</button>
+    <button class="tab-btn"        onclick="switchTab('results')">&#128196; Results</button>
   </div>
 
-  <!-- ADMIN PANEL -->
-  <div id="adminPanel" class="hidden">
+  <!-- ─────────────────────
+       USERS TAB
+  ───────────────────── -->
+  <div id="tab-users" class="tab-panel active">
 
-    <!-- CREATE USER -->
+    <!-- Create User -->
     <div class="card">
-
       <h2>Create User</h2>
-
-      <input type="text" id="name" placeholder="Name">
-
-      <input type="password" id="password" placeholder="Password">
-
+      <input type="text"     id="name"      placeholder="Name">
+      <input type="password" id="password"  placeholder="Password">
       <select id="rank">
-
-  <option value="">Select Rank</option>
-
-  <option value="MASTER">MASTER</option>
-  <option value="CHIEF ENGINEER">CHIEF ENGINEER</option>
-  <option value="CHIEF OFFICER">CHIEF OFFICER</option>
-  <option value="SECOND ENGINEER">SECOND ENGINEER</option>
-  <option value="THIRD ENGINEER">THIRD ENGINEER</option>
-  <option value="FOURTH ENGINEER">FOURTH ENGINEER</option>
-  <option value="SECOND OFFICER">SECOND OFFICER</option>
-  <option value="THIRD OFFICER">THIRD OFFICER</option>
-  <option value="ETO">ETO</option>
-  <option value="DECK CADET">DECK CADET</option>
-  <option value="ENGINE CADET">ENGINE CADET</option>
-  <option value="AB">AB</option>
-  <option value="OS">OS</option>
-  <option value="OILER">OILER</option>
-  <option value="FITTER">FITTER</option>
-  <option value="Able_bodied_seaman">ABLE BODIED SEAMAN</option>
-</select>
-
+        <option value="">Select Rank</option>
+        <option value="MASTER">MASTER</option>
+        <option value="CHIEF ENGINEER">CHIEF ENGINEER</option>
+        <option value="CHIEF OFFICER">CHIEF OFFICER</option>
+        <option value="SECOND ENGINEER">SECOND ENGINEER</option>
+        <option value="THIRD ENGINEER">THIRD ENGINEER</option>
+        <option value="FOURTH ENGINEER">FOURTH ENGINEER</option>
+        <option value="SECOND OFFICER">SECOND OFFICER</option>
+        <option value="THIRD OFFICER">THIRD OFFICER</option>
+        <option value="ETO">ETO</option>
+        <option value="DECK CADET">DECK CADET</option>
+        <option value="ENGINE CADET">ENGINE CADET</option>
+        <option value="AB">AB</option>
+        <option value="OS">OS</option>
+        <option value="OILER">OILER</option>
+        <option value="FITTER">FITTER</option>
+        <option value="Able_bodied_seaman">ABLE BODIED SEAMAN</option>
+      </select>
       <input type="text" id="cdcNumber" placeholder="CDC Number">
-
       <button onclick="createUser()">Create User</button>
-
     </div>
 
-    <!-- USERS -->
+    <!-- Users Table -->
     <div class="card">
-
       <h2>Users</h2>
-
+      <div class="search-bar">
+        <input type="text" id="userSearch" placeholder="Search by name, rank or CDC..." onkeydown="if(event.key==='Enter') searchUsers()">
+        <button onclick="searchUsers()">&#128269; Search</button>
+        <button class="clear-btn" onclick="clearUserSearch()">&#10005; Clear</button>
+      </div>
+      <div id="userCount" class="result-count"></div>
       <table>
-
         <thead>
           <tr>
             <th>ID</th>
             <th>Name</th>
             <th>Rank</th>
             <th>CDC</th>
-            <th>Action</th>
+            <th>Actions</th>
           </tr>
         </thead>
-
         <tbody id="usersTable"></tbody>
-
       </table>
-
     </div>
 
-    <!-- RESULTS -->
+  </div><!-- /tab-users -->
+
+
+  <!-- ─────────────────────
+       RESULTS TAB
+  ───────────────────── -->
+  <div id="tab-results" class="tab-panel">
+
     <div class="card">
-
       <h2>Results</h2>
-
+      <div class="search-bar">
+        <input type="text" id="resultSearch" placeholder="Search by name, rank, CDC or status..." onkeydown="if(event.key==='Enter') searchResults()">
+        <button onclick="searchResults()">&#128269; Search</button>
+        <button class="clear-btn" onclick="clearResultSearch()">&#10005; Clear</button>
+      </div>
+      <div id="resultCount" class="result-count"></div>
       <table>
-
         <thead>
           <tr>
             <th>ID</th>
@@ -215,80 +363,87 @@ table th{
             <th>Rank</th>
             <th>CDC</th>
             <th>Score</th>
-            <th>Correct</th>
-            <th>Wrong</th>
-            <th>Skipped</th>
+            <th>Correct / Wrong / Skipped</th>
             <th>Status</th>
-            <th>PDF</th>
+            <th>Actions</th>
           </tr>
         </thead>
-
         <tbody id="resultsTable"></tbody>
-
       </table>
-
     </div>
 
-    <button class="logout-btn" onclick="logoutAdmin()">
-      Logout
-    </button>
+  </div><!-- /tab-results -->
 
+</div><!-- /.container -->
+
+
+<!-- ══════════════════════
+     EDIT MODAL
+══════════════════════ -->
+<div id="editModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Edit Result</h3>
+    <input type="hidden" id="editId">
+
+    <label>Candidate Name</label>
+    <input type="text" id="editName" placeholder="Candidate Name">
+
+    <label>Score (%)</label>
+    <input type="number" id="editScore" placeholder="Score" min="0" max="100">
+
+    <div class="modal-grid">
+      <div>
+        <label>Correct</label>
+        <input type="number" id="editCorrect" placeholder="0" min="0">
+      </div>
+      <div>
+        <label>Wrong</label>
+        <input type="number" id="editWrong" placeholder="0" min="0">
+      </div>
+      <div>
+        <label>Skipped</label>
+        <input type="number" id="editSkipped" placeholder="0" min="0">
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-save"   onclick="saveEdit()">Save Changes</button>
+      <button class="btn-cancel" onclick="closeEdit()">Cancel</button>
+    </div>
   </div>
-
 </div>
+
 
 <script>
 
-// const API = "http://localhost:3005";
 const API = "";
 
-let adminName = "";
+let adminName     = "";
 let adminPassword = "";
+let allUsers      = [];
+let allResults    = [];
 
 
 // ─────────────────────────────
-// ADMIN LOGIN
+// INIT — load data on page open
 // ─────────────────────────────
 
-async function adminLogin(){
+window.addEventListener('DOMContentLoaded', () => {
+  loadUsers();
+  loadResults();
+});
 
-  adminName = document.getElementById('adminName').value;
 
-  adminPassword = document.getElementById('adminPassword').value;
+// ─────────────────────────────
+// TAB SWITCHING
+// ─────────────────────────────
 
-  const res = await fetch(`${API}/api/admin/login`,{
-
-    method:'POST',
-
-    headers:{
-      'Content-Type':'application/json'
-    },
-
-    body:JSON.stringify({
-      name:adminName,
-      password:adminPassword
-    })
-
-  });
-
-  const data = await res.json();
-
-  if(data.success){
-
-    document.getElementById('loginCard').classList.add('hidden');
-
-    document.getElementById('adminPanel').classList.remove('hidden');
-
-    loadUsers();
-
-    loadResults();
-
-  }else{
-
-    alert(data.message);
-
-  }
-
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  const idx = tab === 'users' ? 0 : 1;
+  document.querySelectorAll('.tab-btn')[idx].classList.add('active');
 }
 
 
@@ -296,53 +451,30 @@ async function adminLogin(){
 // CREATE USER
 // ─────────────────────────────
 
-async function createUser(){
+async function createUser() {
 
-  const name = document.getElementById('name').value;
-
-  const password = document.getElementById('password').value;
-
-  const rank = document.getElementById('rank').value;
-
+  const name      = document.getElementById('name').value;
+  const password  = document.getElementById('password').value;
+  const rank      = document.getElementById('rank').value;
   const cdcNumber = document.getElementById('cdcNumber').value;
 
-  const res = await fetch(`${API}/api/users`,{
-
-    method:'POST',
-
-    headers:{
-      'Content-Type':'application/json'
-    },
-
-    body:JSON.stringify({
-      name,
-      password,
-      rank,
-      cdcNumber
-    })
-
+  const res  = await fetch(`${API}/api/users`, {
+    method  : 'POST',
+    headers : { 'Content-Type': 'application/json' },
+    body    : JSON.stringify({ name, password, rank, cdcNumber })
   });
 
   const data = await res.json();
 
-  if(data.success){
-
+  if (data.success) {
     alert("User created");
-
     loadUsers();
-
-    document.getElementById('name').value = "";
-
-    document.getElementById('password').value = "";
-
-    document.getElementById('rank').value = "";
-
+    document.getElementById('name').value      = "";
+    document.getElementById('password').value  = "";
+    document.getElementById('rank').value      = "";
     document.getElementById('cdcNumber').value = "";
-
-  }else{
-
+  } else {
     alert(data.message);
-
   }
 
 }
@@ -352,54 +484,59 @@ async function createUser(){
 // LOAD USERS
 // ─────────────────────────────
 
-async function loadUsers(){
-
-  const res = await fetch(`${API}/api/users`);
-
+async function loadUsers() {
+  const res  = await fetch(`${API}/api/users`);
   const data = await res.json();
+  allUsers = data.users;
+  renderUsers(allUsers);
+}
 
-  let html = "";
 
-  data.users.forEach(user => {
+// ─────────────────────────────
+// RENDER USERS
+// ─────────────────────────────
 
-    html += `
-      <tr>
+function renderUsers(users) {
 
-        <td>${user.id}</td>
+  document.getElementById('userCount').innerHTML =
+    `Showing <span>${users.length}</span> of <span>${allUsers.length}</span> users`;
 
-        <td>${user.name}</td>
+  document.getElementById('usersTable').innerHTML = users.map(user => `
+    <tr>
+      <td>${user.id}</td>
+      <td>${user.name}</td>
+      <td>${user.rank      || '-'}</td>
+      <td>${user.cdcnumber || '-'}</td>
+      <td>
+        <button class="action-btn reset-btn"
+          onclick="resetPassword(${user.id})">Reset Password</button>
+        <button class="action-btn delete-btn"
+          onclick="deleteUser(${user.id})">Delete</button>
+      </td>
+    </tr>
+  `).join('');
 
-        <td>${user.rank || '-'}</td>
+}
 
-        <td>${user.cdcnumber || '-'}</td>
 
-        <td>
+// ─────────────────────────────
+// SEARCH USERS
+// ─────────────────────────────
 
-          <button
-            class="action-btn reset-btn"
-            onclick="resetPassword(${user.id})">
+function searchUsers() {
+  const q = document.getElementById('userSearch').value.trim().toLowerCase();
+  if (!q) { renderUsers(allUsers); return; }
+  const filtered = allUsers.filter(u =>
+    (u.name      || '').toLowerCase().includes(q) ||
+    (u.rank      || '').toLowerCase().includes(q) ||
+    (u.cdcnumber || '').toLowerCase().includes(q)
+  );
+  renderUsers(filtered);
+}
 
-            Reset Password
-
-          </button>
-
-          <button
-            class="action-btn delete-btn"
-            onclick="deleteUser(${user.id})">
-
-            Delete
-
-          </button>
-
-        </td>
-
-      </tr>
-    `;
-
-  });
-
-  document.getElementById('usersTable').innerHTML = html;
-
+function clearUserSearch() {
+  document.getElementById('userSearch').value = '';
+  renderUsers(allUsers);
 }
 
 
@@ -407,24 +544,11 @@ async function loadUsers(){
 // DELETE USER
 // ─────────────────────────────
 
-async function deleteUser(id){
-
-  if(!confirm("Delete this user?")) return;
-
-  const res = await fetch(`${API}/api/users/${id}`,{
-    method:'DELETE'
-  });
-
+async function deleteUser(id) {
+  if (!confirm("Delete this user?")) return;
+  const res  = await fetch(`${API}/api/users/${id}`, { method: 'DELETE' });
   const data = await res.json();
-
-  if(data.success){
-
-    alert("User deleted");
-
-    loadUsers();
-
-  }
-
+  if (data.success) { alert("User deleted"); loadUsers(); }
 }
 
 
@@ -432,32 +556,20 @@ async function deleteUser(id){
 // RESET PASSWORD
 // ─────────────────────────────
 
-async function resetPassword(id){
-
+async function resetPassword(id) {
   const newPassword = prompt("Enter new password");
-
-  if(!newPassword) return;
-
-  const res = await fetch(`${API}/api/users/${id}/password`,{
-
-    method:'PATCH',
-
-    headers:{
-      'Content-Type':'application/json',
-      'x-admin-name':adminName,
-      'x-admin-password':adminPassword
+  if (!newPassword) return;
+  const res  = await fetch(`${API}/api/users/${id}/password`, {
+    method  : 'PATCH',
+    headers : {
+      'Content-Type'     : 'application/json',
+      'x-admin-name'     : adminName,
+      'x-admin-password' : adminPassword
     },
-
-    body:JSON.stringify({
-      newPassword
-    })
-
+    body: JSON.stringify({ newPassword })
   });
-
   const data = await res.json();
-
   alert(data.message);
-
 }
 
 
@@ -465,63 +577,154 @@ async function resetPassword(id){
 // LOAD RESULTS
 // ─────────────────────────────
 
-async function loadResults(){
-
-  const res = await fetch(`${API}/api/results`);
-
+async function loadResults() {
+  const res  = await fetch(`${API}/api/results`);
   const data = await res.json();
+  allResults = data.results;
+  renderResults(allResults);
+}
 
-  let html = "";
 
-  data.results.forEach(result => {
+// ─────────────────────────────
+// RENDER RESULTS
+// ─────────────────────────────
 
-    html += `
-      <tr>
+function renderResults(results) {
 
-        <td>${result.id}</td>
+  document.getElementById('resultCount').innerHTML =
+    `Showing <span>${results.length}</span> of <span>${allResults.length}</span> results`;
 
-        <td>${result.user_name}</td>
+  document.getElementById('resultsTable').innerHTML = results.map(result => `
+    <tr>
+      <td>${result.id}</td>
+      <td style="font-weight:600">${result.user_name}</td>
+      <td>${result.rank      || '-'}</td>
+      <td>${result.cdcnumber || '-'}</td>
+      <td style="font-weight:700">${result.score}%</td>
+      <td>
+        <span class="stat-chip chip-correct">&#10003; ${result.correct} correct</span>
+        <span class="stat-chip chip-wrong">&#10007; ${result.wrong} wrong</span>
+        <span class="stat-chip chip-skip">&#8212; ${result.skipped} skipped</span>
+      </td>
+      <td>
+        ${result.passed
+          ? '<span class="pass-badge">PASS</span>'
+          : '<span class="fail-badge">FAIL</span>'
+        }
+      </td>
+      <td>
+        <button class="action-btn edit-btn"
+          onclick="openEdit(${result.id})">&#9998; Edit</button>
+        <button class="action-btn download-btn"
+          onclick="downloadPDF(${result.id})">&#11015; PDF</button>
+      </td>
+    </tr>
+  `).join('');
 
-        <td>${result.rank || '-'}</td>
+}
 
-        <td>${result.cdcnumber || '-'}</td>
 
-        <td>${result.score}%</td>
+// ─────────────────────────────
+// SEARCH RESULTS
+// ─────────────────────────────
 
-        <td>${result.correct}</td>
+function searchResults() {
+  const q = document.getElementById('resultSearch').value.trim().toLowerCase();
+  if (!q) { renderResults(allResults); return; }
+  const filtered = allResults.filter(r =>
+    (r.user_name  || '').toLowerCase().includes(q) ||
+    (r.rank       || '').toLowerCase().includes(q) ||
+    (r.cdcnumber  || '').toLowerCase().includes(q) ||
+    (r.passed ? 'pass' : 'fail').includes(q)       ||
+    String(r.score).includes(q)
+  );
+  renderResults(filtered);
+}
 
-        <td>${result.wrong}</td>
+function clearResultSearch() {
+  document.getElementById('resultSearch').value = '';
+  renderResults(allResults);
+}
 
-        <td>${result.skipped}</td>
 
-        <td>
+// ─────────────────────────────
+// OPEN EDIT MODAL
+// ─────────────────────────────
 
-          ${
-            result.passed
-            ? '<span style="color:green;font-weight:bold">PASS</span>'
-            : '<span style="color:red;font-weight:bold">FAIL</span>'
-          }
+function openEdit(id) {
+  const result = allResults.find(r => r.id === id);
+  if (!result) return;
+  document.getElementById('editId').value      = result.id;
+  document.getElementById('editName').value    = result.user_name;
+  document.getElementById('editScore').value   = result.score;
+  document.getElementById('editCorrect').value = result.correct;
+  document.getElementById('editWrong').value   = result.wrong;
+  document.getElementById('editSkipped').value = result.skipped;
+  document.getElementById('editModal').classList.add('active');
+}
 
-        </td>
+function closeEdit() {
+  document.getElementById('editModal').classList.remove('active');
+}
 
-        <td>
+document.getElementById('editModal').addEventListener('click', function(e) {
+  if (e.target === this) closeEdit();
+});
 
-          <button
-            class="action-btn download-btn"
-            onclick="downloadPDF(${result.id})">
 
-            Download PDF
+// ─────────────────────────────
+// SAVE EDIT
+// ─────────────────────────────
 
-          </button>
+async function saveEdit() {
 
-        </td>
+  const id      = +document.getElementById('editId').value;
+  const payload = {
+    name    : document.getElementById('editName').value,
+    score   : +document.getElementById('editScore').value,
+    correct : +document.getElementById('editCorrect').value,
+    wrong   : +document.getElementById('editWrong').value,
+    skipped : +document.getElementById('editSkipped').value,
+  };
 
-      </tr>
-    `;
+  try {
 
-  });
+    const res  = await fetch(`${API}/api/results/${id}`, {
+      method  : 'PATCH',
+      headers : {
+        'Content-Type'     : 'application/json',
+        'x-admin-name'     : adminName,
+        'x-admin-password' : adminPassword
+      },
+      body: JSON.stringify(payload)
+    });
 
-  document.getElementById('resultsTable').innerHTML = html;
+    const data = await res.json();
+
+    if (data.success || res.ok) {
+      const idx = allResults.findIndex(r => r.id === id);
+      if (idx > -1) {
+        allResults[idx] = {
+          ...allResults[idx],
+          user_name : payload.name,
+          score     : payload.score,
+          correct   : payload.correct,
+          wrong     : payload.wrong,
+          skipped   : payload.skipped,
+          passed    : payload.score >= 50
+        };
+      }
+      const q = document.getElementById('resultSearch').value.trim();
+      q ? searchResults() : renderResults(allResults);
+      closeEdit();
+      alert("Result updated successfully");
+    } else {
+      alert(data.message || "Update failed");
+    }
+
+  } catch (err) {
+    alert("Network error: " + err.message);
+  }
 
 }
 
@@ -530,222 +733,80 @@ async function loadResults(){
 // DOWNLOAD PDF
 // ─────────────────────────────
 
-async function downloadPDF(id){
+async function downloadPDF(id) {
 
-  const res = await fetch(`${API}/api/results`);
-
-  const data = await res.json();
-
-  const result = data.results.find(r => r.id === id);
-
-  if(!result){
-
-    alert("Result not found");
-
-    return;
-
-  }
+  const result = allResults.find(r => r.id === id);
+  if (!result) { alert("Result not found"); return; }
 
   const { jsPDF } = window.jspdf;
-
   const doc = new jsPDF();
 
-  // ─────────────────────────
-  // LOAD LOGO
-  // ─────────────────────────
-
   const logo = "2025-07-24-removebg-preview.png";
-
-  try{
-
+  try {
     const img = await loadImage(logo);
-
-    doc.addImage(img,'PNG',14,10,55,20);
-
-  }catch(err){
-
+    doc.addImage(img, 'PNG', 14, 10, 55, 20);
+  } catch (err) {
     console.log("Logo not loaded");
-
   }
 
-  // ─────────────────────────
-  // COMPANY NAME
-  // ─────────────────────────
-
-  doc.setFont("helvetica","bold");
-
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(18);
+  doc.setTextColor(230, 90, 40);
+  doc.text("Ozellar Marine Pvt. Ltd.", 105, 18, { align: "center" });
 
-  doc.setTextColor(230,90,40);
-
-  doc.text(
-    "Ozellar Marine Pvt. Ltd.",
-    105,
-    18,
-    { align:"center" }
-  );
-
-  doc.setFont("helvetica","normal");
-
+  doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
-
   doc.setTextColor(80);
+  doc.text("4th Floor, Developed Plots Estate, Anejas Towers, B-Block, Plot No. 4 & 5,", 105, 25, { align: "center" });
+  doc.text("Perungudi, Chennai, Tamil Nadu 600096", 105, 30, { align: "center" });
 
-  doc.text(
-    "4th Floor, Developed Plots Estate, Anejas Towers, B-Block, Plot No. 4 & 5,",
-    105,
-    25,
-    { align:"center" }
-  );
-
-  doc.text(
-    "Perungudi, Chennai, Tamil Nadu 600096",
-    105,
-    30,
-    { align:"center" }
-  );
-
-  // ─────────────────────────
-  // TITLE
-  // ─────────────────────────
-
-  doc.setDrawColor(230,90,40);
-
+  doc.setDrawColor(230, 90, 40);
   doc.setLineWidth(0.7);
+  doc.line(14, 38, 196, 38);
 
-  doc.line(14,38,196,38);
-
-  doc.setFont("helvetica","bold");
-
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
-
   doc.setTextColor(0);
-
-  doc.text(
-    "COMPETENCY REPORT",
-    105,
-    50,
-    { align:"center" }
-  );
-
-  // ─────────────────────────
-  // TABLE
-  // ─────────────────────────
+  doc.text("COMPETENCY REPORT", 105, 50, { align: "center" });
 
   doc.autoTable({
-
-    startY:62,
-
-    head:[
-      ['Field','Details']
-    ],
-
-    body:[
-
-      ['Candidate Name', result.user_name || '-'],
-
-      ['Rank', result.rank || '-'],
-
-      ['CDC Number', result.cdcnumber || '-'],
-
-      ['Score', result.score + '%'],
-
-      ['Correct Answers', String(result.correct)],
-
-      ['Wrong Answers', String(result.wrong)],
-
+    startY : 62,
+    head   : [['Field', 'Details']],
+    body   : [
+      ['Candidate Name',    result.user_name  || '-'],
+      ['Rank',              result.rank        || '-'],
+      ['CDC Number',        result.cdcnumber   || '-'],
+      ['Score',             result.score + '%'],
+      ['Correct Answers',   String(result.correct)],
+      ['Wrong Answers',     String(result.wrong)],
       ['Skipped Questions', String(result.skipped)],
-
-      ['Status', result.passed ? 'PASS' : 'FAIL']
-
+      ['Status',            result.passed ? 'PASS' : 'FAIL']
     ],
-
-    theme:'grid',
-
-    styles:{
-      fontSize:11,
-      cellPadding:4
-    },
-
-    headStyles:{
-      fillColor:[230,90,40],
-      textColor:255,
-      fontStyle:'bold'
-    },
-
-    alternateRowStyles:{
-      fillColor:[245,245,245]
-    },
-
-    columnStyles:{
-      0:{
-        fontStyle:'bold',
-        cellWidth:60
-      }
-    }
-
+    theme  : 'grid',
+    styles : { fontSize: 11, cellPadding: 4 },
+    headStyles         : { fillColor: [230, 90, 40], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles : { fillColor: [245, 245, 245] },
+    columnStyles       : { 0: { fontStyle: 'bold', cellWidth: 60 } }
   });
 
-  // ─────────────────────────
-  // STATUS
-  // ─────────────────────────
-
   let finalY = doc.lastAutoTable.finalY + 15;
-
   doc.setFontSize(16);
+  doc.setFont("helvetica", "bold");
 
-  doc.setFont("helvetica","bold");
-
-  if(result.passed){
-
-    doc.setTextColor(0,150,0);
-
-    doc.text(
-      "STATUS : PASS",
-      14,
-      finalY
-    );
-
-  }else{
-
-    doc.setTextColor(220,0,0);
-
-    doc.text(
-      "STATUS : FAIL",
-      14,
-      finalY
-    );
-
+  if (result.passed) {
+    doc.setTextColor(0, 150, 0);
+    doc.text("STATUS : PASS", 14, finalY);
+  } else {
+    doc.setTextColor(220, 0, 0);
+    doc.text("STATUS : FAIL", 14, finalY);
   }
 
-  // ─────────────────────────
-  // FOOTER
-  // ─────────────────────────
-
   doc.setFontSize(9);
-
   doc.setTextColor(120);
+  doc.text("Generated on : " + new Date().toLocaleString(), 14, 285);
+  doc.text("Ozellar Marine Pvt. Ltd.", 196, 285, { align: "right" });
 
-  doc.text(
-    "Generated on : " + new Date().toLocaleString(),
-    14,
-    285
-  );
-
-  doc.text(
-    "Ozellar Marine Pvt. Ltd.",
-    196,
-    285,
-    { align:"right" }
-  );
-
-  // ─────────────────────────
-  // SAVE PDF
-  // ─────────────────────────
-
-  doc.save(
-    `Ozellar_Result_${result.user_name}.pdf`
-  );
+  doc.save(`Ozellar_Result_${result.user_name}.pdf`);
 
 }
 
@@ -754,52 +815,22 @@ async function downloadPDF(id){
 // IMAGE LOADER
 // ─────────────────────────────
 
-function loadImage(src){
-
-  return new Promise((resolve,reject)=>{
-
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
     const img = new Image();
-
     img.crossOrigin = "Anonymous";
-
-    img.onload = function(){
-
+    img.onload = function () {
       const canvas = document.createElement("canvas");
-
-      canvas.width = img.width;
-
+      canvas.width  = img.width;
       canvas.height = img.height;
-
-      const ctx = canvas.getContext("2d");
-
-      ctx.drawImage(img,0,0);
-
-      resolve(
-        canvas.toDataURL("image/png")
-      );
-
+      canvas.getContext("2d").drawImage(img, 0, 0);
+      resolve(canvas.toDataURL("image/png"));
     };
-
     img.onerror = reject;
-
     img.src = src;
-
   });
-
-}
-
-
-// ─────────────────────────────
-// LOGOUT
-// ─────────────────────────────
-
-function logoutAdmin(){
-
-  location.reload();
-
 }
 
 </script>
-
 </body>
 </html>
