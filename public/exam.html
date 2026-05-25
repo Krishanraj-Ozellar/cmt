@@ -6,237 +6,189 @@
 <title>Exam Portal</title>
 
 <style>
+  * { box-sizing: border-box; }
 
-*{
-  box-sizing:border-box;
-}
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    padding: 20px;
+    margin: 0;
+  }
 
-body{
-  font-family:Arial,sans-serif;
-  background:#f5f5f5;
-  padding:20px;
-  margin:0;
+  #examScreen, #res {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 620px;
+    margin: auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
 
-  -webkit-user-select:none;
-  -moz-user-select:none;
-  -ms-user-select:none;
-  user-select:none;
-}
+  #qtxt {
+    font-size: 18px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
 
-#examScreen,
-#res{
-  background:#fff;
-  padding:30px;
-  border-radius:10px;
-  max-width:620px;
-  margin:auto;
-  box-shadow:0 4px 20px rgba(0,0,0,0.08);
-}
+  .opt {
+    padding: 12px 16px;
+    margin: 8px 0;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.15s;
+    font-size: 15px;
+  }
 
-#qtxt{
-  font-size:18px;
-  margin-bottom:20px;
-  line-height:1.5;
-}
+  .opt:hover { border-color: #3b82f6; background: #eff6ff; }
 
-.opt{
-  padding:12px 16px;
-  margin:8px 0;
-  border:2px solid #ddd;
-  cursor:pointer;
-  border-radius:8px;
-  transition:all 0.15s;
-  font-size:15px;
-}
+  .opt.sel {
+    background: #3b82f6;
+    color: #fff;
+    border-color: #3b82f6;
+  }
 
-.opt:hover{
-  border-color:#3b82f6;
-  background:#eff6ff;
-}
+  .nav-btns { margin-top: 20px; display: flex; gap: 10px; }
 
-.opt.sel{
-  background:#3b82f6;
-  color:#fff;
-  border-color:#3b82f6;
-}
+  .nav-btns button, #submitBtn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+  }
 
-.nav-btns{
-  margin-top:20px;
-  display:flex;
-  gap:10px;
-}
+  .nav-btns button { background: #e5e7eb; color: #010c5d; }
+  .nav-btns button:hover { background: #d1d5db; }
 
-.nav-btns button,
-#submitBtn{
-  padding:10px 20px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  font-size:14px;
-  font-weight:bold;
-}
+  #submitBtn {
+    display: block;
+    margin-top: 20px;
+    background: #ef4444;
+    color: white;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+  }
 
-.nav-btns button{
-  background:#e5e7eb;
-  color:#010c5d;
-}
+  #submitBtn:hover { background: #dc2626; }
 
-.nav-btns button:hover{
-  background:#d1d5db;
-}
+  #timerBox {
+    text-align: right;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ef4444;
+    margin-bottom: 10px;
+  }
 
-#submitBtn{
-  display:block;
-  margin-top:20px;
-  background:#ef4444;
-  color:white;
-  width:100%;
-  padding:12px;
-  font-size:16px;
-}
+  #timerBox.warning { color: #f97316; animation: pulse 1s infinite; }
 
-#submitBtn:hover{
-  background:#dc2626;
-}
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
 
-#timerBox{
-  text-align:right;
-  font-size:18px;
-  font-weight:bold;
-  color:#ef4444;
-  margin-bottom:10px;
-}
+  #progressBar {
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    margin-bottom: 20px;
+  }
 
-#timerBox.warning{
-  color:#f97316;
-  animation:pulse 1s infinite;
-}
+  #progressFill {
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
 
-@keyframes pulse{
-  0%,100%{opacity:1;}
-  50%{opacity:0.4;}
-}
+  /* Result screen */
+  #res h2 { color: #1e3a5f; }
+  #res .stat-row { display: flex; gap: 15px; margin-top: 15px; }
+  #res .stat-box {
+    flex: 1;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+  }
 
-#progressBar{
-  height:6px;
-  background:#e5e7eb;
-  border-radius:3px;
-  margin-bottom:20px;
-}
+  .stat-box.correct  { background: #dcfce7; color: #166534; }
+  .stat-box.wrong    { background: #fee2e2; color: #991b1b; }
+  .stat-box.skipped  { background: #fef9c3; color: #854d0e; }
 
-#progressFill{
-  height:100%;
-  background:#3b82f6;
-  border-radius:3px;
-  transition:width 0.3s;
-}
+  #scoreCircle {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: bold; color: white;
+    margin: 20px auto;
+  }
 
-#res h2{
-  color:#1e3a5f;
-}
+  #dlBtn {
+    display: block;
+    margin-top: 20px;
+    padding: 12px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+  }
 
-#res .stat-row{
-  display:flex;
-  gap:15px;
-  margin-top:15px;
-}
+  /* Session kicked overlay */
+  #kickedOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+  }
 
-#res .stat-box{
-  flex:1;
-  padding:15px;
-  border-radius:8px;
-  text-align:center;
-  font-weight:bold;
-}
+  #kickedOverlay.show { display: flex; }
 
-.stat-box.correct{
-  background:#dcfce7;
-  color:#166534;
-}
+  #kickedBox {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 380px;
+  }
 
-.stat-box.wrong{
-  background:#fee2e2;
-  color:#991b1b;
-}
-
-.stat-box.skipped{
-  background:#fef9c3;
-  color:#854d0e;
-}
-
-#scoreCircle{
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:28px;
-  font-weight:bold;
-  color:white;
-  margin:20px auto;
-}
-
-#kickedOverlay{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.75);
-  z-index:9999;
-  justify-content:center;
-  align-items:center;
-}
-
-#kickedOverlay.show{
-  display:flex;
-}
-
-#kickedBox{
-  background:white;
-  padding:40px;
-  border-radius:12px;
-  text-align:center;
-  max-width:380px;
-}
-
-#kickedBox h3{
-  color:#ef4444;
-  margin-bottom:10px;
-}
-
-#cameraBox{
-  position:fixed;
-  bottom:10px;
-  right:10px;
-  width:180px;
-  height:130px;
-  background:#000;
-  border:3px solid #3b82f6;
-  border-radius:10px;
-  overflow:hidden;
-  z-index:99999;
-  display:none;
-}
-
-#cameraBox video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
+  #kickedBox h3 { color: #ef4444; margin-bottom: 10px; }
+  #kickedBox p  { margin-bottom: 20px; color: #555; }
+  #kickedBox button {
+    padding: 10px 24px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+  }
 </style>
 </head>
 
 <body>
 
+<!-- Session kicked overlay -->
 <div id="kickedOverlay">
   <div id="kickedBox">
     <h3>⚠️ Session Expired</h3>
-    <p>Your account was logged in from another device or browser.</p>
+    <p>Your account was logged in from another device or browser. This session has been terminated.</p>
     <button onclick="goToLogin()">Back to Login</button>
   </div>
 </div>
 
+<!-- RESULT SCREEN -->
+
+<!-- RESULT SCREEN -->
 <div id="res" style="display:none;">
 
   <h2>Exam Submitted Successfully</h2>
@@ -245,8 +197,10 @@ body{
   <p><strong>Name:</strong> <span id="rname"></span></p>
   <p><strong>Rank:</strong> <span id="rrank"></span></p>
 
+  <!-- SCORE CIRCLE -->
   <div id="scoreCircle">0%</div>
 
+  <!-- STATS -->
   <div class="stat-row">
 
     <div class="stat-box correct">
@@ -266,54 +220,66 @@ body{
 
   </div>
 
+  <!-- RESULT MESSAGE -->
   <h3 id="rmsg" style="margin-top:20px;"></h3>
 
 </div>
 
 <div id="examScreen">
-
-  <div id="timerBox">
-    ⏱ <span id="timeLeft">--:--</span>
-  </div>
-
-  <div id="progressBar">
-    <div id="progressFill" style="width:0%"></div>
-  </div>
+  <div id="timerBox">⏱ <span id="timeLeft">--:--</span></div>
+  <div id="progressBar"><div id="progressFill" style="width:0%"></div></div>
 
   <h2 id="qtxt">Loading...</h2>
-
   <div id="optsEl"></div>
 
   <div class="nav-btns">
     <button onclick="go(-1)">◀ Prev</button>
     <button onclick="go(1)">Next ▶</button>
   </div>
-
-  <button id="submitBtn" onclick="confirmSubmit()">
-    Submit Exam
-  </button>
-
+<div></div>
+  <button id="submitBtn" onclick="confirmSubmit()">Submit Exam</button>
 </div>
 
-<div id="cameraBox">
-  <video id="cameraFeed" autoplay muted playsinline></video>
-</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
+document.addEventListener("DOMContentLoaded", function () {
 
-document.addEventListener("DOMContentLoaded", async function(){
-
-// QUESTIONS
+// ─────────────────────────────────────────
+// QUESTIONS DATABASE
+// ─────────────────────────────────────────
 const questionBank = {
-
-  master:[
+  chief_officer: [
     {
-      q:"What is your fav Team?",
-      opts:["RCB","CSK","MI","KKR"],
-      ans:0
+      q: "What is the Chief Officer's primary responsibility?",
+      opts: ["Engine maintenance","Bridge watchkeeping","Cargo operations","Navigation only"],
+      ans: 2
     }
-  ]
-able_bodied_seaman: [
+  ],
+
+  master: [
+    {
+      section: "1. Helm Orders",
+      q: "What is your fav Team?",
+      opts: ["RCB","CSK","MI","KKR"],
+      ans: 0
+    }
+  ],
+
+  second_officer: [
+    {
+      q: "What is the Second Officer?",
+      opts: ["2O","3O","4E","3E"],
+      ans: 1
+    },
+    {
+      q: "Master called?",
+      opts: ["Chief Officer","Chief Engineer","Second Officer","Master"],
+      ans: 3
+    }
+  ],
+
+  able_bodied_seaman: [
     {
       section: "1. Helm Orders",
       q: "What does the helm order “Midships” mean?",
@@ -705,249 +671,83 @@ section: "",
     },
 
 
-
+  ]
 };
-
+// ─────────────────────────────────────────
 // STATE
-let questions = [];
-let answers = [];
-let cur = 0;
+// ─────────────────────────────────────────
+let questions   = [];
+let answers     = [];
+let cur         = 0;
+let correct     = 0, wrong = 0, skipped = 0;
+let totalTime   = 3600; // 1 hour
+let timerInterval, pingInterval;
+let submitted   = false;
+let user        = null;
 
-let correct = 0;
-let wrong = 0;
-let skipped = 0;
-
-let totalTime = 3600;
-
-let timerInterval;
-let pingInterval;
-
-let submitted = false;
-let user = null;
-
-let warningCount = 0;
-const MAX_WARNINGS = 3;
-
+// ─────────────────────────────────────────
 // HELPERS
-function el(id){
-  return document.getElementById(id);
+// ─────────────────────────────────────────
+function el(id) { 
+  return document.getElementById(id); 
 }
 
-function normalizeRank(raw){
+function normalizeRank(raw) {
   return (raw || "")
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g,"_")
-    .replace(/^_+|_+$/g,"");
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
 }
 
-function getAuthHeaders(){
+function getAuthHeaders() {
   return {
-    "Content-Type":"application/json",
-    "x-session-token":user.token || "",
-    "x-user-id":String(user.id || "")
+    "Content-Type": "application/json",
+    "x-session-token": user.token || "",
+    "x-user-id": String(user.id || "")
   };
 }
 
-window.goToLogin = function(){
+function goToLogin() {
   sessionStorage.clear();
   window.location.href = "login.html";
-};
-
-// SHUFFLE
-function shuffleArray(arr){
-
-  for(let i=arr.length-1;i>0;i--){
-
-    const j = Math.floor(Math.random() * (i+1));
-
-    [arr[i],arr[j]] = [arr[j],arr[i]];
-
-  }
-
 }
 
-function shuffleQuestions(){
+// ─────────────────────────────────────────
+// SESSION PING — every 10 seconds
+// If another login happened, server returns 401 → kick this tab
+// ─────────────────────────────────────────
+function startPing() {
+  pingInterval = setInterval(async () => {
+    if (submitted) { clearInterval(pingInterval); return; }
 
-  shuffleArray(questions);
-
-  questions.forEach(q=>{
-
-    const correctAnswer = q.opts[q.ans];
-
-    shuffleArray(q.opts);
-
-    q.ans = q.opts.indexOf(correctAnswer);
-
-  });
-
-}
-
-// ANTI COPY
-document.addEventListener("contextmenu",e=>e.preventDefault());
-
-document.addEventListener("copy",e=>e.preventDefault());
-
-document.addEventListener("cut",e=>e.preventDefault());
-
-document.addEventListener("paste",e=>e.preventDefault());
-
-document.addEventListener("dragstart",e=>e.preventDefault());
-
-// BLOCK KEYS
-document.addEventListener("keydown",function(e){
-
-  if(
-    (e.ctrlKey || e.metaKey) &&
-    ["c","v","x","u","s","a","p"].includes(e.key.toLowerCase())
-  ){
-    e.preventDefault();
-  }
-
-  if(e.key === "F12"){
-    e.preventDefault();
-  }
-
-  if(
-    e.ctrlKey &&
-    e.shiftKey &&
-    ["I","J","C"].includes(e.key.toUpperCase())
-  ){
-    e.preventDefault();
-  }
-
-});
-
-// FULLSCREEN
-async function enterFullscreen(){
-
-  const elem = document.documentElement;
-
-  if(elem.requestFullscreen){
-    await elem.requestFullscreen();
-  }
-
-}
-
-document.addEventListener("fullscreenchange",()=>{
-
-  if(!document.fullscreenElement && !submitted){
-
-    cheatingDetected("Fullscreen exited");
-
-  }
-
-});
-
-// TAB SWITCH
-document.addEventListener("visibilitychange",()=>{
-
-  if(document.hidden && !submitted){
-
-    cheatingDetected("Tab switch detected");
-
-  }
-
-});
-
-// WINDOW BLUR
-window.addEventListener("blur",()=>{
-
-  if(!submitted){
-
-    cheatingDetected("Window focus lost");
-
-  }
-
-});
-
-// CHEATING DETECTION
-function cheatingDetected(reason){
-
-  warningCount++;
-
-  alert(`${reason}\nWarning ${warningCount}/${MAX_WARNINGS}`);
-
-  if(warningCount >= MAX_WARNINGS){
-
-    alert("Exam auto submitted due to cheating.");
-
-    submit();
-
-  }else{
-
-    enterFullscreen();
-
-  }
-
-}
-
-// CAMERA
-async function startCamera(){
-
-  try{
-
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video:true,
-      audio:false
-    });
-
-    const video = el("cameraFeed");
-
-    video.srcObject = stream;
-
-    el("cameraBox").style.display = "block";
-
-  }catch(err){
-
-    alert("Camera permission required");
-
-  }
-
-}
-
-// SESSION PING
-function startPing(){
-
-  pingInterval = setInterval(async()=>{
-
-    if(submitted){
-      clearInterval(pingInterval);
-      return;
-    }
-
-    try{
-
-      const res = await fetch("http://localhost:3005/api/ping",{
-        headers:getAuthHeaders()
+    try {
+      const res = await fetch("http://localhost:3005/api/ping", {
+      // await fetch("/api/ping", {
+        headers: getAuthHeaders()
       });
 
-      if(res.status === 401){
-
+      if (res.status === 401) {
         clearInterval(pingInterval);
         clearInterval(timerInterval);
-
         el("kickedOverlay").classList.add("show");
-
       }
-
-    }catch(e){
-
-      console.warn("Ping failed:",e.message);
-
+    } catch (e) {
+      // Network hiccup — don't kick, just log
+      console.warn("Ping failed:", e.message);
     }
-
-  },10000);
-
+ }, 10000); // every 10 seconds
 }
 
+// ─────────────────────────────────────────
 // INIT
-async function init(){
+// ─────────────────────────────────────────
+function init() {
 
   user = JSON.parse(sessionStorage.getItem("examUser"));
 
-  if(!user || !user.id || !user.token){
+  if (!user || !user.id || !user.token) {
 
-    alert("No valid session found.");
+    alert("No valid session found. Please login.");
 
     goToLogin();
 
@@ -955,22 +755,38 @@ async function init(){
 
   }
 
+  // DIRECT RANK MATCH
   const rankKey = normalizeRank(user.rank);
 
-  questions = questionBank[rankKey] || [];
+console.log("User Rank:", user.rank);
+console.log("Normalized Rank:", rankKey);
+console.log("Available Keys:", Object.keys(questionBank));
 
-  if(!questions.length){
+// Rank aliases
+const rankMap = {
+  able_boiled_seamnan: "able_bodied_seaman",
+  able_bodied_seaman: "able_bodied_seaman",
+  ab: "able_bodied_seaman",
+  abs: "able_bodied_seaman"
+};
+
+const finalRank = rankMap[rankKey] || rankKey;
+
+questions = questionBank[finalRank] || [];
+
+  if (!questions || questions.length === 0) {
 
     el("qtxt").textContent =
-      `No questions found for rank "${user.rank}"`;
+      `No questions found for rank: "${user.rank}"`;
 
     return;
 
   }
 
-  shuffleQuestions();
-
   answers = new Array(questions.length).fill(null);
+
+  // HIDE SUBMIT BUTTON INITIALLY
+  el("submitBtn").style.display = "none";
 
   renderQ();
 
@@ -978,28 +794,26 @@ async function init(){
 
   startPing();
 
-  await enterFullscreen();
-
-  await startCamera();
-
 }
-
-// RENDER
-function renderQ(){
+// ─────────────────────────────────────────
+// ─────────────────────────────────────────
+// RENDER QUESTION
+// ─────────────────────────────────────────
+function renderQ() {
 
   const q = questions[cur];
 
   el("qtxt").textContent =
-    `Q${cur+1} of ${questions.length}: ${q.q}`;
+    `Q${cur + 1} of ${questions.length}: ${q.q}`;
 
+  // Progress bar
   el("progressFill").style.width =
-    ((cur+1)/questions.length*100)+"%";
+    ((cur + 1) / questions.length * 100) + "%";
 
   const box = el("optsEl");
-
   box.innerHTML = "";
 
-  q.opts.forEach((opt,i)=>{
+  q.opts.forEach((opt, i) => {
 
     const div = document.createElement("div");
 
@@ -1008,199 +822,134 @@ function renderQ(){
 
     div.textContent = opt;
 
-    div.onclick = ()=>{
-
+    div.onclick = () => {
       answers[cur] = i;
-
       renderQ();
-
     };
 
     box.appendChild(div);
 
   });
 
-  if(cur === questions.length-1){
+  // SHOW SUBMIT BUTTON ONLY ON LAST QUESTION
+  if (cur === questions.length - 1) {
 
     el("submitBtn").style.display = "block";
 
-  }else{
+  } else {
 
     el("submitBtn").style.display = "none";
 
   }
 
 }
-
+// ─────────────────────────────────────────
 // NAVIGATION
-window.go = function(d){
-
+// ─────────────────────────────────────────
+window.go = function(d) {
   const n = cur + d;
-
-  if(n >=0 && n < questions.length){
-
-    cur = n;
-
-    renderQ();
-
-  }
-
+  if (n >= 0 && n < questions.length) { cur = n; renderQ(); }
 };
 
+// ─────────────────────────────────────────
 // TIMER
-function startTimer(){
-
+// ─────────────────────────────────────────
+function startTimer() {
   updateTimerDisplay();
-
-  timerInterval = setInterval(()=>{
-
+  timerInterval = setInterval(() => {
     totalTime--;
-
     updateTimerDisplay();
-
-    if(totalTime <= 60){
-
-      el("timerBox").classList.add("warning");
-
-    }
-
-    if(totalTime <= 0){
-
-      clearInterval(timerInterval);
-
-      submit();
-
-    }
-
-  },1000);
-
+    if (totalTime <= 60) el("timerBox").classList.add("warning");
+    if (totalTime <= 0)  { clearInterval(timerInterval); submit(); }
+  }, 1000);
 }
 
-function updateTimerDisplay(){
-
-  const m = String(
-    Math.floor(totalTime/60)
-  ).padStart(2,"0");
-
-  const s = String(
-    totalTime % 60
-  ).padStart(2,"0");
-
+function updateTimerDisplay() {
+  const m = String(Math.floor(totalTime / 60)).padStart(2, "0");
+  const s = String(totalTime % 60).padStart(2, "0");
   el("timeLeft").textContent = `${m}:${s}`;
-
 }
 
+// ─────────────────────────────────────────
 // SUBMIT
-window.confirmSubmit = function(){
-
-  if(confirm("Submit exam?")){
-
-    submit();
-
-  }
-
+// ─────────────────────────────────────────
+window.confirmSubmit = function() {
+  if (confirm("Are you sure you want to submit the exam?")) submit();
 };
 
-async function submit(){
-
-  if(submitted) return;
-
+async function submit() {
+  if (submitted) return;
   submitted = true;
 
   clearInterval(timerInterval);
   clearInterval(pingInterval);
 
-  correct = 0;
-  wrong = 0;
-  skipped = 0;
+  correct = 0; wrong = 0; skipped = 0;
 
-  questions.forEach((q,i)=>{
-
-    if(answers[i] === null){
-
-      skipped++;
-
-    }else if(answers[i] === q.ans){
-
-      correct++;
-
-    }else{
-
-      wrong++;
-
-    }
-
+  questions.forEach((q, i) => {
+    if      (answers[i] === null)    skipped++;
+    else if (answers[i] === q.ans)   correct++;
+    else                             wrong++;
   });
 
-  const score = Math.round(
-    (correct / questions.length) * 100
-  );
+  const score = Math.round((correct / questions.length) * 100);
+  const name  = user.name || "N/A";
+  const rank  = user.rank || "N/A";
 
-  const name = user.name || "N/A";
-  const rank = user.rank || "N/A";
+  // Save result to server (token-protected)
+  try {
+    const res = await fetch("http://localhost:3005/api/result", {
+    // await fetch("/api/result", {
+      method:  "POST",
+      headers: getAuthHeaders(),
+      body:    JSON.stringify({
+        user_id:   user.id,
+        user_name: name,
+        rank,
+        score,
+        correct,
+        wrong,
+        skipped
+      })
+    });
 
-  try{
-
-    const res = await fetch(
-      "http://localhost:3005/api/result",
-      {
-        method:"POST",
-        headers:getAuthHeaders(),
-        body:JSON.stringify({
-          user_id:user.id,
-          user_name:name,
-          rank,
-          score,
-          correct,
-          wrong,
-          skipped
-        })
-      }
-    );
-
-    if(res.status === 401){
-
+    if (res.status === 401) {
+      // Kicked mid-exam — still show result locally
       console.warn("Session expired during submit");
-
     }
-
-  }catch(err){
-
-    console.error("Result save failed:",err);
-
+  } catch (err) {
+    console.error("Result save failed:", err);
   }
 
+  // Show result screen
   el("examScreen").style.display = "none";
-  el("res").style.display = "block";
+  el("res").style.display        = "block";
 
-  el("rname").textContent = name;
-  el("rrank").textContent = rank;
-
+  el("rname").textContent    = name;
+  el("rrank").textContent    = rank;
   el("rcorrect").textContent = correct;
-  el("rwrong").textContent = wrong;
+  el("rwrong").textContent   = wrong;
   el("rskipped").textContent = skipped;
 
   const circle = el("scoreCircle");
+  circle.textContent       = score + "%";
+  circle.style.background  = score >= 50 ? "#22c55e" : "#ef4444";
 
-  circle.textContent = score + "%";
-
-  circle.style.background =
-    score >= 50 ? "#22c55e" : "#ef4444";
-
-  el("rmsg").textContent =
-    score >= 50
+  el("rmsg").textContent = score >= 50
     ? "🎉 Congratulations! You have PASSED the exam."
-    : "❌ You did not meet the passing score.";
+    : "❌ You did not meet the passing score of 50%. Please try again.";
 
+  // Clear session so they can't re-enter exam
   sessionStorage.removeItem("examUser");
-
 }
 
+
+// ─────────────────────────────────────────
 // START
+// ─────────────────────────────────────────
 init();
 
 });
-
 </script>
 
 </body>
