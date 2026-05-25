@@ -13,6 +13,9 @@
     background: #f5f5f5;
     padding: 20px;
     margin: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
   }
 
   #examScreen, #res {
@@ -40,10 +43,7 @@
     font-size: 15px;
   }
 
-  .opt:hover {
-    border-color: #3b82f6;
-    background: #eff6ff;
-  }
+  .opt:hover { border-color: #3b82f6; background: #eff6ff; }
 
   .opt.sel {
     background: #3b82f6;
@@ -51,14 +51,9 @@
     border-color: #3b82f6;
   }
 
-  .nav-btns {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-  }
+  .nav-btns { margin-top: 20px; display: flex; gap: 10px; }
 
-  .nav-btns button,
-  #submitBtn {
+  .nav-btns button, #submitBtn {
     padding: 10px 20px;
     border: none;
     border-radius: 8px;
@@ -67,14 +62,8 @@
     font-weight: bold;
   }
 
-  .nav-btns button {
-    background: #e5e7eb;
-    color: #010c5d;
-  }
-
-  .nav-btns button:hover {
-    background: #d1d5db;
-  }
+  .nav-btns button { background: #e5e7eb; color: #010c5d; }
+  .nav-btns button:hover { background: #d1d5db; }
 
   #submitBtn {
     display: block;
@@ -86,9 +75,7 @@
     font-size: 16px;
   }
 
-  #submitBtn:hover {
-    background: #dc2626;
-  }
+  #submitBtn:hover { background: #dc2626; }
 
   #timerBox {
     text-align: right;
@@ -98,14 +85,11 @@
     margin-bottom: 10px;
   }
 
-  #timerBox.warning {
-    color: #f97316;
-    animation: pulse 1s infinite;
-  }
+  #timerBox.warning { color: #f97316; animation: pulse 1s infinite; }
 
   @keyframes pulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
+    50%       { opacity: 0.4; }
   }
 
   #progressBar {
@@ -122,16 +106,9 @@
     transition: width 0.3s;
   }
 
-  #res h2 {
-    color: #1e3a5f;
-  }
-
-  #res .stat-row {
-    display: flex;
-    gap: 15px;
-    margin-top: 15px;
-  }
-
+  /* Result screen */
+  #res h2 { color: #1e3a5f; }
+  #res .stat-row { display: flex; gap: 15px; margin-top: 15px; }
   #res .stat-box {
     flex: 1;
     padding: 15px;
@@ -140,34 +117,33 @@
     font-weight: bold;
   }
 
-  .stat-box.correct {
-    background: #dcfce7;
-    color: #166534;
-  }
-
-  .stat-box.wrong {
-    background: #fee2e2;
-    color: #991b1b;
-  }
-
-  .stat-box.skipped {
-    background: #fef9c3;
-    color: #854d0e;
-  }
+  .stat-box.correct  { background: #dcfce7; color: #166534; }
+  .stat-box.wrong    { background: #fee2e2; color: #991b1b; }
+  .stat-box.skipped  { background: #fef9c3; color: #854d0e; }
 
   #scoreCircle {
-    width: 120px;
-    height: 120px;
+    width: 120px; height: 120px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    font-weight: bold;
-    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: bold; color: white;
     margin: 20px auto;
   }
 
+  #dlBtn {
+    display: block;
+    margin-top: 20px;
+    padding: 12px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  /* Session kicked overlay */
   #kickedOverlay {
     display: none;
     position: fixed;
@@ -178,9 +154,7 @@
     align-items: center;
   }
 
-  #kickedOverlay.show {
-    display: flex;
-  }
+  #kickedOverlay.show { display: flex; }
 
   #kickedBox {
     background: white;
@@ -190,16 +164,8 @@
     max-width: 380px;
   }
 
-  #kickedBox h3 {
-    color: #ef4444;
-    margin-bottom: 10px;
-  }
-
-  #kickedBox p {
-    margin-bottom: 20px;
-    color: #555;
-  }
-
+  #kickedBox h3 { color: #ef4444; margin-bottom: 10px; }
+  #kickedBox p  { margin-bottom: 20px; color: #555; }
   #kickedBox button {
     padding: 10px 24px;
     background: #3b82f6;
@@ -210,26 +176,98 @@
     cursor: pointer;
   }
 
-  #cheatWarning {
+  /* ── ANTI-CHEAT OVERLAYS ── */
+
+  /* Warning banner (tab-switch / blur) */
+  #warningBanner {
+    display: none;
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 0; left: 0; right: 0;
     background: #ef4444;
     color: white;
-    padding: 12px 18px;
-    border-radius: 8px;
-    z-index: 99999;
-    display: none;
+    text-align: center;
+    padding: 14px 20px;
+    font-size: 15px;
     font-weight: bold;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 8000;
+    animation: slideDown 0.3s ease;
   }
+
+  @keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to   { transform: translateY(0); }
+  }
+
+  /* Strike counter badge */
+  #strikeBadge {
+    display: none;
+    position: fixed;
+    top: 60px; right: 20px;
+    background: #7f1d1d;
+    color: #fecaca;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    z-index: 8001;
+  }
+
+  /* Fullscreen nudge overlay */
+  #fullscreenOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 9000;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #fullscreenOverlay.show { display: flex; }
+
+  #fullscreenBox {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+  }
+
+  #fullscreenBox h3 { color: #b45309; margin-bottom: 10px; }
+  #fullscreenBox p  { margin-bottom: 20px; color: #444; font-size: 14px; }
+  #fullscreenBox button {
+    padding: 12px 28px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  /* Cheating log (bottom-right, small) */
+  #cheatLog {
+    position: fixed;
+    bottom: 12px; right: 12px;
+    background: #1f2937;
+    color: #9ca3af;
+    font-size: 11px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    max-width: 260px;
+    z-index: 7000;
+    display: none;
+  }
+
+  #cheatLog div { margin-bottom: 3px; }
+  #cheatLog div:last-child { margin-bottom: 0; }
 </style>
 </head>
 
 <body>
 
-<div id="cheatWarning"></div>
-
+<!-- Session kicked overlay -->
 <div id="kickedOverlay">
   <div id="kickedBox">
     <h3>⚠️ Session Expired</h3>
@@ -238,98 +276,509 @@
   </div>
 </div>
 
+<!-- FULLSCREEN NUDGE OVERLAY -->
+<div id="fullscreenOverlay">
+  <div id="fullscreenBox">
+    <h3>⚠️ Fullscreen Required</h3>
+    <p>This exam must be taken in fullscreen mode. Exiting fullscreen has been recorded.<br><br>Please re-enter fullscreen to continue.</p>
+    <button onclick="requestFullscreen()">Enter Fullscreen &amp; Continue</button>
+  </div>
+</div>
+
+<!-- WARNING BANNER -->
+<div id="warningBanner" id="warningBanner"></div>
+
+<!-- STRIKE BADGE -->
+<div id="strikeBadge">⚠️ Strikes: <span id="strikeCount">0</span> / 3</div>
+
+<!-- CHEAT LOG (visible to admin post-exam, hidden from examinee) -->
+<div id="cheatLog" style="display:none;"></div>
+
+<!-- RESULT SCREEN -->
 <div id="res" style="display:none;">
   <h2>Exam Submitted Successfully</h2>
-
   <p><strong>Company:</strong> Ozellar Marine</p>
   <p><strong>Name:</strong> <span id="rname"></span></p>
   <p><strong>Rank:</strong> <span id="rrank"></span></p>
-
   <div id="scoreCircle">0%</div>
-
   <div class="stat-row">
-    <div class="stat-box correct">
-      Correct
-      <div id="rcorrect">0</div>
-    </div>
-
-    <div class="stat-box wrong">
-      Wrong
-      <div id="rwrong">0</div>
-    </div>
-
-    <div class="stat-box skipped">
-      Skipped
-      <div id="rskipped">0</div>
-    </div>
+    <div class="stat-box correct">Correct<div id="rcorrect">0</div></div>
+    <div class="stat-box wrong">Wrong<div id="rwrong">0</div></div>
+    <div class="stat-box skipped">Skipped<div id="rskipped">0</div></div>
   </div>
-
   <h3 id="rmsg" style="margin-top:20px;"></h3>
+  <div id="cheatSummary" style="margin-top:16px; padding:12px; background:#fef2f2; border-radius:8px; font-size:13px; color:#991b1b; display:none;"></div>
 </div>
 
+<!-- EXAM SCREEN -->
 <div id="examScreen">
   <div id="timerBox">⏱ <span id="timeLeft">--:--</span></div>
-
-  <div id="progressBar">
-    <div id="progressFill" style="width:0%"></div>
-  </div>
-
+  <div id="progressBar"><div id="progressFill" style="width:0%"></div></div>
   <h2 id="qtxt">Loading...</h2>
-
   <div id="optsEl"></div>
-
   <div class="nav-btns">
     <button onclick="go(-1)">◀ Prev</button>
     <button onclick="go(1)">Next ▶</button>
   </div>
-
-  <button id="submitBtn" onclick="confirmSubmit()">
-    Submit Exam
-  </button>
+  <div></div>
+  <button id="submitBtn" onclick="confirmSubmit()">Submit Exam</button>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-// SAMPLE QUESTIONS
+// ─────────────────────────────────────────
+// QUESTIONS DATABASE
+// ─────────────────────────────────────────
 const questionBank = {
+  chief_officer: [
+    {
+      q: "What is the Chief Officer's primary responsibility?",
+      opts: ["Engine maintenance","Bridge watchkeeping","Cargo operations","Navigation only"],
+      ans: 2
+    }
+  ],
+
   master: [
     {
+      section: "1. Helm Orders",
       q: "What is your fav Team?",
-      opts: ["RCB", "CSK", "MI", "KKR"],
+      opts: ["RCB","CSK","MI","KKR"],
       ans: 0
+    }
+  ],
+
+  second_officer: [
+    {
+      q: "What is the Second Officer?",
+      opts: ["2O","3O","4E","3E"],
+      ans: 1
+    },
+    {
+      q: "Master called?",
+      opts: ["Chief Officer","Chief Engineer","Second Officer","Master"],
+      ans: 3
+    }
+  ],
+
+  able_bodied_seaman: [
+    {
+      section: "1. Helm Orders",
+      q: "What does the helm order "Midships" mean?",
+      opts: [
+        "Turn the wheel fully to port",
+        "Keep the ship steady on course",
+        "Bring the rudder to zero position",
+        "Stop the steering gear"
+      ],
+      ans: 2
+    },
+    {
+      section: "2. Lookout Procedures",
+      q: "Which is the primary duty of a lookout?",
+      opts: [
+        "Leave bridge periodically",
+        "Maintain lookout by sight, hearing & all available means",
+        "Follow daylight procedures",
+        "Depend only on radar"
+      ],
+      ans: 1
+    },
+    {
+      section: "3. Cargo Watch Takeover",
+      q: ". When taking over cargo watch, the AB should FIRST",
+      opts: [
+        "Start cargo operations",
+        "Check cargo plan, ongoing operations and moorings",
+        "Leave the area if cargo is completed",
+        "Only follow orders from shore staff"
+      ],
+      ans: 1
+    },
+    {
+      section: "4. Corrosion Maintenance",
+      q: "The main cause of corrosion on deck structures is:",
+      opts: [
+        "Cargo weight",
+        "Heat from the sun",
+        "Coating breakdown exposing steel",
+        "Poor welding"
+      ],
+      ans: 2
+    },
+    {
+      section: "5. Surface Preparation",
+      q: "Why is surface preparation important before painting?",
+      opts: [
+        "A. To improve paint colour",
+        "B. To reduce paint consumption",
+        "C. To ensure proper paint adhesion and durability",
+        "D. To speed up drying time"
+      ],
+      ans: 2
+    },
+    {
+      section: "6. Marine Paint Varieties",
+      q: "Which paint is commonly used for corrosion protection on steel surfaces?",
+      opts: [
+        "A. Polyurethane paint",
+        "B. Epoxy paint",
+        "C. Acrylic paint",
+        "D. Enamel paint"
+      ],
+      ans: 1
+    },
+    {
+      section: "7. Airless Spray Painting",
+      q: "One major advantage of airless spray painting is:",
+      opts: [
+        "A. No need for PPE",
+        "B. Thicker coating with better coverage",
+        "C. No surface preparation required",
+        "D. Faster rust formation"
+      ],
+      ans: 1
+    },
+    {
+      section: "8. DFT (Dry Film Thickness)",
+      q: "Why is maintaining correct DFT important?",
+      opts: [
+        "A. To reduce drying time",
+        "B. To avoid paint wastage only",
+        "C. To ensure proper corrosion protection",
+        "D. To improve paint gloss"
+      ],
+      ans: 2
+    },
+    {
+      section: "9. Hydroblaster – Safety",
+      q: "While using a hydro blaster, which PPE is MOST important?",
+      opts: [
+        "A. Cotton gloves",
+        "B. Safety helmet only",
+        "C. Face shield, cut-resistant gloves, boots and apron",
+        "D. Ordinary shoes"
+      ],
+      ans: 2
+    },
+    {
+      section: "10. Lubrication Importance",
+      q: "Proper lubrication of deck machinery helps to:",
+      opts: [
+        "A. Increase noise",
+        "B. Reduce friction, wear and avoid breakdowns.",
+        "C. Increase fuel consumption",
+        "D. Delay operations"
+      ],
+      ans: 1
+    },
+    {
+      section: "11. Permit to Work System",
+      q: "Q11. A Permit to Work system is mainly used to:",
+      opts: [
+        "Increase paperwork",
+        "Allow faster job completion",
+        "Ensure work is carried out safely under controlled conditions",
+        "Replace risk assessments"
+      ],
+      ans: 2
+    },
+    {
+      section: "12. FFA",
+      q: "Q12. Which item is part of Fire Fighting Appliances (FFA)?",
+      opts: [
+        "Lifebuoy",
+        "Fire extinguisher",
+        "Lifejacket",
+        "Immersion suit"
+      ],
+      ans: 1
+    },
+    {
+      section: "13. Mooring Precautions",
+      q: "While mooring, snap-back zones should be:",
+      opts: [
+        "Clearly marked and kept clear of all personnel",
+        "Used for standing during operations",
+        "Ignored during calm weather",
+        "Used only by officers"
+      ],
+      ans: 0
+    },
+    {
+      section: "14. Crane Wire Renewal",
+      q: "Before renewing a crane wire, the AB must ensure:",
+      opts: [
+        "Crane is under load",
+        "Power supply is isolated and hooks are secured",
+        "Only shore staff are present",
+        "Wire is greased"
+      ],
+      ans: 1
+    },
+    {
+      section: "15. Hatch Cover Operation",
+      q: "Before operating hatch covers, the AB should:",
+      opts: [
+        "Start immediately to save time",
+        "Ensure area is clear and safety checks are done",
+        "Stand on the hatch cover",
+        "Operate without communication"
+      ],
+      ans: 1
+    },
+    {
+      section: "Q16. Helm Orders",
+      q: "Ease to 5° port means:",
+      opts: [
+        "Put rudder hard to port",
+        "Reduce rudder angle until 5° port",
+        "Shift helm to midships",
+        "Maintain present rudder angle"
+      ],
+      ans: 1
+    },
+    {
+      section: "Q17. ISPS",
+      q: "Security Level 1 means:",
+      opts: [
+        "Emergency",
+        "Heightened risk",
+        "Normal operations ",
+        "Complete Lockdown"
+      ],
+      ans: 2
+    },
+    {
+      section: "Q18. Gangway Watch",
+      q: "Primary duty is to:",
+      opts: [
+        "Assist cargo",
+        "Control access & record movements and maintain safe access",
+        "Assist store Pick up",
+        "Scrolling the Mobile Phone"
+      ],
+      ans: 1
+    },
+    {
+      section: "Q19. Cargo Hold Prep",
+      q: "Before loading, holds must be:",
+      opts: [
+        "Wet",
+        "Clean, dry, residue-free",
+        "Painted only",
+        "Inspected by stevedores only"
+      ],
+      ans: 1
+    },
+    {
+      section: "",
+      q: "20.What is the company's standard Drugs & Alcohol (D&A) policy onboard?",
+      opts: [
+        "Alcohol allowed after working hours",
+        "Alcohol allowed with Master's permission",
+        "Zero tolerance for non-compliance with company Policy",
+        "Alcohol allowed in port only"
+      ],
+      ans: 2
+    },
+    {
+      section: "",
+      q: "21. If an AB suspects a colleague is under the influence of alcohol, the AB should:",
+      opts: [
+        "Ignore the situation",
+        "Confront the person directly",
+        "Immediately inform the duty officer",
+        "Record it in the logbook later"
+      ],
+      ans: 2
+    },
+    {
+      section: "",
+      q: "22. As per MLC, the minimum rest hours required in any 24-hour period is:",
+      opts: [
+        "6 hours",
+        "8hours",
+        "10 hours",
+        "12 hours"
+      ],
+      ans: 2
+    },
+    {
+      section: "",
+      q: "23.Which of the following is a basic right of a seafarer under MLC?",
+      opts: [
+        "Free shore leave anytime",
+        "Proper accommodation, food, and medical care",
+        "Extra leave on request",
+        "Reduced working hours always"
+      ],
+      ans: 1
+    },
+    {
+      section: "",
+      q: "24.How u examine the quality and standards of any rope prior use?:",
+      opts: [
+        "Check the rope color and appearance only. ",
+        "Use the rope directly if it was used previously",
+        "Confirm the rope length is sufficient for the job. ",
+        "Inspect for cuts, wear, broken strands, and defects before use"
+      ],
+      ans: 3
+    },
+    {
+      section: "",
+      q: "25.Before lubricating moving machinery, the AB must ensure:",
+      opts: [
+        "Machinery is running normally",
+        "Guards are removed",
+        "Machinery is stopped or safely isolated",
+        "Lubrication is done quickly"
+      ],
+      ans: 2
+    },
+    {
+      section: "",
+      q: "26.A Permit to Work system is used to:",
+      opts: [
+        "Speed up maintenance",
+        "Control and manage hazardous work safely",
+        "Reduce documentation",
+        "Replace toolbox meetings"
+      ],
+      ans: 1
+    },
+    {
+      section: "",
+      q: "27.Which activity requires a Permit to Work?",
+      opts: [
+        "Deck washing",
+        "Greasing winches",
+        "Entry into enclosed spaces",
+        "Painting Pipelines"
+      ],
+      ans: 2
+    },
+    {
+      section: "",
+      q: "28.During mooring operations, personnel should:",
+      opts: [
+        "Stand close to ropes for control",
+        "Stand inside snap-back zones",
+        "Keep well clear of ropes under tension",
+        "Cross ropes when necessary"
+      ],
+      ans: 2
+    },
+    {
+      section: "1. SECURITY WATCH REQUIREMENT",
+      q: "29.Question: What is the primary responsibility of a seafarer on security watch duty?",
+      opts: [
+        "To maintain engine room logs and monitor machinery parameters",
+        "To detect and report any suspicious activities or unauthorized persons on board",
+        "To assist the chef in meal preparation during night hours",
+        "To conduct routine maintenance on deck equipment"
+      ],
+      ans: 1
+    },
+    {
+      section: "30. WORK AT HEIGHT REQUIREMENT",
+      q: "Question: Before commencing work at height, which of the following is the MOST critical safety measure?",
+      opts: [
+        "Ensure the work area is well-lit and weather is favorable",
+        "Conduct risk assessment, use proper fall protection equipment, and obtain work permit",
+        "Inform the captain about the planned work schedule",
+        "Complete the work as quickly as possible to minimize exposure time"
+      ],
+      ans: 1
+    },
+    {
+      section: "31. SMOKING REGULATION",
+      q: "Question: Where is smoking permitted on board a vessel under normal operating conditions?",
+      opts: [
+        "In any outdoor area on deck during off-duty hours",
+        "Only in designated smoking areas as specified in the vessel's SMS",
+        "In the accommodation after obtaining permission from the duty officer",
+        "Anywhere below deck except the engine room"
+      ],
+      ans: 1
+    },
+    {
+      section: "32. COMPLAINT PROCEDURE",
+      q: "Question: If a crew member has a work-related complaint or grievance, what is the correct procedure?",
+      opts: [
+        "Wait until port arrival and complain to the port authority",
+        "Discuss with fellow crew members and take collective action",
+        "Follow the company's grievance procedure by reporting to immediate supervisor or designated person",
+        "Send an anonymous letter to the ship management company"
+      ],
+      ans: 2
+    },
+    {
+      section: "33. HAZARD IDENTIFICATION",
+      q: "Question: Which statement BEST describes a hazard in the workplace?",
+      opts: [
+        "An accident that has already occurred and caused injury",
+        "Any source or situation with potential to cause harm, injury, or damage",
+        "Only chemical substances that are flammable or toxic",
+        "Equipment that is older than 10 years and needs replacement"
+      ],
+      ans: 1
+    },
+    {
+      section: "SEAMANSHIP",
+      q: "34.what kind of rope to be used for pilot ladder man ropes?",
+      opts: [
+        "Nylon",
+        "Poly propylene",
+        "Manila",
+        "Composite"
+      ],
+      ans: 2
+    },
+    {
+      section: "",
+      q: "35.What safety watch to be followed while coal loading operations?",
+      opts: [
+        "Security watch",
+        "Fire watch",
+        "Mooring Watch",
+        "All the above"
+      ],
+      ans: 3
     }
   ]
 };
 
+// ─────────────────────────────────────────
 // STATE
-let questions = [];
-let answers = [];
-let cur = 0;
-let correct = 0;
-let wrong = 0;
-let skipped = 0;
-let totalTime = 3600;
+// ─────────────────────────────────────────
+let questions    = [];
+let answers      = [];
+let cur          = 0;
+let correct      = 0, wrong = 0, skipped = 0;
+let totalTime    = 3600;
 let timerInterval, pingInterval;
-let submitted = false;
-let user = null;
+let submitted    = false;
+let user         = null;
 
-// ANTI CHEAT
-let cheatCount = 0;
-let maxCheat = 3;
-let fullscreenExited = false;
-let lastCheatTime = 0;
-let devtoolsOpened = false;
+// ── ANTI-CHEAT STATE ──
+let strikes           = 0;
+const MAX_STRIKES     = 3;
+let cheatEvents       = [];          // log entries sent with result
+let warningTimeout    = null;
+let fullscreenActive  = false;
+let devtoolsCheckInterval = null;
 
-function el(id) {
-  return document.getElementById(id);
-}
+// ─────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────
+function el(id) { return document.getElementById(id); }
 
 function normalizeRank(raw) {
-  return (raw || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
+  return (raw || "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
 }
 
 function getAuthHeaders() {
@@ -340,428 +789,413 @@ function getAuthHeaders() {
   };
 }
 
-window.goToLogin = function() {
+function goToLogin() {
   sessionStorage.clear();
   window.location.href = "login.html";
-};
+}
 
+// ─────────────────────────────────────────
+// ANTI-CHEAT — LOGGING
+// ─────────────────────────────────────────
+function logCheat(type, detail) {
+  const ts = new Date().toISOString();
+  cheatEvents.push({ type, detail, ts, question: cur + 1 });
+  console.warn("[ANTI-CHEAT]", type, detail);
+}
+
+// ─────────────────────────────────────────
+// ANTI-CHEAT — STRIKE SYSTEM
+// ─────────────────────────────────────────
+function addStrike(reason) {
+  if (submitted) return;
+  strikes++;
+  logCheat("STRIKE_" + strikes, reason);
+
+  el("strikeBadge").style.display = "block";
+  el("strikeCount").textContent   = strikes;
+
+  showWarning("⚠️ Warning " + strikes + "/" + MAX_STRIKES + ": " + reason +
+    (strikes < MAX_STRIKES ? " — Repeated violations will auto-submit your exam." : ""));
+
+  if (strikes >= MAX_STRIKES) {
+    showWarning("🚨 Maximum violations reached. Exam auto-submitted.");
+    setTimeout(() => submit("auto — max violations reached"), 2500);
+  }
+}
+
+// ─────────────────────────────────────────
+// ANTI-CHEAT — WARNING BANNER
+// ─────────────────────────────────────────
 function showWarning(msg) {
-
-  const box = el("cheatWarning");
-
-  box.textContent = msg;
-  box.style.display = "block";
-
-  setTimeout(() => {
-    box.style.display = "none";
-  }, 3000);
+  const b = el("warningBanner");
+  b.textContent   = msg;
+  b.style.display = "block";
+  if (warningTimeout) clearTimeout(warningTimeout);
+  warningTimeout = setTimeout(() => { b.style.display = "none"; }, 5000);
 }
 
-function registerCheat(reason) {
-
-  const now = Date.now();
-
-  if (now - lastCheatTime < 3000) return;
-
-  lastCheatTime = now;
-
-  cheatCount++;
-
-  console.warn("Cheating detected:", reason);
-
-  showWarning(`Warning ${cheatCount}/${maxCheat}: ${reason}`);
-
-  if (cheatCount >= maxCheat) {
-
-    alert("Exam terminated due to multiple cheating violations.");
-
-    submit();
-  }
-}
-
-async function enableFullScreen() {
-
-  const elem = document.documentElement;
-
-  try {
-
-    if (elem.requestFullscreen) {
-      await elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) {
-      await elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) {
-      await elem.msRequestFullscreen();
+// ─────────────────────────────────────────
+// ANTI-CHEAT — TAB / WINDOW VISIBILITY
+// ─────────────────────────────────────────
+function initVisibilityGuard() {
+  document.addEventListener("visibilitychange", () => {
+    if (submitted) return;
+    if (document.hidden) {
+      logCheat("TAB_SWITCH", "Tab hidden / switched");
+      addStrike("You switched tabs or minimised the window");
     }
+  });
 
-  } catch (err) {
-    console.warn("Fullscreen failed:", err.message);
-  }
+  window.addEventListener("blur", () => {
+    if (submitted || document.hidden) return;
+    logCheat("WINDOW_BLUR", "Window lost focus");
+    // soft warning on blur (no strike — can be accidental click)
+    showWarning("⚠️ Please keep this window focused during the exam.");
+  });
 }
 
-function startPing() {
+// ─────────────────────────────────────────
+// ANTI-CHEAT — KEYBOARD SHORTCUTS
+// ─────────────────────────────────────────
+function initKeyboardGuard() {
+  document.addEventListener("keydown", (e) => {
+    if (submitted) return;
 
-  pingInterval = setInterval(async () => {
+    const key = e.key.toLowerCase();
+    const ctrl = e.ctrlKey || e.metaKey;
 
-    if (submitted) {
-      clearInterval(pingInterval);
+    // Block copy, cut, paste, select-all
+    if (ctrl && ["c","x","v","a","u","s","p"].includes(key)) {
+      e.preventDefault();
+      logCheat("KEYBOARD_SHORTCUT", `Ctrl+${key.toUpperCase()} blocked`);
+      showWarning("⚠️ Keyboard shortcuts are disabled during this exam.");
       return;
     }
 
-    try {
+    // Block F12 and common DevTools shortcuts
+    if (e.key === "F12") {
+      e.preventDefault();
+      logCheat("DEVTOOLS_KEY", "F12 pressed");
+      addStrike("Attempt to open developer tools detected");
+      return;
+    }
 
+    if (ctrl && e.shiftKey && ["i","j","c"].includes(key)) {
+      e.preventDefault();
+      logCheat("DEVTOOLS_KEY", `Ctrl+Shift+${key.toUpperCase()} pressed`);
+      addStrike("Attempt to open developer tools detected");
+      return;
+    }
+
+    // Block PrintScreen
+    if (e.key === "PrintScreen") {
+      e.preventDefault();
+      logCheat("SCREENSHOT", "PrintScreen key pressed");
+      addStrike("Screen capture attempt detected");
+      return;
+    }
+
+    // Block Alt+Tab (partial — can't fully prevent on OS level)
+    if (e.altKey && e.key === "Tab") {
+      e.preventDefault();
+      logCheat("ALT_TAB", "Alt+Tab detected");
+    }
+  });
+}
+
+// ─────────────────────────────────────────
+// ANTI-CHEAT — RIGHT-CLICK
+// ─────────────────────────────────────────
+function initContextMenuGuard() {
+  document.addEventListener("contextmenu", (e) => {
+    if (submitted) return;
+    e.preventDefault();
+    logCheat("RIGHT_CLICK", "Context menu blocked");
+    showWarning("⚠️ Right-click is disabled during this exam.");
+  });
+}
+
+// ─────────────────────────────────────────
+// ANTI-CHEAT — TEXT SELECTION
+// ─────────────────────────────────────────
+function initSelectionGuard() {
+  document.addEventListener("selectstart", (e) => {
+    if (submitted) return;
+    e.preventDefault();
+  });
+
+  document.addEventListener("copy", (e) => {
+    if (submitted) return;
+    e.preventDefault();
+    logCheat("COPY_ATTEMPT", "Copy event blocked");
+    showWarning("⚠️ Copying is not allowed during this exam.");
+  });
+}
+
+// ─────────────────────────────────────────
+// ANTI-CHEAT — DEVTOOLS SIZE DETECTION
+// ─────────────────────────────────────────
+function initDevtoolsDetection() {
+  const threshold = 160;
+  devtoolsCheckInterval = setInterval(() => {
+    if (submitted) { clearInterval(devtoolsCheckInterval); return; }
+    const widthDiff  = window.outerWidth  - window.innerWidth;
+    const heightDiff = window.outerHeight - window.innerHeight;
+    if (widthDiff > threshold || heightDiff > threshold) {
+      logCheat("DEVTOOLS_OPEN", `outerW=${window.outerWidth} innerW=${window.innerWidth}`);
+      addStrike("Developer tools panel detected open");
+      clearInterval(devtoolsCheckInterval);
+      // Restart after short pause to avoid repeated strikes for same session
+      setTimeout(initDevtoolsDetection, 15000);
+    }
+  }, 3000);
+}
+
+// ─────────────────────────────────────────
+// ANTI-CHEAT — FULLSCREEN ENFORCEMENT
+// ─────────────────────────────────────────
+function requestFullscreen() {
+  const el = document.documentElement;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+  if (req) req.call(el);
+  document.getElementById("fullscreenOverlay").classList.remove("show");
+}
+
+function initFullscreenGuard() {
+  // Request fullscreen on start
+  requestFullscreen();
+
+  const onFsChange = () => {
+    if (submitted) return;
+    const isFull = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+    if (!isFull && fullscreenActive) {
+      logCheat("FULLSCREEN_EXIT", "User exited fullscreen");
+      addStrike("Fullscreen mode was exited");
+      el("fullscreenOverlay").classList.add("show");
+    }
+    fullscreenActive = isFull;
+  };
+
+  document.addEventListener("fullscreenchange",       onFsChange);
+  document.addEventListener("webkitfullscreenchange", onFsChange);
+  document.addEventListener("mozfullscreenchange",    onFsChange);
+}
+
+// ─────────────────────────────────────────
+// ANTI-CHEAT — DRAG PREVENTION
+// ─────────────────────────────────────────
+function initDragGuard() {
+  document.addEventListener("dragstart", (e) => {
+    e.preventDefault();
+    logCheat("DRAG", "Drag attempt blocked");
+  });
+}
+
+// ─────────────────────────────────────────
+// ANTI-CHEAT — INITIALISE ALL GUARDS
+// ─────────────────────────────────────────
+function initAntiCheat() {
+  initVisibilityGuard();
+  initKeyboardGuard();
+  initContextMenuGuard();
+  initSelectionGuard();
+  initDevtoolsDetection();
+  initFullscreenGuard();
+  initDragGuard();
+}
+
+// ─────────────────────────────────────────
+// SESSION PING
+// ─────────────────────────────────────────
+function startPing() {
+  pingInterval = setInterval(async () => {
+    if (submitted) { clearInterval(pingInterval); return; }
+    try {
       const res = await fetch("http://localhost:3005/api/ping", {
         headers: getAuthHeaders()
       });
-
       if (res.status === 401) {
-
         clearInterval(pingInterval);
         clearInterval(timerInterval);
-
         el("kickedOverlay").classList.add("show");
       }
-
     } catch (e) {
       console.warn("Ping failed:", e.message);
     }
-
   }, 10000);
 }
 
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
 function init() {
-
   user = JSON.parse(sessionStorage.getItem("examUser"));
 
   if (!user || !user.id || !user.token) {
-
     alert("No valid session found. Please login.");
-
     goToLogin();
-
     return;
   }
 
-  // MOBILE BLOCK
+  const rankKey  = normalizeRank(user.rank);
+  const rankMap  = {
+    able_boiled_seamnan: "able_bodied_seaman",
+    able_bodied_seaman:  "able_bodied_seaman",
+    ab:  "able_bodied_seaman",
+    abs: "able_bodied_seaman"
+  };
+  const finalRank = rankMap[rankKey] || rankKey;
+  questions = questionBank[finalRank] || [];
 
-  if (/Mobi|Android/i.test(navigator.userAgent)) {
-
-    alert("Mobile devices are not allowed for exams.");
-
-    goToLogin();
-
+  if (!questions || questions.length === 0) {
+    el("qtxt").textContent = `No questions found for rank: "${user.rank}"`;
     return;
   }
-
-  const rankKey = normalizeRank(user.rank);
-
-  questions = questionBank[rankKey] || [];
-
-  if (!questions.length) {
-
-    el("qtxt").textContent =
-      `No questions found for rank: ${user.rank}`;
-
-    return;
-  }
-
-  // RANDOMIZE QUESTIONS
-  questions = questions.sort(() => Math.random() - 0.5);
 
   answers = new Array(questions.length).fill(null);
-
-  // RESTORE ANSWERS
-  const savedAnswers =
-    JSON.parse(sessionStorage.getItem("examAnswers"));
-
-  if (savedAnswers) {
-    answers = savedAnswers;
-  }
-
   el("submitBtn").style.display = "none";
 
-  setTimeout(() => {
-    enableFullScreen();
-  }, 500);
-
   renderQ();
-
   startTimer();
-
   startPing();
+  initAntiCheat();   // ← start all anti-cheat guards
 }
 
+// ─────────────────────────────────────────
+// RENDER QUESTION
+// ─────────────────────────────────────────
 function renderQ() {
-
   const q = questions[cur];
-
-  el("qtxt").textContent =
-    `Q${cur + 1} of ${questions.length}: ${q.q}`;
-
-  el("progressFill").style.width =
-    ((cur + 1) / questions.length * 100) + "%";
+  el("qtxt").textContent = `Q${cur + 1} of ${questions.length}: ${q.q}`;
+  el("progressFill").style.width = ((cur + 1) / questions.length * 100) + "%";
 
   const box = el("optsEl");
-
   box.innerHTML = "";
 
   q.opts.forEach((opt, i) => {
-
     const div = document.createElement("div");
-
-    div.className =
-      "opt" + (answers[cur] === i ? " sel" : "");
-
+    div.className = "opt" + (answers[cur] === i ? " sel" : "");
     div.textContent = opt;
-
-    div.onclick = () => {
-
-      answers[cur] = i;
-
-      // SAVE ANSWERS
-      sessionStorage.setItem(
-        "examAnswers",
-        JSON.stringify(answers)
-      );
-
-      renderQ();
-    };
-
+    div.onclick = () => { answers[cur] = i; renderQ(); };
     box.appendChild(div);
   });
 
-  if (cur === questions.length - 1) {
-    el("submitBtn").style.display = "block";
-  } else {
-    el("submitBtn").style.display = "none";
-  }
+  el("submitBtn").style.display = (cur === questions.length - 1) ? "block" : "none";
 }
 
+// ─────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────
 window.go = function(d) {
-
   const n = cur + d;
-
-  if (n >= 0 && n < questions.length) {
-    cur = n;
-    renderQ();
-  }
+  if (n >= 0 && n < questions.length) { cur = n; renderQ(); }
 };
 
+// ─────────────────────────────────────────
+// TIMER
+// ─────────────────────────────────────────
 function startTimer() {
-
   updateTimerDisplay();
-
   timerInterval = setInterval(() => {
-
     totalTime--;
-
     updateTimerDisplay();
-
-    if (totalTime <= 60) {
-      el("timerBox").classList.add("warning");
-    }
-
-    if (totalTime <= 0) {
-
-      clearInterval(timerInterval);
-
-      submit();
-    }
-
+    if (totalTime <= 60)  el("timerBox").classList.add("warning");
+    if (totalTime <= 0)   { clearInterval(timerInterval); submit("auto — time expired"); }
   }, 1000);
 }
 
 function updateTimerDisplay() {
-
   const m = String(Math.floor(totalTime / 60)).padStart(2, "0");
-
   const s = String(totalTime % 60).padStart(2, "0");
-
   el("timeLeft").textContent = `${m}:${s}`;
 }
 
+// ─────────────────────────────────────────
+// SUBMIT
+// ─────────────────────────────────────────
 window.confirmSubmit = function() {
-
-  if (confirm("Are you sure you want to submit the exam?")) {
-    submit();
-  }
+  if (confirm("Are you sure you want to submit the exam?")) submit("manual");
 };
 
-async function submit() {
-
+async function submit(reason) {
   if (submitted) return;
-
   submitted = true;
 
   clearInterval(timerInterval);
   clearInterval(pingInterval);
+  if (devtoolsCheckInterval) clearInterval(devtoolsCheckInterval);
 
-  correct = 0;
-  wrong = 0;
-  skipped = 0;
+  // Exit fullscreen gracefully
+  try {
+    if (document.exitFullscreen) document.exitFullscreen();
+  } catch(e) {}
+
+  correct = 0; wrong = 0; skipped = 0;
 
   questions.forEach((q, i) => {
-
-    if (answers[i] === null) skipped++;
-    else if (answers[i] === q.ans) correct++;
-    else wrong++;
+    if      (answers[i] === null)    skipped++;
+    else if (answers[i] === q.ans)   correct++;
+    else                             wrong++;
   });
 
   const score = Math.round((correct / questions.length) * 100);
+  const name  = user.name || "N/A";
+  const rank  = user.rank  || "N/A";
 
   try {
-
-    await fetch("/api/result", {
-      method: "POST",
+    const res = await fetch("http://localhost:3005/api/result", {
+      method:  "POST",
       headers: getAuthHeaders(),
-      body: JSON.stringify({
-        user_id: user.id,
-        user_name: user.name,
-        rank: user.rank,
+      body:    JSON.stringify({
+        user_id:      user.id,
+        user_name:    name,
+        rank,
         score,
         correct,
         wrong,
-        skipped
+        skipped,
+        submit_reason: reason || "manual",
+        strikes,
+        cheat_events: cheatEvents    // full log sent to server
       })
     });
-
+    if (res.status === 401) console.warn("Session expired during submit");
   } catch (err) {
-    console.error(err);
+    console.error("Result save failed:", err);
   }
 
+  // Show result screen
   el("examScreen").style.display = "none";
-  el("res").style.display = "block";
+  el("res").style.display        = "block";
 
-  el("rname").textContent = user.name;
-  el("rrank").textContent = user.rank;
+  el("rname").textContent    = name;
+  el("rrank").textContent    = rank;
   el("rcorrect").textContent = correct;
-  el("rwrong").textContent = wrong;
+  el("rwrong").textContent   = wrong;
   el("rskipped").textContent = skipped;
 
-  const circle = el("scoreCircle");
+  const circle           = el("scoreCircle");
+  circle.textContent     = score + "%";
+  circle.style.background = score >= 50 ? "#22c55e" : "#ef4444";
 
-  circle.textContent = score + "%";
+  el("rmsg").textContent = score >= 50
+    ? "🎉 Congratulations! You have PASSED the exam."
+    : "❌ You did not meet the passing score of 50%. Please try again.";
 
-  circle.style.background =
-    score >= 50 ? "#22c55e" : "#ef4444";
+  // Show cheat summary if violations occurred
+  if (cheatEvents.length > 0) {
+    const summary = el("cheatSummary");
+    summary.style.display = "block";
+    summary.innerHTML = `<strong>⚠️ Security Violations Recorded: ${strikes} strike(s)</strong><br>
+      ${cheatEvents.length} suspicious event(s) were logged and reported to the administrator.`;
+  }
 
   sessionStorage.removeItem("examUser");
-  sessionStorage.removeItem("examAnswers");
 }
 
-// TAB SWITCH DETECTION
-document.addEventListener("visibilitychange", () => {
-
-  if (document.hidden && !submitted) {
-    registerCheat("Tab switching detected");
-  }
-});
-
-// WINDOW BLUR
-window.addEventListener("blur", () => {
-
-  if (!submitted) {
-    registerCheat("Window focus lost");
-  }
-});
-
-// FULLSCREEN EXIT
-document.addEventListener("fullscreenchange", () => {
-
-  if (!document.fullscreenElement && !submitted) {
-
-    registerCheat("Fullscreen exited");
-
-    fullscreenExited = true;
-
-    enableFullScreen();
-  }
-});
-
-// RIGHT CLICK BLOCK
-document.addEventListener("contextmenu", (e) => {
-
-  e.preventDefault();
-
-  registerCheat("Right click blocked");
-});
-
-// COPY PASTE BLOCK
-["copy", "cut", "paste"].forEach(evt => {
-
-  document.addEventListener(evt, (e) => {
-
-    e.preventDefault();
-
-    registerCheat(`${evt.toUpperCase()} blocked");
-  });
-});
-
-// SHORTCUT BLOCK
-document.addEventListener("keydown", (e) => {
-
-  if (e.key === "F12") {
-
-    e.preventDefault();
-
-    registerCheat("F12 blocked");
-  }
-
-  if (e.ctrlKey) {
-
-    const blocked = [
-      "c", "v", "x", "u", "s", "a", "p"
-    ];
-
-    if (blocked.includes(e.key.toLowerCase())) {
-
-      e.preventDefault();
-
-      registerCheat(
-        `CTRL + ${e.key.toUpperCase()} blocked`
-      );
-    }
-  }
-});
-
-// DEVTOOLS DETECTION
-setInterval(() => {
-
-  const threshold = 160;
-
-  const widthDiff =
-    window.outerWidth - window.innerWidth > threshold;
-
-  const heightDiff =
-    window.outerHeight - window.innerHeight > threshold;
-
-  if ((widthDiff || heightDiff) && !submitted) {
-
-    if (!devtoolsOpened) {
-
-      devtoolsOpened = true;
-
-      registerCheat("Developer tools opened");
-    }
-
-  } else {
-
-    devtoolsOpened = false;
-  }
-
-}, 2000);
-
-// REFRESH WARNING
-window.addEventListener("beforeunload", function (e) {
-
-  if (!submitted) {
-
-    e.preventDefault();
-
-    e.returnValue =
-      "Your exam is still running.";
-  }
-});
-
+// ─────────────────────────────────────────
+// START
+// ─────────────────────────────────────────
 init();
 
 });
