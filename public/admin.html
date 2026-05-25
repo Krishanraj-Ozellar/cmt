@@ -887,7 +887,7 @@ async function submit() {
 
   // Save result to server (token-protected)
   try {
-    const res = await fetch("http://localhost:3005/api/result", {
+    // const res = await fetch("http://localhost:3005/api/result", {
     await fetch("/api/result", {
       method:  "POST",
       headers: getAuthHeaders(),
