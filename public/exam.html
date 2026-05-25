@@ -1,6 +1,3 @@
-# Full Exam Portal Code with Anti-Cheat
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -321,6 +318,8 @@ let user = null;
 let cheatCount = 0;
 let maxCheat = 3;
 let fullscreenExited = false;
+let lastCheatTime = 0;
+let devtoolsOpened = false;
 
 function el(id) {
   return document.getElementById(id);
@@ -341,10 +340,10 @@ function getAuthHeaders() {
   };
 }
 
-function goToLogin() {
+window.goToLogin = function() {
   sessionStorage.clear();
   window.location.href = "login.html";
-}
+};
 
 function showWarning(msg) {
 
@@ -359,6 +358,12 @@ function showWarning(msg) {
 }
 
 function registerCheat(reason) {
+
+  const now = Date.now();
+
+  if (now - lastCheatTime < 3000) return;
+
+  lastCheatTime = now;
 
   cheatCount++;
 
@@ -378,16 +383,23 @@ async function enableFullScreen() {
 
   const elem = document.documentElement;
 
-  if (elem.requestFullscreen) {
-    await elem.requestFullscreen();
-  } else if (elem.webkitRequestFullscreen) {
-    await elem.webkitRequestFullscreen();
-  } else if (elem.msRequestFullscreen) {
-    await elem.msRequestFullscreen();
+  try {
+
+    if (elem.requestFullscreen) {
+      await elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) {
+      await elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+      await elem.msRequestFullscreen();
+    }
+
+  } catch (err) {
+    console.warn("Fullscreen failed:", err.message);
   }
 }
 
 function startPing() {
+
   pingInterval = setInterval(async () => {
 
     if (submitted) {
@@ -429,6 +441,17 @@ function init() {
     return;
   }
 
+  // MOBILE BLOCK
+
+  if (/Mobi|Android/i.test(navigator.userAgent)) {
+
+    alert("Mobile devices are not allowed for exams.");
+
+    goToLogin();
+
+    return;
+  }
+
   const rankKey = normalizeRank(user.rank);
 
   questions = questionBank[rankKey] || [];
@@ -441,11 +464,24 @@ function init() {
     return;
   }
 
+  // RANDOMIZE QUESTIONS
+  questions = questions.sort(() => Math.random() - 0.5);
+
   answers = new Array(questions.length).fill(null);
+
+  // RESTORE ANSWERS
+  const savedAnswers =
+    JSON.parse(sessionStorage.getItem("examAnswers"));
+
+  if (savedAnswers) {
+    answers = savedAnswers;
+  }
 
   el("submitBtn").style.display = "none";
 
-  enableFullScreen();
+  setTimeout(() => {
+    enableFullScreen();
+  }, 500);
 
   renderQ();
 
@@ -478,7 +514,15 @@ function renderQ() {
     div.textContent = opt;
 
     div.onclick = () => {
+
       answers[cur] = i;
+
+      // SAVE ANSWERS
+      sessionStorage.setItem(
+        "examAnswers",
+        JSON.stringify(answers)
+      );
+
       renderQ();
     };
 
@@ -517,7 +561,9 @@ function startTimer() {
     }
 
     if (totalTime <= 0) {
+
       clearInterval(timerInterval);
+
       submit();
     }
 
@@ -527,6 +573,7 @@ function startTimer() {
 function updateTimerDisplay() {
 
   const m = String(Math.floor(totalTime / 60)).padStart(2, "0");
+
   const s = String(totalTime % 60).padStart(2, "0");
 
   el("timeLeft").textContent = `${m}:${s}`;
@@ -598,10 +645,10 @@ async function submit() {
     score >= 50 ? "#22c55e" : "#ef4444";
 
   sessionStorage.removeItem("examUser");
+  sessionStorage.removeItem("examAnswers");
 }
 
 // TAB SWITCH DETECTION
-
 document.addEventListener("visibilitychange", () => {
 
   if (document.hidden && !submitted) {
@@ -618,7 +665,6 @@ window.addEventListener("blur", () => {
 });
 
 // FULLSCREEN EXIT
-
 document.addEventListener("fullscreenchange", () => {
 
   if (!document.fullscreenElement && !submitted) {
@@ -632,7 +678,6 @@ document.addEventListener("fullscreenchange", () => {
 });
 
 // RIGHT CLICK BLOCK
-
 document.addEventListener("contextmenu", (e) => {
 
   e.preventDefault();
@@ -647,12 +692,11 @@ document.addEventListener("contextmenu", (e) => {
 
     e.preventDefault();
 
-    registerCheat(`${evt.toUpperCase()} blocked`);
+    registerCheat(`${evt.toUpperCase()} blocked");
   });
 });
 
 // SHORTCUT BLOCK
-
 document.addEventListener("keydown", (e) => {
 
   if (e.key === "F12") {
@@ -682,18 +726,41 @@ document.addEventListener("keydown", (e) => {
 // DEVTOOLS DETECTION
 setInterval(() => {
 
-  const widthThreshold =
-    window.outerWidth - window.innerWidth > 160;
+  const threshold = 160;
 
-  const heightThreshold =
-    window.outerHeight - window.innerHeight > 160;
+  const widthDiff =
+    window.outerWidth - window.innerWidth > threshold;
 
-  if ((widthThreshold || heightThreshold) && !submitted) {
+  const heightDiff =
+    window.outerHeight - window.innerHeight > threshold;
 
-    registerCheat("Developer tools opened");
+  if ((widthDiff || heightDiff) && !submitted) {
+
+    if (!devtoolsOpened) {
+
+      devtoolsOpened = true;
+
+      registerCheat("Developer tools opened");
+    }
+
+  } else {
+
+    devtoolsOpened = false;
   }
 
 }, 2000);
+
+// REFRESH WARNING
+window.addEventListener("beforeunload", function (e) {
+
+  if (!submitted) {
+
+    e.preventDefault();
+
+    e.returnValue =
+      "Your exam is still running.";
+  }
+});
 
 init();
 
@@ -702,4 +769,3 @@ init();
 
 </body>
 </html>
-```
