@@ -86,7 +86,7 @@ const questionBank = {
     { q: "Which is the primary duty of a lookout?", opts: ["Leave bridge periodically","Maintain lookout by sight, hearing & all available means","Follow daylight procedures","Depend only on radar"], ans: 1 }
   ],
 
-  Tr_EO: [
+  tr_eo: [
       {
             "q": "The main function of a UPS onboard critical equipment is to:",
             "opts": [
@@ -949,7 +949,7 @@ function init() {
   if (!user || !user.id || !user.token) { alert("No valid session found"); goToLogin(); return; }
   const rankKey = normalizeRank(user.rank);
   const rankMap = {
-    const rankMap = {
+  
   able_boiled_seamnan: "able_bodied_seaman",
   able_bodied_seaman: "able_bodied_seaman",
   able_seaman: "able_bodied_seaman",
@@ -966,7 +966,7 @@ function init() {
   trainee_eto: "electro_technical_officer",
   eto_trainee: "electro_technical_officer"
 };
-  };
+
   const finalRank = rankMap[rankKey] || rankKey;
   questions = questionBank[finalRank] || [];
   if (!questions.length) { el("qtxt").textContent = `No questions found for rank: ${user.rank}`; return; }
