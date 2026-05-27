@@ -949,18 +949,23 @@ function init() {
   if (!user || !user.id || !user.token) { alert("No valid session found"); goToLogin(); return; }
   const rankKey = normalizeRank(user.rank);
   const rankMap = {
-    able_boiled_seamnan: "able_bodied_seaman",
-    able_bodied_seaman: "able_bodied_seaman",
-    able_seaman: "able_bodied_seaman",
-    ab: "able_bodied_seaman",
-    abs: "able_bodied_seaman",
-    ab_seaman: "able_bodied_seaman",
-    electro_technical_officer: "electro_technical_officer",
-    eto: "electro_technical_officer",
-    e_t_o: "electro_technical_officer",
-    Tr_EO: "Tr_EO",
-    trainee_eto: "electro_technical_officer",
-    eto_trainee: "electro_technical_officer"
+    const rankMap = {
+  able_boiled_seamnan: "able_bodied_seaman",
+  able_bodied_seaman: "able_bodied_seaman",
+  able_seaman: "able_bodied_seaman",
+  ab: "able_bodied_seaman",
+  abs: "able_bodied_seaman",
+  ab_seaman: "able_bodied_seaman",
+
+  electro_technical_officer: "electro_technical_officer",
+  eto: "electro_technical_officer",
+  e_t_o: "electro_technical_officer",
+
+  tr_eo: "Tr_EO",
+
+  trainee_eto: "electro_technical_officer",
+  eto_trainee: "electro_technical_officer"
+};
   };
   const finalRank = rankMap[rankKey] || rankKey;
   questions = questionBank[finalRank] || [];
