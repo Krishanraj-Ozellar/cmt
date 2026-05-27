@@ -4,220 +4,42 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Exam Portal</title>
-
 <style>
   * { box-sizing: border-box; }
-
-  body {
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    padding: 20px;
-    margin: 0;
-    user-select: none;
-  }
-
-  #examScreen, #res {
-    background: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    max-width: 620px;
-    margin: auto;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  }
-
-  #qtxt {
-    font-size: 18px;
-    margin-bottom: 20px;
-    line-height: 1.5;
-  }
-
-  .opt {
-    padding: 12px 16px;
-    margin: 8px 0;
-    border: 2px solid #ddd;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.15s;
-    font-size: 15px;
-  }
-
-  .opt:hover {
-    border-color: #3b82f6;
-    background: #eff6ff;
-  }
-
-  .opt.sel {
-    background: #3b82f6;
-    color: #fff;
-    border-color: #3b82f6;
-  }
-
-  .nav-btns {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-  }
-
-  .nav-btns button,
-  #submitBtn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-  }
-
-  .nav-btns button {
-    background: #e5e7eb;
-    color: #010c5d;
-  }
-
-  .nav-btns button:hover {
-    background: #d1d5db;
-  }
-
-  #submitBtn {
-    display: none;
-    margin-top: 20px;
-    background: #ef4444;
-    color: white;
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-  }
-
-  #submitBtn:hover {
-    background: #dc2626;
-  }
-
-  #timerBox {
-    text-align: right;
-    font-size: 18px;
-    font-weight: bold;
-    color: #ef4444;
-    margin-bottom: 10px;
-  }
-
-  #timerBox.warning {
-    color: #f97316;
-    animation: pulse 1s infinite;
-  }
-
-  @keyframes pulse {
-    0%,100% { opacity:1; }
-    50% { opacity:0.4; }
-  }
-
-  #progressBar {
-    height: 6px;
-    background: #e5e7eb;
-    border-radius: 3px;
-    margin-bottom: 20px;
-  }
-
-  #progressFill {
-    height: 100%;
-    background: #3b82f6;
-    border-radius: 3px;
-    transition: width 0.3s;
-  }
-
+  body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; margin: 0; user-select: none; }
+  #examScreen, #res { background: #fff; padding: 30px; border-radius: 10px; max-width: 620px; margin: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  #qtxt { font-size: 18px; margin-bottom: 20px; line-height: 1.5; }
+  .opt { padding: 12px 16px; margin: 8px 0; border: 2px solid #ddd; cursor: pointer; border-radius: 8px; transition: all 0.15s; font-size: 15px; }
+  .opt:hover { border-color: #3b82f6; background: #eff6ff; }
+  .opt.sel { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+  .nav-btns { margin-top: 20px; display: flex; gap: 10px; }
+  .nav-btns button, #submitBtn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; }
+  .nav-btns button { background: #e5e7eb; color: #010c5d; }
+  .nav-btns button:hover { background: #d1d5db; }
+  #submitBtn { display: none; margin-top: 20px; background: #ef4444; color: white; width: 100%; padding: 12px; font-size: 16px; }
+  #submitBtn:hover { background: #dc2626; }
+  #timerBox { text-align: right; font-size: 18px; font-weight: bold; color: #ef4444; margin-bottom: 10px; }
+  #timerBox.warning { color: #f97316; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+  #progressBar { height: 6px; background: #e5e7eb; border-radius: 3px; margin-bottom: 20px; }
+  #progressFill { height: 100%; background: #3b82f6; border-radius: 3px; transition: width 0.3s; }
   #res h2 { color: #1e3a5f; }
-
-  .stat-row {
-    display: flex;
-    gap: 15px;
-    margin-top: 15px;
-  }
-
-  .stat-box {
-    flex: 1;
-    padding: 15px;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: bold;
-  }
-
-  .correct {
-    background: #dcfce7;
-    color: #166534;
-  }
-
-  .wrong {
-    background: #fee2e2;
-    color: #991b1b;
-  }
-
-  .skipped {
-    background: #fef9c3;
-    color: #854d0e;
-  }
-
-  #scoreCircle {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    font-weight: bold;
-    color: white;
-    margin: 20px auto;
-  }
-
-  #kickedOverlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.75);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-  }
-
-  #kickedOverlay.show {
-    display: flex;
-  }
-
-  #kickedBox {
-    background: white;
-    padding: 40px;
-    border-radius: 12px;
-    text-align: center;
-    max-width: 380px;
-  }
-
- #camPreview {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
-  width: 180px;
-  height: 120px;
-  border: 2px solid #3b82f6;
-  border-radius: 10px;
-  background: black;
-  z-index: 999;
-}
-
-#faceOverlay {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
-  width: 180px;
-  height: 120px;
-  z-index: 1000;
-  pointer-events: none;
-}
-
+  .stat-row { display: flex; gap: 15px; margin-top: 15px; }
+  .stat-box { flex: 1; padding: 15px; border-radius: 8px; text-align: center; font-weight: bold; }
+  .correct { background: #dcfce7; color: #166534; }
+  .wrong { background: #fee2e2; color: #991b1b; }
+  .skipped { background: #fef9c3; color: #854d0e; }
+  #scoreCircle { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; color: white; margin: 20px auto; }
+  #kickedOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 9999; justify-content: center; align-items: center; }
+  #kickedOverlay.show { display: flex; }
+  #kickedBox { background: white; padding: 40px; border-radius: 12px; text-align: center; max-width: 380px; }
+  #camPreview { position: fixed; bottom: 10px; right: 10px; width: 180px; height: 120px; border: 2px solid #3b82f6; border-radius: 10px; background: black; z-index: 999; }
+  #faceOverlay { position: fixed; bottom: 10px; right: 10px; width: 180px; height: 120px; z-index: 1000; pointer-events: none; }
 </style>
 <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 </head>
-
 <body>
 
-<!-- Session Expired -->
 <div id="kickedOverlay">
   <div id="kickedBox">
     <h3>⚠️ Session Expired</h3>
@@ -226,67 +48,32 @@
   </div>
 </div>
 
-<!-- Result -->
 <div id="res" style="display:none;">
-
   <h2>Exam Submitted Successfully</h2>
-
   <p><strong>Company:</strong> Ozellar Marine</p>
   <p><strong>Name:</strong> <span id="rname"></span></p>
   <p><strong>Rank:</strong> <span id="rrank"></span></p>
-
   <div id="scoreCircle">0%</div>
-
   <div class="stat-row">
-
-    <div class="stat-box correct">
-      Correct
-      <div id="rcorrect">0</div>
-    </div>
-
-    <div class="stat-box wrong">
-      Wrong
-      <div id="rwrong">0</div>
-    </div>
-
-    <div class="stat-box skipped">
-      Skipped
-      <div id="rskipped">0</div>
-    </div>
-
+    <div class="stat-box correct">Correct<div id="rcorrect">0</div></div>
+    <div class="stat-box wrong">Wrong<div id="rwrong">0</div></div>
+    <div class="stat-box skipped">Skipped<div id="rskipped">0</div></div>
   </div>
-
   <h3 id="rmsg" style="margin-top:20px;"></h3>
-
 </div>
 
-<!-- Exam -->
 <div id="examScreen">
-
-  <div id="timerBox">
-    ⏱ <span id="timeLeft">--:--</span>
-  </div>
-
-  <div id="progressBar">
-    <div id="progressFill" style="width:0%"></div>
-  </div>
-
+  <div id="timerBox">⏱ <span id="timeLeft">--:--</span></div>
+  <div id="progressBar"><div id="progressFill" style="width:0%"></div></div>
   <h2 id="qtxt">Loading...</h2>
-
   <div id="optsEl"></div>
-
   <div class="nav-btns">
     <button onclick="go(-1)">◀ Prev</button>
     <button onclick="go(1)">Next ▶</button>
   </div>
-
-  <button id="submitBtn" onclick="confirmSubmit()">
-    Submit Exam
-  </button>
-
+  <button id="submitBtn" onclick="confirmSubmit()">Submit Exam</button>
 </div>
 
-<!-- Camera -->
 <video id="camPreview" autoplay muted playsinline></video>
 
 <script>
@@ -295,30 +82,742 @@ document.addEventListener("DOMContentLoaded", function () {
 const questionBank = {
 
   able_bodied_seaman: [
+    { q: "What does the helm order \"Midships\" mean?", opts: ["Turn the wheel fully to port","Keep the ship steady on course","Bring the rudder to zero position","Stop the steering gear"], ans: 2 },
+    { q: "Which is the primary duty of a lookout?", opts: ["Leave bridge periodically","Maintain lookout by sight, hearing & all available means","Follow daylight procedures","Depend only on radar"], ans: 1 }
+  ],
 
-    {
-      q: "What does the helm order “Midships” mean?",
-      opts: [
-        "Turn the wheel fully to port",
-        "Keep the ship steady on course",
-        "Bring the rudder to zero position",
-        "Stop the steering gear"
-      ],
-      ans: 2
-    },
-
-    {
-      q: "Which is the primary duty of a lookout?",
-      opts: [
-        "Leave bridge periodically",
-        "Maintain lookout by sight, hearing & all available means",
-        "Follow daylight procedures",
-        "Depend only on radar"
-      ],
-      ans: 1
-    }
-
-  ]
+  Tr_EO: [
+      {
+            "q": "The main function of a UPS onboard critical equipment is to:",
+            "opts": [
+                  "Increase voltage",
+                  "Provide uninterrupted power during supply failure",
+                  "Reduce current consumption",
+                  "Charge batteries faster"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Which type of motor is commonly used for steering gear pumps?",
+            "opts": [
+                  "DC motor",
+                  "Synchronous motor",
+                  "Induction motor",
+                  "Stepper motor"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "In a large two-stroke marine engine, what is the chief function of the turbocharger?",
+            "opts": [
+                  "To increase piston cooling efficiency",
+                  "To supply high-pressure fuel for injection",
+                  "To enhance lubrication oil flow",
+                  "To provide scavenge air for combustion and scavenging"
+            ],
+            "ans": 3
+      },
+      {
+            "q": "Which of the following frequencies is typically found in shipboard electrical supply systems?",
+            "opts": [
+                  "25 Hz",
+                  "50 Hz",
+                  "100 Hz",
+                  "60 Hz"
+            ],
+            "ans": 3
+      },
+      {
+            "q": "What is the primary consequence of operating shipboard electrical equipment at a low power factor?",
+            "opts": [
+                  "Lower generator output voltage",
+                  "Higher current flow and increased energy losses",
+                  "Reduced cable heating",
+                  "Improved system efficiency"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Which safety concern is most critical when working inside a ship's battery room?",
+            "opts": [
+                  "Hydrogen gas explosion risk",
+                  "Strong air drafts",
+                  "Excessive noise",
+                  "High humidity levels"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "Which source is primarily used to supply power to a ship's emergency switchboard during a blackout?",
+            "opts": [
+                  "Main switchboard",
+                  "Shaft generator",
+                  "Emergency generator",
+                  "Shore supply"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "The synchronous speed of a motor depends on:",
+            "opts": [
+                  "Voltage",
+                  "Number of poles and frequency",
+                  "Current",
+                  "Loading"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "On a UMS (Unmanned Machinery Space) vessel, what is the main system used for engine room alarm monitoring and response?",
+            "opts": [
+                  "Mechanical safety interlocks on each piece of equipment",
+                  "Alarm repeater panels located only on the bridge",
+                  "Centralized control room with alarm logging and automatic shutdown features",
+                  "Routine manual inspections by engineers"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "What is the purpose of a circuit breaker?",
+            "opts": [
+                  "Regulate voltage",
+                  "Protect against overload and short circuit",
+                  "Increase power",
+                  "Maintain power factor"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Which method is most effective in minimizing galvanic corrosion on a ship's hull?",
+            "opts": [
+                  "Coating with varnish",
+                  "Using only freshwater washdowns",
+                  "Painting without anodes",
+                  "Applying sacrificial anodes"
+            ],
+            "ans": 3
+      },
+      {
+            "q": "What is the first action when an electrical shock victim is found?",
+            "opts": [
+                  "Give CPR immediately",
+                  "Remove victim from source safely",
+                  "Pour water to cool skin",
+                  "Call office"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Which onboard system is most likely to be critically affected by a sudden loss of electrical power?",
+            "opts": [
+                  "Radar and ECDIS",
+                  "Bilge pump",
+                  "Freshwater generator",
+                  "Accommodation lights"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "What is the primary advantage of installing a shaft generator on a ship?",
+            "opts": [
+                  "Improves the vessel's maneuverability",
+                  "Lowers the ship's overall voltage",
+                  "Reduces fuel consumption by utilizing main engine power for electricity generation",
+                  "Increases the electrical load on auxiliary generators"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "What is the most likely cause of frequent tripping of an Earth Fault Relay in a 440V system?",
+            "opts": [
+                  "Loose neutral connection",
+                  "High humidity in distribution panels",
+                  "Balanced three-phase load",
+                  "Incorrect frequency"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "When synchronizing generators, which parameter is MOST critical to match exactly?",
+            "opts": [
+                  "Voltage",
+                  "Frequency",
+                  "Phase sequence",
+                  "Phase angle"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "A motor is observed to draw excessive current at startup but does not rotate. What is the most likely reason for this behavior?",
+            "opts": [
+                  "Reverse rotation",
+                  "Single phasing",
+                  "Over-lubrication",
+                  "High power factor"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Which method provides the most accurate assessment of the state of charge in a lead-acid battery?",
+            "opts": [
+                  "Load test",
+                  "Short circuit test",
+                  "Open circuit voltage check",
+                  "Specific gravity measurement"
+            ],
+            "ans": 3
+      },
+      {
+            "q": "What is the effect of high harmonic distortion on generators?",
+            "opts": [
+                  "Load sharing improves",
+                  "Generator runs cooler",
+                  "Excess heating of windings",
+                  "Reduced copper losses"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "Which symptom is most commonly observed when a diode in a ship's alternator rectifier fails?",
+            "opts": [
+                  "Excessive vibration",
+                  "Irregular output voltage from the alternator",
+                  "High power factor",
+                  "Reduced fuel consumption"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "What is the primary reason for connecting a ship's shaft generator to the electrical system via a frequency converter?",
+            "opts": [
+                  "To increase the generator's voltage",
+                  "To maintain constant frequency output regardless of main engine speed variations",
+                  "To bypass the Automatic Voltage Regulator (AVR)",
+                  "To reduce the vessel's fuel consumption"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "What is a common effect of using Variable Frequency Drives (VFDs) in shipboard electrical systems?",
+            "opts": [
+                  "They reduce inrush current to zero.",
+                  "They eliminate all harmonics from the supply.",
+                  "They introduce harmonic distortion and can cause overheating.",
+                  "They always improve the system's power factor."
+            ],
+            "ans": 2
+      },
+      {
+            "q": "What is the effect of reverse power flow to a running generator?",
+            "opts": [
+                  "It becomes a motor",
+                  "It stops immediately",
+                  "AVR shuts down",
+                  "Main engine shuts down"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "The emergency generator fails to start automatically. What is the FIRST check?",
+            "opts": [
+                  "Fuel filter",
+                  "Starting battery voltage",
+                  "Governing system",
+                  "AVR"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Upon noticing smoke coming from a ship's main switchboard, what should be your immediate response?",
+            "opts": [
+                  "Pour CO2 directly into the switchboard",
+                  "Open the switchboard door wide to investigate",
+                  "Switch off the ventilation to prevent smoke spread",
+                  "Remain nearby and observe the situation"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "During a Power Management System (PMS) failure on a ship, which parameters must be matched manually to safely synchronize two generators?",
+            "opts": [
+                  "Frequency only",
+                  "Frequency, voltage, and phase sequence",
+                  "Voltage only",
+                  "Load"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Which test is most commonly used to assess the insulation integrity of high voltage motors onboard ships?",
+            "opts": [
+                  "Megger test",
+                  "IR test during running",
+                  "Clamp meter test",
+                  "Hipot test (High potential test)"
+            ],
+            "ans": 3
+      },
+      {
+            "q": "Two Alternators are running in parallel, If the field of one of the alternator is adjusted, it will",
+            "opts": [
+                  "Reduce its speed",
+                  "Change its load",
+                  "Change its power factor",
+                  "Change its frequency"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "The Frequency of voltage generated by an alternator having 4-poles and rotating at 1800rpm is____HZ",
+            "opts": [
+                  "60hz",
+                  "50hz",
+                  "80hz",
+                  "120hz"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "A 60Hz Alternator will run at the 900rpm if it is wound for________poles.",
+            "opts": [
+                  "2",
+                  "6",
+                  "4",
+                  "8"
+            ],
+            "ans": 3
+      },
+      {
+            "q": "Galley Hot plate the rating will be 440Volts, 3Kw, 60Hz if the same hot plate connected to shore supply in dry dock with 440Volt and 50Hz then the rate of change of heat will be,",
+            "opts": [
+                  "Decrease",
+                  "Same",
+                  "Increase",
+                  "None of the above"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Which resistor will be physically larger in size?",
+            "opts": [
+                  "10 ohms, 50w",
+                  "100 ohms, 10w",
+                  "1 Kohm, 1w",
+                  "10 Mohm, 1/2w"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "When current flows through heater coil it glows but supply wire does not glow because",
+            "opts": [
+                  "Supply wire is covered with insulation layer",
+                  "Current through supply line flows at slower speed",
+                  "Supply wires arc made of superior material",
+                  "Resistance of heater coil is more than that supply wires"
+            ],
+            "ans": 3
+      },
+      {
+            "q": "Electronic soft starters are used for motors to",
+            "opts": [
+                  "Achieve variable speed",
+                  "Provide smooth start and stop",
+                  "Improve the loading",
+                  "None of the above"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Which of the following is the output of a thermocouple?",
+            "opts": [
+                  "Alternating Current",
+                  "Direct Current",
+                  "AC Voltage",
+                  "DC Voltage"
+            ],
+            "ans": 3
+      },
+      {
+            "q": "Electronic Variable Frequency Drive (VFD) connected to motors",
+            "opts": [
+                  "Provide variable speed with high efficiency",
+                  "Induces eddy-current in the secondary member of the clutch mechanism",
+                  "It is not suitable for variable torque load",
+                  "Does not provide variable speed and has low-efficiency"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "The power factor of an alternator is determined by its",
+            "opts": [
+                  "Speed",
+                  "Load",
+                  "Excitation",
+                  "Prime Mover"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Which of the substances listed should be applied to battery terminals to help prevent corrosion?",
+            "opts": [
+                  "Naval Jelly",
+                  "Grease",
+                  "Petroleum Jelly",
+                  "Lead peroxide"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "What are the different types of 3-phase transformer connections?",
+            "opts": [
+                  "Star Connection",
+                  "Star Connection and Delta Connection",
+                  "Delta Connection",
+                  "Single Phase Connection"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Ideal Transformer do not have",
+            "opts": [
+                  "Mag. Leakage",
+                  "Low Efficiency",
+                  "Losses",
+                  "All of the above"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "A Single Phase Rectifier has________diodes.",
+            "opts": [
+                  "2",
+                  "4",
+                  "6",
+                  "8"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "A Diode is used in_______",
+            "opts": [
+                  "Amplifiers",
+                  "Oscillators",
+                  "Modem",
+                  "None Of These"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "If any motor starter panel push the start button, the contactor gets energised and gets closed. Even after the push button release also the contactor gets closes how?",
+            "opts": [
+                  "Looping process",
+                  "Latching Relay Circuit",
+                  "Main Contactor",
+                  "None of the above"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "How can the direction of rotation of the motor be reversed?",
+            "opts": [
+                  "By changing over any two phase wires",
+                  "Remove the one phase wire",
+                  "By Changing the relay",
+                  "By Changing the winding wire"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "Emergency mode of boiler firing which all alarms can be bypassed?",
+            "opts": [
+                  "Fuel Oil Temperature",
+                  "1.Low Low Water Level Trip 2.Ignition Failure 3.Flame Failure 4.Steam Pressure High 5.Emergency Stop",
+                  "Air pressure Low",
+                  "None of the above"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Why are iron cores in transformers made laminated?",
+            "opts": [
+                  "To Reduce eddy current losses",
+                  "To Prevent electricity shock",
+                  "To improve the electromagnetic induction",
+                  "Magnetic flux density"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "How does the Emergency Generator start automatically?",
+            "opts": [
+                  "Activated by a timer",
+                  "Signal Goes through MSB",
+                  "It is activated by a under voltage relay",
+                  "24VDC Relay"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "Is the field current in an Alternator AC or DC?",
+            "opts": [
+                  "AC",
+                  "AC and DC",
+                  "DC",
+                  "None of the above"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "Is the Alternator connected Star or Delta?",
+            "opts": [
+                  "Delta",
+                  "Normally Star",
+                  "Star/Delta",
+                  "3-phases"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Batteries Replacement procedure of PLC?",
+            "opts": [
+                  "Switched Off AC Power Supply",
+                  "Switched Off DC Power Supply",
+                  "Switched of both AC & DC",
+                  "To Replace the battery with the controller power must be on (no memory loss)"
+            ],
+            "ans": 3
+      },
+      {
+            "q": "What is the name of the winding to which supply is given?",
+            "opts": [
+                  "Field Winding",
+                  "Secondary Winding",
+                  "Stator Winding",
+                  "Primary Winding"
+            ],
+            "ans": 3
+      },
+      {
+            "q": "What are the sources of electrical power on ship?",
+            "opts": [
+                  "440 Volt and 220 Volt Transformer",
+                  "Main generator",
+                  "1.Main generator 2.Emergency Generator 3.Emergency Batteries 4.Shore Power",
+                  "Main Generator"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "What is the main role of an Automatic Voltage Regulator (AVR) in a ship's generator system?",
+            "opts": [
+                  "Control engine cooling water flow",
+                  "Synchronize generator frequency",
+                  "Monitor lubricating oil temperature",
+                  "Regulate generator excitation to maintain output voltage"
+            ],
+            "ans": 3
+      },
+      {
+            "q": "(Read the following paragraph thoroughly and answer the questions below)\\nDetective glories tend to glorify crime. Murderers, gangsters and crooks all kinds are described as tough, cunning and courageous individuals who\\nknow how to take care of themselves and how to get what they want. In James McCain's \"The Postman Always Rings twice\" , for instance the villain is\\nmuch more a impressive character than his victim. He is casual brave smart and successful with women. It is true that he finally gets caught. But he is\\npunished for a crime that he did not commit, so that his conviction is hardly a triumph of justice. Besides, looking back over the exciting life of the\\ncriminal, the reader might conclude that it was worth the risk.\\n\\nAccording to the passage, how are murderers, gangsters, and crooks typically depicted in detective stories?",
+            "opts": [
+                  "They know how to escape from law",
+                  "They always manage to get away",
+                  "They are often glorified in detective stories",
+                  "They are wiser than their victims"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "(Read the following paragraph thoroughly and answer the questions below)\\nDetective glories tend to glorify crime. Murderers, gangsters and crooks all kinds are described as tough, cunning and courageous individuals who\\nknow how to take care of themselves and how to get what they want. In James McCain's \"The Postman Always Rings twice\" , for instance the villain is\\nmuch more a impressive character than his victim. He is casual brave smart and successful with women. It is true that he finally gets caught. But he is\\npunished for a crime that he did not commit, so that his conviction is hardly a triumph of justice. Besides, looking back over the exciting life of the\\ncriminal, the reader might conclude that it was worth the risk.\\n\\nAccording to the passage, how is the villain in James McCain's 'The Postman Always Rings Twice'\\nportrayed?",
+            "opts": [
+                  "As a casual, brave, smart, and successful character",
+                  "As a law-abiding citizen",
+                  "As a victim of injustice",
+                  "As a weak and timid individual"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "(Read the following paragraph thoroughly and answer the questions below)\\nDetective glories tend to glorify crime. Murderers, gangsters and crooks all kinds are described as tough, cunning and courageous individuals who\\nknow how to take care of themselves and how to get what they want. In James McCain's \"The Postman Always Rings twice\" , for instance the villain is\\nmuch more a impressive character than his victim. He is casual brave smart and successful with women. It is true that he finally gets caught. But he is\\npunished for a crime that he did not commit, so that his conviction is hardly a triumph of justice. Besides, looking back over the exciting life of the\\ncriminal, the reader might conclude that it was worth the risk.\\n\\nBased on the passage, why is the villain in 'The Postman Always Rings Twice' ultimately punished?",
+            "opts": [
+                  "For a crime he did not actually commit",
+                  "Because the police are exceptionally clever",
+                  "Because he confesses to all his crimes",
+                  "Due to his lack of intelligence"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "(Read the following paragraph thoroughly and answer the questions below)\\nDetective glories tend to glorify crime. Murderers, gangsters and crooks all kinds are described as tough, cunning and courageous individuals who\\nknow how to take care of themselves and how to get what they want. In James McCain's \"The Postman Always Rings twice\" , for instance the villain is\\nmuch more a impressive character than his victim. He is casual brave smart and successful with women. It is true that he finally gets caught. But he is\\npunished for a crime that he did not commit, so that his conviction is hardly a triumph of justice. Besides, looking back over the exciting life of the\\ncriminal, the reader might conclude that it was worth the risk.\\n\\nWhat conclusion might a reader draw about the life of a criminal after reading the passage?",
+            "opts": [
+                  "It is rarely described as interesting.",
+                  "It is always presented negatively.",
+                  "It is exciting and may seem worth the risk.",
+                  "It ends in a clear triumph of justice."
+            ],
+            "ans": 2
+      },
+      {
+            "q": "(Read the following paragraph thoroughly and answer the questions below)\\nDetective glories tend to glorify crime. Murderers, gangsters and crooks all kinds are described as tough, cunning and courageous individuals who\\nknow how to take care of themselves and how to get what they want. In James McCain's \"The Postman Always Rings twice\" , for instance the villain is\\nmuch more a impressive character than his victim. He is casual brave smart and successful with women. It is true that he finally gets caught. But he is\\npunished for a crime that he did not commit, so that his conviction is hardly a triumph of justice. Besides, looking back over the exciting life of the\\ncriminal, the reader might conclude that it was worth the risk.\\n\\nWhat impression do detective stories often give about crime and punishment, according to the passage?",
+            "opts": [
+                  "They focus only on the victims' perspectives.",
+                  "They tend to create a misleading view of crime and its consequences.",
+                  "They make crime seem uninteresting.",
+                  "They always discourage criminal behavior."
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Life at sea promises adventure, learning, and discipline\"”but for many deck cadets, the journey begins not with mentorship, but vulnerability.\\nHarassment faced by cadets often goes unreported due to fear, hierarchical pressure, or unclear grievance procedures. From verbal intimidation to being tasked with unsafe or humiliating duties, the lines between training and exploitation blur. In several cases, cadets have endured psychological distress when they were excluded from basic operational learning, denied rest, or subjected to derogatory treatment.\\n\\nIdentify the part of the following sentence that contains a grammatical error: 'Each of the officers have been instructed to submit their documents by Monday.'",
+            "opts": [
+                  "c) to submit their documents",
+                  "a) Each of the officers",
+                  "d) by Monday",
+                  "b) have been instructed"
+            ],
+            "ans": 3
+      },
+      {
+            "q": "Life at sea promises adventure, learning, and discipline\"”but for many deck cadets, the journey begins not with mentorship, but vulnerability.\\nHarassment faced by cadets often goes unreported due to fear, hierarchical pressure, or unclear grievance procedures. From verbal intimidation to being tasked with unsafe or humiliating duties, the lines between training and exploitation blur. In several cases, cadets have endured psychological distress when they were excluded from basic operational learning, denied rest, or subjected to derogatory treatment.\\n\\nComplete the sentence: The employee who was caught falsifying records had to ______.",
+            "opts": [
+                  "take a vacation",
+                  "face disciplinary action",
+                  "ignore the mistake",
+                  "receive a promotion"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Life at sea promises adventure, learning, and discipline\"”but for many deck cadets, the journey begins not with mentorship, but vulnerability.\\nHarassment faced by cadets often goes unreported due to fear, hierarchical pressure, or unclear grievance procedures. From verbal intimidation to being tasked with unsafe or humiliating duties, the lines between training and exploitation blur. In several cases, cadets have endured psychological distress when they were excluded from basic operational learning, denied rest, or subjected to derogatory treatment.\\n\\nWhat does the idiom 'take something with a pinch of salt' mean?",
+            "opts": [
+                  "To act quickly in a risky situation",
+                  "To accept something without question",
+                  "To regard something as possibly untrue or exaggerated",
+                  "To celebrate a small achievement"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "Life at sea promises adventure, learning, and discipline\"”but for many deck cadets, the journey begins not with mentorship, but vulnerability.\\nHarassment faced by cadets often goes unreported due to fear, hierarchical pressure, or unclear grievance procedures. From verbal intimidation to being tasked with unsafe or humiliating duties, the lines between training and exploitation blur. In several cases, cadets have endured psychological distress when they were excluded from basic operational learning, denied rest, or subjected to derogatory treatment.\\n\\nWhich revision best improves the following sentence? 'The students were asked to write an essay on the Ganga, its cultural significance, and how to preserve it.'",
+            "opts": [
+                  "write an essay on the Ganga, its cultural significance, and preservation",
+                  "write essay on the Ganga and how it can be preserved",
+                  "write an essay about the Ganga and preservation",
+                  "write essay about the Ganga, its culture, and preservation"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "Life at sea promises adventure, learning, and discipline\"”but for many deck cadets, the journey begins not with mentorship, but vulnerability.\\nHarassment faced by cadets often goes unreported due to fear, hierarchical pressure, or unclear grievance procedures. From verbal intimidation to being tasked with unsafe or humiliating duties, the lines between training and exploitation blur. In several cases, cadets have endured psychological distress when they were excluded from basic operational learning, denied rest, or subjected to derogatory treatment.\\n\\nWith great efforts his son succeeded in convincing him not to donate his entire wealth to an orphanage ______.",
+            "opts": [
+                  "and lead the life of a wealthy merchant",
+                  "but to a home for the forsaken children",
+                  "and make an orphan of himself",
+                  "as the orphanage needed a lot of donations"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "Life at sea promises adventure, learning, and discipline\"”but for many deck cadets, the journey begins not with mentorship, but vulnerability.\\nHarassment faced by cadets often goes unreported due to fear, hierarchical pressure, or unclear grievance procedures. From verbal intimidation to being tasked with unsafe or humiliating duties, the lines between training and exploitation blur. In several cases, cadets have endured psychological distress when they were excluded from basic operational learning, denied rest, or subjected to derogatory treatment.\\n\\nIn the context of the Prime Minister's statement on India's Blue Economy, what does the term 'sustainable' most closely refer to?",
+            "opts": [
+                  "Rapid and aggressive",
+                  "Short-term but profitable",
+                  "Environmentally balanced and lasting",
+                  "Temporary but effective"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "If the length and breadth of a rectangle are both increased by 20%, what is the percentage increase in its area?",
+            "opts": [
+                  "0.4",
+                  "0.42",
+                  "0.44",
+                  "0.46"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "A person needs to walk from one corner of a square park to the opposite corner. If he walks along the edges, he covers the length of two sides, but if he walks diagonally, he takes the shortest route. Approximately what percentage of distance does he save by walking diagonally instead of along the edges?",
+            "opts": [
+                  "0.29",
+                  "0.24",
+                  "0.33",
+                  "0.2"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "Two boats are anchored on opposite sides of a 100 m tall lighthouse. From the boats, the angles of elevation to the top of the lighthouse are 30° and 45° respectively. What is the distance between the two boats?",
+            "opts": [
+                  "273 m",
+                  "173 m",
+                  "200 m",
+                  "300 m"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "A cylindrical iron pipe is 21 cm long with an external diameter of 8 cm and a wall thickness of 1 cm. If the density of iron is 8 g/cm³, what is the mass of the pipe?",
+            "opts": [
+                  "3.6 kg",
+                  "36 kg",
+                  "3.696 kg",
+                  "36.9 kg"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "A bag contains 2 red, 3 green, and 2 blue balls. If two balls are drawn at random, what is the probability that neither ball drawn is blue?",
+            "opts": [
+                  "10/21",
+                  "10/7",
+                  "5/21",
+                  "5/7"
+            ],
+            "ans": 1
+      },
+      {
+            "q": "Two students appeared for an exam. One scored 9 marks more than the other, and his marks were 56% of the total marks obtained by both. What are their marks?",
+            "opts": [
+                  "42,33",
+                  "39,30",
+                  "41,32",
+                  "43,34"
+            ],
+            "ans": 0
+      },
+      {
+            "q": "A and B can complete a task together in 30 days. After A works alone for 16 days, B completes the remaining work in 44 days. How long would it take B to finish the entire work alone?",
+            "opts": [
+                  "40 days",
+                  "30 days",
+                  "60 days",
+                  "70 days"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "A vessel has traveled 1856 nautical miles at a speed of 18 knots, consuming 545 tons of fuel oil. The remaining distance to the next port is 1978 nautical miles. If the vessel increases speed to 22 knots for the rest of the journey, how much fuel will be consumed to reach the port? Select the correct amount of fuel required for the remaining voyage.",
+            "opts": [
+                  "772 tons",
+                  "690 tons",
+                  "868 tons",
+                  "710 tons"
+            ],
+            "ans": 2
+      },
+      {
+            "q": "Which term describes the pressure measured relative to a perfect vacuum? Select the correct term for this type of pressure.",
+            "opts": [
+                  "Absolute pressure",
+                  "Differential pressure",
+                  "Gauge pressure",
+                  "Atmospheric pressure"
+            ],
+            "ans": 0
+      }
+]
 
 };
 
@@ -335,15 +834,10 @@ let submitted = false;
 let user = null;
 let warningCount = 0;
 
-function el(id) {
-  return document.getElementById(id);
-}
+function el(id) { return document.getElementById(id); }
 
 function normalizeRank(raw) {
-  return (raw || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
+  return (raw || "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
 }
 
 function getAuthHeaders() {
@@ -353,617 +847,231 @@ function getAuthHeaders() {
     "x-user-id": String(user.id || "")
   };
 }
+
 async function startCamera() {
-
   try {
-
-    // Load models
-    await faceapi.nets.tinyFaceDetector.loadFromUri(
-      "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model"
-    );
-
-    await faceapi.nets.faceLandmark68TinyNet.loadFromUri(
-      "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model"
-    );
-
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        width: 640,
-        height: 480,
-        facingMode: "user"
-      },
-      audio: false
-    });
-
+    await faceapi.nets.tinyFaceDetector.loadFromUri("https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model");
+    await faceapi.nets.faceLandmark68TinyNet.loadFromUri("https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model");
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: "user" }, audio: false });
     const video = el("camPreview");
-
     video.srcObject = stream;
-await video.play();
-  video.width = 180;
-video.height = 120;
-    // Overlay canvas
+    await video.play();
+    video.width = 180;
+    video.height = 120;
     const canvas = document.createElement("canvas");
-
     canvas.id = "faceOverlay";
     canvas.width = 180;
-canvas.height = 120;
-
+    canvas.height = 120;
     document.body.appendChild(canvas);
-
-    const displaySize = {
-      width: 180,
-      height: 120
-    };
-
+    const displaySize = { width: 180, height: 120 };
     faceapi.matchDimensions(canvas, displaySize);
-canvas.style.display = "block";
-video.onloadedmetadata = () => {
+    canvas.style.display = "block";
+    video.onloadedmetadata = () => {
       const ctx = canvas.getContext("2d");
-
       let noFaceCount = 0;
       let multiFaceCount = 0;
       let awayCount = 0;
- 
       async function detectFace() {
-
         if (submitted) return;
-
-        const detections =
-  await faceapi
-    .detectAllFaces(
-      video,
-      new faceapi.TinyFaceDetectorOptions({
-        inputSize: 224,
-        scoreThreshold: 0.5
-      })
-    )
-    .withFaceLandmarks(
-      true
-    );
+        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 })).withFaceLandmarks(true);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // TOP STATUS BAR
         ctx.fillStyle = "rgba(0,0,0,0.7)";
         ctx.fillRect(0, 0, 180, 24);
-
-        // NO FACE
         if (detections.length === 0) {
-
           noFaceCount++;
-
           ctx.fillStyle = "red";
           ctx.font = "bold 13px Arial";
           ctx.fillText("NO FACE DETECTED", 8, 16);
-
-          if (noFaceCount >= 40) {
-
-            alert("Face not detected.");
-
-            submit();
-
-            return;
-          }
-
-        }
-
-        // MULTIPLE FACE
-        else if (detections.length > 1) {
-
+          if (noFaceCount >= 40) { alert("Face not detected."); submit(); return; }
+        } else if (detections.length > 1) {
           multiFaceCount++;
-
           ctx.fillStyle = "yellow";
           ctx.font = "bold 13px Arial";
           ctx.fillText("MULTIPLE FACES", 8, 16);
-
-          if (multiFaceCount >= 20) {
-
-            alert("Multiple persons detected.");
-
-            submit();
-
-            return;
-          }
-
-        }
-
-        // SINGLE FACE
-        else {
-
+          if (multiFaceCount >= 20) { alert("Multiple persons detected."); submit(); return; }
+        } else {
           noFaceCount = 0;
           multiFaceCount = 0;
-
-          const resized =
-            faceapi.resizeResults(detections, displaySize);
-
+          const resized = faceapi.resizeResults(detections, displaySize);
           faceapi.draw.drawDetections(canvas, resized);
-
           const detection = resized[0];
-
           const box = detection.detection.box;
-
-          // FACE CENTER CHECK
           const centerX = box.x + box.width / 2;
           const centerY = box.y + box.height / 2;
-
-          const faceCentered =
-            centerX > 50 &&
-            centerX < 130 &&
-            centerY > 25 &&
-            centerY < 95;
-
-          // LANDMARKS
+          const faceCentered = centerX > 50 && centerX < 130 && centerY > 25 && centerY < 95;
           const landmarks = detection.landmarks;
-
           faceapi.draw.drawFaceLandmarks(canvas, resized);
-
-          // LEFT + RIGHT EYE
           const leftEye = landmarks.getLeftEye();
           const rightEye = landmarks.getRightEye();
-
-          // Approximate gaze
-          const eyeAvgX =
-            [...leftEye, ...rightEye]
-              .reduce((a, p) => a + p.x, 0) /
-            (leftEye.length + rightEye.length);
-
-          // FACE DIRECTION
+          const eyeAvgX = [...leftEye, ...rightEye].reduce((a, p) => a + p.x, 0) / (leftEye.length + rightEye.length);
           let direction = "CENTER";
-
-          if (eyeAvgX < centerX - 10) {
-            direction = "LEFT";
-          }
-          else if (eyeAvgX > centerX + 10) {
-            direction = "RIGHT";
-          }
-
-          // STATUS DISPLAY
+          if (eyeAvgX < centerX - 10) direction = "LEFT";
+          else if (eyeAvgX > centerX + 10) direction = "RIGHT";
           ctx.fillStyle = "#00ff00";
           ctx.font = "bold 12px Arial";
           ctx.fillText("FACE VERIFIED", 8, 16);
-
-          // DIRECTION BOX
           ctx.fillStyle = "rgba(0,0,0,0.7)";
           ctx.fillRect(0, 95, 180, 25);
-
           ctx.fillStyle = "#ffffff";
           ctx.font = "bold 12px Arial";
-          ctx.fillText(
-            "LOOKING: " + direction,
-            8,
-            112
-          );
-
-          // FACE MOVED AWAY
+          ctx.fillText("LOOKING: " + direction, 8, 112);
           if (!faceCentered) {
-
             awayCount++;
-
             ctx.strokeStyle = "red";
             ctx.lineWidth = 3;
-
-            ctx.strokeRect(
-              box.x,
-              box.y,
-              box.width,
-              box.height
-            );
-
-            if (awayCount >= 50) {
-
-              alert("Please face the screen.");
-
-              submit();
-
-              return;
-            }
-
-          } else {
-
-            awayCount = 0;
-
-          }
-
+            ctx.strokeRect(box.x, box.y, box.width, box.height);
+            if (awayCount >= 50) { alert("Please face the screen."); submit(); return; }
+          } else { awayCount = 0; }
         }
-
         requestAnimationFrame(detectFace);
-
       }
-
       detectFace();
-
-    });
-  } catch (err) {
-
-    console.error(err);
-
-    alert("Camera permission required.");
-
-  }
-
+    };
+  } catch (err) { console.error(err); alert("Camera permission required."); }
 }
+
 function startPing() {
-
   pingInterval = setInterval(async () => {
-
     if (submitted) return;
-
     try {
-
-      // const res = await fetch("http://localhost:3005/api/ping", {
-              await fetch("/api/ping", {
-
-        headers: getAuthHeaders()
-      });
-
+      const res = await fetch("/api/ping", { headers: getAuthHeaders() });
       if (res.status === 401) {
-
         clearInterval(timerInterval);
         clearInterval(pingInterval);
-
         el("kickedOverlay").classList.add("show");
-
       }
-
-    } catch (e) {
-
-      console.warn(e.message);
-
-    }
-
+    } catch (e) { console.warn(e.message); }
   }, 10000);
-
 }
 
 function init() {
-
   user = JSON.parse(sessionStorage.getItem("examUser"));
-
-  if (!user || !user.id || !user.token) {
-
-    alert("No valid session found");
-
-    goToLogin();
-
-    return;
-
-  }
-
+  if (!user || !user.id || !user.token) { alert("No valid session found"); goToLogin(); return; }
   const rankKey = normalizeRank(user.rank);
-
   const rankMap = {
     able_boiled_seamnan: "able_bodied_seaman",
     able_bodied_seaman: "able_bodied_seaman",
     able_seaman: "able_bodied_seaman",
     ab: "able_bodied_seaman",
     abs: "able_bodied_seaman",
-    ab_seaman: "able_bodied_seaman"
+    ab_seaman: "able_bodied_seaman",
+    electro_technical_officer: "electro_technical_officer",
+    eto: "electro_technical_officer",
+    e_t_o: "electro_technical_officer",
+    Tr_EO: "Tr_EO",
+    trainee_eto: "electro_technical_officer",
+    eto_trainee: "electro_technical_officer"
   };
-
   const finalRank = rankMap[rankKey] || rankKey;
-
   questions = questionBank[finalRank] || [];
-
-  if (!questions.length) {
-
-    el("qtxt").textContent =
-      `No questions found for rank: ${user.rank}`;
-
-    return;
-
-  }
-
+  if (!questions.length) { el("qtxt").textContent = `No questions found for rank: ${user.rank}`; return; }
   answers = new Array(questions.length).fill(null);
-
   renderQ();
-
   startTimer();
-
   startPing();
-
   startCamera();
-
-  // Fullscreen
-  if (document.documentElement.requestFullscreen) {
-    document.documentElement.requestFullscreen();
-  }
-
+  if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
 }
 
 function renderQ() {
-
   const q = questions[cur];
-
-  if (!q) {
-
-    el("qtxt").textContent = "Question not found";
-
-    return;
-
-  }
-
-  el("qtxt").textContent =
-    `Q${cur + 1} of ${questions.length}: ${q.q}`;
-
-  el("progressFill").style.width =
-    ((cur + 1) / questions.length * 100) + "%";
-
+  if (!q) { el("qtxt").textContent = "Question not found"; return; }
+  el("qtxt").textContent = `Q${cur + 1} of ${questions.length}: ${q.q}`;
+  el("progressFill").style.width = ((cur + 1) / questions.length * 100) + "%";
   const box = el("optsEl");
-
   box.innerHTML = "";
-
   (q.opts || []).forEach((opt, i) => {
-
     const div = document.createElement("div");
-
-    div.className =
-      "opt" + (answers[cur] === i ? " sel" : "");
-
+    div.className = "opt" + (answers[cur] === i ? " sel" : "");
     div.textContent = opt;
-
-    div.onclick = () => {
-
-      answers[cur] = i;
-
-      renderQ();
-
-    };
-
+    div.onclick = () => { answers[cur] = i; renderQ(); };
     box.appendChild(div);
-
   });
-
-  if (cur === questions.length - 1) {
-
-    el("submitBtn").style.display = "block";
-
-  } else {
-
-    el("submitBtn").style.display = "none";
-
-  }
-
+  el("submitBtn").style.display = cur === questions.length - 1 ? "block" : "none";
 }
 
 window.go = function(d) {
-
   const n = cur + d;
-
-  if (n >= 0 && n < questions.length) {
-
-    cur = n;
-
-    renderQ();
-
-  }
-
+  if (n >= 0 && n < questions.length) { cur = n; renderQ(); }
 };
 
 function startTimer() {
-
   updateTimerDisplay();
-
   timerInterval = setInterval(() => {
-
     totalTime--;
-
     updateTimerDisplay();
-
-    if (totalTime <= 60) {
-      el("timerBox").classList.add("warning");
-    }
-
-    if (totalTime <= 0) {
-
-      clearInterval(timerInterval);
-
-      submit();
-
-    }
-
+    if (totalTime <= 60) el("timerBox").classList.add("warning");
+    if (totalTime <= 0) { clearInterval(timerInterval); submit(); }
   }, 1000);
-
 }
 
 function updateTimerDisplay() {
-
-  const m =
-    String(Math.floor(totalTime / 60)).padStart(2, "0");
-
-  const s =
-    String(totalTime % 60).padStart(2, "0");
-
+  const m = String(Math.floor(totalTime / 60)).padStart(2, "0");
+  const s = String(totalTime % 60).padStart(2, "0");
   el("timeLeft").textContent = `${m}:${s}`;
-
 }
 
-window.confirmSubmit = function() {
-
-  if (confirm("Submit exam?")) {
-
-    submit();
-
-  }
-
-};
+window.confirmSubmit = function() { if (confirm("Submit exam?")) submit(); };
 
 async function submit() {
-
   if (submitted) return;
-
   submitted = true;
-
   clearInterval(timerInterval);
-
   clearInterval(pingInterval);
-
-  correct = 0;
-  wrong = 0;
-  skipped = 0;
-
+  correct = 0; wrong = 0; skipped = 0;
   questions.forEach((q, i) => {
-
-    if (answers[i] === null) {
-
-      skipped++;
-
-    } else if (answers[i] === q.ans) {
-
-      correct++;
-
-    } else {
-
-      wrong++;
-
-    }
-
+    if (answers[i] === null) skipped++;
+    else if (answers[i] === q.ans) correct++;
+    else wrong++;
   });
-
-  const score =
-    Math.round((correct / questions.length) * 100);
-
+  const score = Math.round((correct / questions.length) * 100);
   const name = user.name || "N/A";
-
   const rank = user.rank || "N/A";
-
   try {
-
-    // await fetch("http://localhost:3005/api/result", {
-          await fetch("/api/result", {
-
-
+    await fetch("/api/result", {
       method: "POST",
-
       headers: getAuthHeaders(),
-
-      body: JSON.stringify({
-
-        user_id: user.id,
-        user_name: name,
-        rank,
-        score,
-        correct,
-        wrong,
-        skipped
-
-      })
-
+      body: JSON.stringify({ user_id: user.id, user_name: name, rank, score, correct, wrong, skipped })
     });
-
-  } catch (err) {
-
-    console.error(err);
-
-  }
-
+  } catch (err) { console.error(err); }
   el("examScreen").style.display = "none";
-
   el("res").style.display = "block";
-
   el("rname").textContent = name;
-
   el("rrank").textContent = rank;
-
   el("rcorrect").textContent = correct;
-
   el("rwrong").textContent = wrong;
-
   el("rskipped").textContent = skipped;
-
   const circle = el("scoreCircle");
-
   circle.textContent = score + "%";
-
-  circle.style.background =
-    score >= 50 ? "#22c55e" : "#ef4444";
-
-  el("rmsg").textContent =
-    score >= 50
-      ? "🎉 Congratulations! You PASSED."
-      : "❌ You FAILED.";
-
+  circle.style.background = score >= 50 ? "#22c55e" : "#ef4444";
+  el("rmsg").textContent = score >= 50 ? "🎉 Congratulations! You PASSED." : "❌ You FAILED.";
   sessionStorage.removeItem("examUser");
-
 }
 
-// Prevent fullscreen exit
 document.addEventListener("fullscreenchange", () => {
-
-  if (!document.fullscreenElement && !submitted) {
-
-    alert("Fullscreen required.");
-
-    document.documentElement.requestFullscreen();
-
-  }
-
+  if (!document.fullscreenElement && !submitted) { alert("Fullscreen required."); document.documentElement.requestFullscreen(); }
 });
-
-// Disable right click
-document.addEventListener("contextmenu", e => {
-  e.preventDefault();
-});
-
-// Disable copy
-document.addEventListener("copy", e => {
-  e.preventDefault();
-});
-
-// Disable paste
-document.addEventListener("paste", e => {
-  e.preventDefault();
-});
-
-// Disable cut
-document.addEventListener("cut", e => {
-  e.preventDefault();
-});
-
-// Detect tab switching
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("copy", e => e.preventDefault());
+document.addEventListener("paste", e => e.preventDefault());
+document.addEventListener("cut", e => e.preventDefault());
 document.addEventListener("visibilitychange", () => {
-
   if (document.hidden && !submitted) {
-
     warningCount++;
-
     alert(`Warning ${warningCount}/3`);
-
-    if (warningCount >= 3) {
-
-      alert("Exam auto submitted.");
-
-      submit();
-
-    }
-
+    if (warningCount >= 3) { alert("Exam auto submitted."); submit(); }
   }
-
 });
-
-// Block shortcuts
 document.addEventListener("keydown", function(e) {
-
-  if (e.key === "F12") {
-    e.preventDefault();
-  }
-
-  if (e.ctrlKey && e.shiftKey && e.key === "I") {
-    e.preventDefault();
-  }
-
-  if (e.ctrlKey && e.key === "u") {
-    e.preventDefault();
-  }
-
-  if (e.ctrlKey && e.key === "c") {
-    e.preventDefault();
-  }
-
+  if (e.key === "F12") e.preventDefault();
+  if (e.ctrlKey && e.shiftKey && e.key === "I") e.preventDefault();
+  if (e.ctrlKey && e.key === "u") e.preventDefault();
+  if (e.ctrlKey && e.key === "c") e.preventDefault();
 });
 
 init();
 
 });
 </script>
-
 </body>
 </html>
