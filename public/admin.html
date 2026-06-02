@@ -1,785 +1,1032 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-<title>Admin Panel</title>
+<title>Admin Panel — Ozellar Marine</title>
 
 <!-- jsPDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <!-- AutoTable -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<!-- Tabler Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box;}
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+:root{
+  --navy:#0f2044;
+  --navy-mid:#1a3360;
+  --navy-light:#243d72;
+  --accent:#e65a28;
+  --accent-hover:#c94d20;
+  --surface:#f4f6fb;
+  --card:#ffffff;
+  --border:rgba(15,32,68,0.12);
+  --text-1:#0f2044;
+  --text-2:#4a5a7a;
+  --text-3:#8a96b0;
+  --pass:#1d9e75;
+  --fail:#e24b4a;
+  --pass-bg:#e1f5ee;
+  --pass-border:#5dcaa5;
+  --fail-bg:#fcebeb;
+  --fail-border:#f09595;
 }
 
 body{
-  font-family:Arial,sans-serif;
-  background:#f5f5f5;
-  padding:20px;
+  font-family:'DM Sans',sans-serif;
+  background:var(--surface);
+  min-height:100vh;
 }
 
-.container{
-  max-width:1200px;
-  margin:auto;
+/* ── SIDEBAR LAYOUT ── */
+.app-shell{
+  display:flex;
+  min-height:100vh;
 }
 
-.card{
-  background:#fff;
-  padding:20px;
-  border-radius:10px;
-  margin-bottom:20px;
-  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+.sidebar{
+  width:230px;
+  background:var(--navy);
+  display:flex;
+  flex-direction:column;
+  position:fixed;
+  top:0;left:0;
+  height:100vh;
+  z-index:100;
 }
 
-h1,h2{
-  margin-bottom:15px;
+.main-area{
+  margin-left:230px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
 }
 
-input,select,button{
-  width:100%;
-  padding:12px;
-  margin-bottom:10px;
-  border-radius:5px;
-  border:1px solid #ccc;
+/* ── SIDEBAR INTERNALS ── */
+.logo-area{
+  padding:22px 20px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
 }
-
-button{
-  background:#007bff;
-  color:#fff;
-  border:none;
-  cursor:pointer;
-}
-
-button:hover{
-  background:#0056b3;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
-}
-
-table th,
-table td{
-  border:1px solid #ddd;
-  padding:10px;
-  text-align:left;
+.logo-name{
+  font-family:'Syne',sans-serif;
   font-size:14px;
+  font-weight:700;
+  color:#fff;
+  line-height:1.3;
+}
+.logo-sub{
+  font-size:10px;
+  color:rgba(255,255,255,0.4);
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  margin-top:3px;
 }
 
-table th{
-  background:#007bff;
-  color:white;
+.admin-chip{
+  margin:14px 14px 8px;
+  background:rgba(255,255,255,0.07);
+  border-radius:9px;
+  padding:10px 12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
-
-.action-btn{
-  padding:8px 10px;
-  border:none;
-  border-radius:5px;
-  cursor:pointer;
-  color:white;
-  margin-right:5px;
+.admin-avatar{
+  width:34px;height:34px;
+  border-radius:50%;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;
+  flex-shrink:0;
+  font-family:'Syne',sans-serif;
 }
+.admin-name{font-size:12px;font-weight:600;color:#fff;}
+.admin-role{font-size:10px;color:rgba(255,255,255,0.4);}
 
-.delete-btn{
-  background:red;
+nav{padding:8px 10px;flex:1;}
+.nav-section{
+  font-size:9px;color:rgba(255,255,255,0.3);
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:14px 10px 5px;
 }
-
-.reset-btn{
-  background:orange;
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:8px;
+  cursor:pointer;font-size:13px;
+  color:rgba(255,255,255,0.58);
+  transition:background 0.15s,color 0.15s;
+  margin-bottom:2px;
 }
+.nav-item i{font-size:17px;}
+.nav-item.active{background:var(--accent);color:#fff;}
+.nav-item:not(.active):hover{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.9);}
 
-.download-btn{
-  background:green;
-}
-
+.sidebar-footer{padding:12px 14px;}
 .logout-btn{
-  background:#222;
+  width:100%;padding:9px 12px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:8px;color:rgba(255,255,255,0.55);
+  font-size:12px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:background 0.15s,color 0.15s;
+}
+.logout-btn:hover{background:rgba(255,255,255,0.12);color:#fff;}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:var(--card);
+  border-bottom:0.5px solid var(--border);
+  padding:0 28px;
+  height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+}
+.page-title{
+  font-family:'Syne',sans-serif;
+  font-size:16px;font-weight:700;
+  color:var(--text-1);
+}
+.topbar-right{
+  display:flex;align-items:center;gap:14px;
+}
+.portal-label{
+  font-size:11px;color:var(--text-3);
+  background:var(--surface);
+  padding:4px 10px;border-radius:20px;
+  border:0.5px solid var(--border);
 }
 
-.hidden{
-  display:none;
+/* ── CONTENT ── */
+.content{
+  padding:24px 28px;
+  display:flex;flex-direction:column;gap:22px;
 }
 
-@media(max-width:768px){
-
-  table{
-    font-size:12px;
-  }
-
+/* ── STAT CARDS ── */
+.stats-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+.stat-card{
+  background:var(--card);
+  border-radius:10px;
+  border:0.5px solid var(--border);
+  padding:16px 18px;
+}
+.stat-label{
+  font-size:10px;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:0.6px;
+  margin-bottom:8px;
+}
+.stat-val{
+  font-family:'Syne',sans-serif;
+  font-size:26px;font-weight:700;
+  color:var(--text-1);
+  line-height:1;
+}
+.stat-sub{font-size:11px;color:var(--text-3);margin-top:5px;}
+.stat-dot{
+  display:inline-block;width:7px;height:7px;
+  border-radius:50%;margin-right:4px;
+  vertical-align:middle;
 }
 
+/* ── PANELS ROW ── */
+.panels-row{
+  display:grid;
+  grid-template-columns:340px 1fr;
+  gap:18px;
+  align-items:start;
+}
+
+/* ── CARD PANEL ── */
+.panel{
+  background:var(--card);
+  border-radius:10px;
+  border:0.5px solid var(--border);
+  overflow:hidden;
+}
+.panel-header{
+  padding:14px 20px;
+  border-bottom:0.5px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.panel-title{
+  font-family:'Syne',sans-serif;
+  font-size:13px;font-weight:700;
+  color:var(--text-1);
+  display:flex;align-items:center;gap:7px;
+}
+.panel-title i{font-size:15px;color:var(--accent);}
+.panel-count{font-size:11px;color:var(--text-3);}
+
+/* ── CREATE USER FORM ── */
+.form-body{padding:18px 20px;}
+.form-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:10px;
+}
+.form-group{display:flex;flex-direction:column;gap:4px;}
+.form-label{
+  font-size:10px;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:0.6px;
+}
+.form-input,
+.form-select{
+  padding:9px 11px;
+  border:0.5px solid var(--border);
+  border-radius:7px;
+  font-size:12px;
+  color:var(--text-1);
+  background:var(--surface);
+  font-family:'DM Sans',sans-serif;
+  outline:none;
+  transition:border-color 0.15s;
+  width:100%;
+}
+.form-input:focus,
+.form-select:focus{border-color:var(--navy-light);}
+.form-input::placeholder{color:var(--text-3);}
+
+.btn-create{
+  margin-top:4px;
+  width:100%;padding:10px;
+  background:var(--navy);
+  border:none;border-radius:8px;
+  color:#fff;font-size:13px;font-weight:600;
+  cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:background 0.15s;
+}
+.btn-create:hover{background:var(--navy-mid);}
+.btn-create i{font-size:15px;}
+
+/* ── USERS TABLE ── */
+.users-table{width:100%;border-collapse:collapse;font-size:12px;}
+.users-table th{
+  background:var(--surface);
+  color:var(--text-3);
+  font-size:10px;text-transform:uppercase;letter-spacing:0.6px;
+  padding:9px 14px;text-align:left;font-weight:600;
+  border-bottom:0.5px solid var(--border);
+}
+.users-table td{
+  padding:10px 14px;
+  border-bottom:0.5px solid var(--border);
+  color:var(--text-1);vertical-align:middle;
+}
+.users-table tr:last-child td{border-bottom:none;}
+.users-table tr:hover td{background:#fafbff;}
+
+.user-cell{display:flex;align-items:center;gap:9px;}
+.u-avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--navy-light);
+  color:#fff;font-size:9px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-family:'Syne',sans-serif;
+}
+
+.btn-reset{
+  padding:4px 9px;border-radius:5px;
+  font-size:10px;font-weight:600;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  background:#fff3e0;color:#b45309;
+  border:0.5px solid #f0a950;
+  transition:opacity 0.15s;
+}
+.btn-del{
+  padding:4px 9px;border-radius:5px;
+  font-size:10px;font-weight:600;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  background:var(--fail-bg);color:#a32d2d;
+  border:0.5px solid var(--fail-border);
+  transition:opacity 0.15s;
+}
+.btn-reset:hover,.btn-del:hover{opacity:0.75;}
+
+/* ── RESULTS SECTION ── */
+.results-panel{
+  background:var(--card);
+  border-radius:10px;
+  border:0.5px solid var(--border);
+  overflow:hidden;
+}
+.results-toolbar{
+  padding:13px 20px;
+  border-bottom:0.5px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+  flex-wrap:wrap;
+}
+.search-wrap{flex:1;min-width:160px;position:relative;}
+.search-icon{
+  position:absolute;left:10px;top:50%;
+  transform:translateY(-50%);
+  font-size:15px;color:var(--text-3);pointer-events:none;
+}
+.search-input{
+  width:100%;
+  padding:8px 10px 8px 32px;
+  border:0.5px solid var(--border);
+  border-radius:7px;font-size:12px;
+  background:var(--surface);
+  font-family:'DM Sans',sans-serif;
+  color:var(--text-1);outline:none;
+  transition:border-color 0.15s;
+}
+.search-input:focus{border-color:var(--navy-light);}
+.search-input::placeholder{color:var(--text-3);}
+
+.filter-select{
+  padding:8px 10px;
+  border:0.5px solid var(--border);
+  border-radius:7px;font-size:12px;
+  background:var(--surface);
+  font-family:'DM Sans',sans-serif;
+  color:var(--text-1);outline:none;
+  min-width:120px;
+}
+
+.results-table{width:100%;border-collapse:collapse;font-size:12px;}
+.results-table th{
+  background:var(--navy);
+  color:rgba(255,255,255,0.75);
+  font-size:10px;text-transform:uppercase;letter-spacing:0.6px;
+  padding:10px 14px;text-align:left;font-weight:600;
+}
+.results-table td{
+  padding:11px 14px;
+  border-bottom:0.5px solid var(--border);
+  color:var(--text-1);vertical-align:middle;
+}
+.results-table tr:last-child td{border-bottom:none;}
+.results-table tr:hover td{background:#fafbff;}
+
+.score-wrap{display:flex;align-items:center;gap:8px;}
+.score-bar{
+  width:52px;height:5px;
+  background:var(--surface);
+  border-radius:99px;overflow:hidden;
+  border:0.5px solid var(--border);
+}
+.score-fill{height:100%;border-radius:99px;}
+
+.pass-badge{
+  background:var(--pass-bg);color:#0f6e56;
+  font-size:10px;font-weight:700;
+  padding:3px 9px;border-radius:20px;
+  border:0.5px solid var(--pass-border);
+}
+.fail-badge{
+  background:var(--fail-bg);color:#a32d2d;
+  font-size:10px;font-weight:700;
+  padding:3px 9px;border-radius:20px;
+  border:0.5px solid var(--fail-border);
+}
+
+.btn-pdf{
+  padding:5px 10px;
+  background:var(--accent);
+  border:none;border-radius:6px;
+  color:#fff;font-size:10px;font-weight:600;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+  display:inline-flex;align-items:center;gap:5px;
+  transition:background 0.15s;
+}
+.btn-pdf:hover{background:var(--accent-hover);}
+.btn-pdf i{font-size:12px;}
+
+.no-results{
+  padding:30px;text-align:center;
+  color:var(--text-3);font-size:13px;
+}
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .panels-row{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:640px){
+  .sidebar{width:0;overflow:hidden;}
+  .main-area{margin-left:0;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+}
 </style>
 </head>
-
 <body>
 
-<div class="container">
 
-  <!-- LOGIN -->
-  <div id="loginCard" class="card">
+<!-- ═══════════════════════════════════════
+     MAIN APP SHELL
+════════════════════════════════════════ -->
+<div class="app-shell" id="appShell">
 
-    <h1>Admin Login</h1>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo-area">
+      <div class="logo-name">Ozellar Marine<br>Pvt. Ltd.</div>
+      <div class="logo-sub">Admin Console</div>
+    </div>
 
-    <input type="text" id="adminName" placeholder="Admin Name">
+    <div class="admin-chip">
+      <div class="admin-avatar" id="sidebarAvatar">AD</div>
+      <div>
+        <div class="admin-name" id="sidebarName">Administrator</div>
+        <div class="admin-role">Super Admin</div>
+      </div>
+    </div>
 
-    <input type="password" id="adminPassword" placeholder="Password">
+    <nav>
+      <div class="nav-section">Main</div>
+<div class="nav-item active" onclick="scrollToSection('statsSection', this)">        <i class="ti ti-layout-dashboard"></i> Dashboard
+      </div>
+<div class="nav-item" onclick="scrollToSection('usersSection', this)">        <i class="ti ti-users"></i> Manage Users
+      </div>
+      <div class="nav-item" onclick="scrollToSection('resultsSection')">
+        <i class="ti ti-clipboard-list"></i> Results
+      </div>
+    </nav>
 
-    <button onclick="adminLogin()">Login</button>
-
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="logoutAdmin()">
+        <i class="ti ti-logout" style="font-size:15px;"></i> Logout
+      </button>
+    </div>
   </div>
 
-  <!-- ADMIN PANEL -->
-  <div id="adminPanel" class="hidden">
+  <!-- MAIN AREA -->
+  <div class="main-area">
 
-    <!-- CREATE USER -->
-    <div class="card">
-
-      <h2>Create User</h2>
-
-      <input type="text" id="name" placeholder="Name">
-
-      <input type="password" id="password" placeholder="Password">
-
-      <input type="text" id="rank" placeholder="Rank">
-
-      <input type="text" id="cdcNumber" placeholder="CDC Number">
-
-      <button onclick="createUser()">Create User</button>
-
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="page-title">Admin Panel</div>
+      <div class="topbar-right">
+        <span class="portal-label">Ozellar Competency Portal</span>
+      </div>
     </div>
 
-    <!-- USERS -->
-    <div class="card">
+    <!-- CONTENT -->
+    <div class="content">
 
-      <h2>Users</h2>
+      <!-- STAT CARDS -->
+      <div id="statsSection" class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Total Seafarers</div>
+          <div class="stat-val" id="statUsers">—</div>
+          <div class="stat-sub">registered users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Exams Taken</div>
+          <div class="stat-val" id="statExams">—</div>
+          <div class="stat-sub">results recorded</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pass Rate</div>
+          <div class="stat-val" id="statPass" style="color:var(--pass)">—</div>
+          <div class="stat-sub" id="statPassSub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Fail Rate</div>
+          <div class="stat-val" id="statFail" style="color:var(--fail)">—</div>
+          <div class="stat-sub" id="statFailSub"></div>
+        </div>
+      </div>
 
-      <table>
+      <!-- CREATE + USERS ROW -->
+      <div class="panels-row" id="usersSection">
 
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Rank</th>
-            <th>CDC</th>
-            <th>Action</th>
-          </tr>
-        </thead>
+        <!-- CREATE USER -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="ti ti-user-plus"></i> Create Seafarer
+            </div>
+          </div>
+          <div class="form-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" id="name" class="form-input" placeholder="e.g. Rahul Sharma"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="••••••••"/>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Rank</label>
+                <select id="rank" class="form-select">
+                  <option value="">Select rank…</option>
+                  
+                  <option>Master</option>
+<option>Chief officer</option>
+<option>Second officer</option>
+<option>Third officer</option>
+<option>Deck cadet</option>
+<option>Chief engineer</option>
+<option>Second engineer</option>
+<option>Third engineer</option>
+<option>Electrotechnicl officer</option>
+<option>Electrical Officer</option>
+<option>Tr.EO</option>
+<option>Electrical Cadet</option>
+<option>Engine cadet</option>
+<option>Bosun</option>
+<option>Able bodied seamen</option>
+<option>Ordinary sailor</option>
+<option>Fitter</option>
+<option>Oiler</option>
+<option>Chief cook</option>
+<option>Tr.Gs</option>
+<option>Tr.Wiper</option>
+<option>Tr.Fitter</option>
+<option>Tr.Os</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">CDC Number</label>
+                <input type="text" id="cdcNumber" class="form-input" placeholder="e.g. CDC-20241"/>
+              </div>
+            </div>
+            <button class="btn-create" onclick="createUser()">
+              <i class="ti ti-plus"></i> Create User
+            </button>
+          </div>
+        </div>
 
-        <tbody id="usersTable"></tbody>
+        <!-- USERS TABLE -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="ti ti-users"></i> Registered Users
+            </div>
+            <span class="panel-count" id="usersCount"></span>
+          </div>
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Rank</th>
+                <th>CDC</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTable"></tbody>
+          </table>
+        </div>
 
-      </table>
+      </div>
 
-    </div>
+      <!-- RESULTS -->
+      <div class="results-panel" id="resultsSection">
+        <div class="results-toolbar">
+          <div class="panel-title" style="white-space:nowrap;">
+            <i class="ti ti-clipboard-list" style="color:var(--accent);font-size:15px;"></i> Exam Results
+          </div>
+          <div class="search-wrap">
+            <i class="ti ti-search search-icon"></i>
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Search by name or CDC…"
+              oninput="filterResults()"
+            />
+          </div>
+          <select id="statusFilter" class="filter-select" onchange="filterResults()">
+            <option value="">All Status</option>
+            <option value="pass">Pass</option>
+            <option value="fail">Fail</option>
+          </select>
+        </div>
 
-    <!-- RESULTS -->
-    <div class="card">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Rank</th>
+              <th>CDC</th>
+              <th>Score</th>
+              <th>Correct</th>
+              <th>Wrong</th>
+              <th>Skipped</th>
+              <th>Status</th>
+              <th>PDF</th>
+              
+            </tr>
+          </thead>
+          <tbody id="resultsTable"></tbody>
+        </table>
+      </div>
 
-      <h2>Results</h2>
-
-      <table>
-
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Rank</th>
-            <th>CDC</th>
-            <th>Score</th>
-            <th>Correct</th>
-            <th>Wrong</th>
-            <th>Skipped</th>
-            <th>Status</th>
-            <th>PDF</th>
-          </tr>
-        </thead>
-
-        <tbody id="resultsTable"></tbody>
-
-      </table>
-
-    </div>
-
-    <button class="logout-btn" onclick="logoutAdmin()">
-      Logout
-    </button>
-
-  </div>
-
-</div>
+    </div><!-- /content -->
+  </div><!-- /main-area -->
+</div><!-- /app-shell -->
 
 <script>
 
-const API = "";
-// const API = "http://localhost:3005"
+// ─────────────────────────────────────────
+// CONFIG
+// ─────────────────────────────────────────
+// const API = "http://localhost:3005";
 
-let adminName = "";
+let adminName     = "";
 let adminPassword = "";
+let allResults    = [];   // cache for client-side filter
+
+window.onload = function(){
+  showPanel("Administrator");
+};
 
 
-// ─────────────────────────────
-// ADMIN LOGIN
-// ─────────────────────────────
 
-async function adminLogin(){
+function showPanel(name){
+  document.getElementById("loginOverlay").style.display = "none";
+  document.getElementById("appShell").style.display     = "flex";
 
-  adminName = document.getElementById('adminName').value;
+  // update sidebar avatar + name
+  const initials = name
+    ? name.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2)
+    : "AD";
+  document.getElementById("sidebarAvatar").textContent = initials;
+  document.getElementById("sidebarName").textContent   = name || "Administrator";
 
-  adminPassword = document.getElementById('adminPassword').value;
-
-  const res = await fetch(`${API}/api/admin/login`,{
-
-    method:'POST',
-
-    headers:{
-      'Content-Type':'application/json'
-    },
-
-    body:JSON.stringify({
-      name:adminName,
-      password:adminPassword
-    })
-
-  });
-
-  const data = await res.json();
-
-  if(data.success){
-
-    document.getElementById('loginCard').classList.add('hidden');
-
-    document.getElementById('adminPanel').classList.remove('hidden');
-
-    loadUsers();
-
-    loadResults();
-
-  }else{
-
-    alert(data.message);
-
-  }
-
+  loadUsers();
+  loadResults();
 }
 
 
-// ─────────────────────────────
-// CREATE USER
-// ─────────────────────────────
+// ─────────────────────────────────────────
+// LOGIN (fallback if no session)
+// ─────────────────────────────────────────
+document.addEventListener("keydown", function(e){
+  if(e.key === "Enter" &&
+     document.getElementById("loginOverlay").style.display !== "none"){
+    doLogin();
+  }
+});
 
+
+// ─────────────────────────────────────────
+// CREATE USER  — original workflow kept
+// ─────────────────────────────────────────
 async function createUser(){
+  const name      = document.getElementById("name").value.trim();
+  const password  = document.getElementById("password").value.trim();
+  const rank      = document.getElementById("rank").value;
+  const cdcNumber = document.getElementById("cdcNumber").value.trim();
 
-  const name = document.getElementById('name').value;
-
-  const password = document.getElementById('password').value;
-
-  const rank = document.getElementById('rank').value;
-
-  const cdcNumber = document.getElementById('cdcNumber').value;
+  if(!name || !password || !rank || !cdcNumber){
+    alert("Please fill in all fields.");
+    return;
+  }
 
   const res = await fetch(`${API}/api/users`,{
-
-    method:'POST',
-
-    headers:{
-      'Content-Type':'application/json'
-    },
-
-    body:JSON.stringify({
-      name,
-      password,
-      rank,
-      cdcNumber
-    })
-
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({name, password, rank, cdcNumber})
   });
-
   const data = await res.json();
 
   if(data.success){
-
-    alert("User created");
-
+    alert("User created successfully.");
+    document.getElementById("name").value      = "";
+    document.getElementById("password").value  = "";
+    document.getElementById("rank").value      = "";
+    document.getElementById("cdcNumber").value = "";
     loadUsers();
-
-    document.getElementById('name').value = "";
-
-    document.getElementById('password').value = "";
-
-    document.getElementById('rank').value = "";
-
-    document.getElementById('cdcNumber').value = "";
-
   }else{
-
     alert(data.message);
-
   }
-
 }
 
 
-// ─────────────────────────────
-// LOAD USERS
-// ─────────────────────────────
-
+// ─────────────────────────────────────────
+// LOAD USERS  — original workflow kept
+// ─────────────────────────────────────────
 async function loadUsers(){
-
-  const res = await fetch(`${API}/api/users`);
-
+  const res  = await fetch(`${API}/api/users`);
   const data = await res.json();
+  const users = data.users || [];
+
+  document.getElementById("usersCount").textContent =
+    users.length + " user" + (users.length !== 1 ? "s" : "");
+
+  // update stat card
+  document.getElementById("statUsers").textContent = users.length;
 
   let html = "";
-
-  data.users.forEach(user => {
-
+  users.forEach(user => {
+    const initials = user.name
+      ? user.name.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2)
+      : "??";
     html += `
       <tr>
-
-        <td>${user.id}</td>
-
-        <td>${user.name}</td>
-
-        <td>${user.rank || '-'}</td>
-
-        <td>${user.cdcnumber || '-'}</td>
-
         <td>
-
-          <button
-            class="action-btn reset-btn"
-            onclick="resetPassword(${user.id})">
-
-            Reset Password
-
-          </button>
-
-          <button
-            class="action-btn delete-btn"
-            onclick="deleteUser(${user.id})">
-
-            Delete
-
-          </button>
-
+          <div class="user-cell">
+            <div class="u-avatar">${initials}</div>
+            ${user.name}
+          </div>
         </td>
-
+        <td>${user.rank || "—"}</td>
+        <td>${user.cdcnumber || "—"}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn-reset" onclick="resetPassword(${user.id})">
+            <i class="ti ti-refresh" style="font-size:11px;vertical-align:-1px;"></i> Reset
+          </button>
+          &nbsp;
+          <button class="btn-del" onclick="deleteUser(${user.id})">
+            <i class="ti ti-trash" style="font-size:11px;vertical-align:-1px;"></i> Delete
+          </button>
+        </td>
       </tr>
     `;
-
   });
 
-  document.getElementById('usersTable').innerHTML = html;
-
+  document.getElementById("usersTable").innerHTML =
+    html || `<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--text-3);">No users found.</td></tr>`;
 }
 
 
-// ─────────────────────────────
-// DELETE USER
-// ─────────────────────────────
-
+// ─────────────────────────────────────────
+// DELETE USER  — original workflow kept
+// ─────────────────────────────────────────
 async function deleteUser(id){
-
   if(!confirm("Delete this user?")) return;
-
-  const res = await fetch(`${API}/api/users/${id}`,{
-    method:'DELETE'
-  });
-
+  const res  = await fetch(`${API}/api/users/${id}`,{method:"DELETE"});
   const data = await res.json();
-
   if(data.success){
-
-    alert("User deleted");
-
+    alert("User deleted.");
     loadUsers();
-
   }
-
 }
 
 
-// ─────────────────────────────
-// RESET PASSWORD
-// ─────────────────────────────
-
+// ─────────────────────────────────────────
+// RESET PASSWORD  — original workflow kept
+// ─────────────────────────────────────────
 async function resetPassword(id){
-
-  const newPassword = prompt("Enter new password");
-
+  const newPassword = prompt("Enter new password for this user:");
   if(!newPassword) return;
 
   const res = await fetch(`${API}/api/users/${id}/password`,{
-
-    method:'PATCH',
-
+    method:"PATCH",
     headers:{
-      'Content-Type':'application/json',
-      'x-admin-name':adminName,
-      'x-admin-password':adminPassword
+      "Content-Type":"application/json",
+      "x-admin-name":adminName,
+      "x-admin-password":adminPassword
     },
-
-    body:JSON.stringify({
-      newPassword
-    })
-
+    body:JSON.stringify({newPassword})
   });
-
   const data = await res.json();
-
   alert(data.message);
-
 }
 
 
-// ─────────────────────────────
-// LOAD RESULTS
-// ─────────────────────────────
-
+// ─────────────────────────────────────────
+// LOAD RESULTS  — original workflow kept
+// ─────────────────────────────────────────
 async function loadResults(){
-
-  const res = await fetch(`${API}/api/results`);
-
+  const res  = await fetch(`${API}/api/results`);
   const data = await res.json();
+  allResults = data.results || [];
+
+  // update stat cards
+  const total   = allResults.length;
+  const passed  = allResults.filter(r => r.passed).length;
+  const failed  = total - passed;
+  const passRate = total ? Math.round((passed/total)*100) : 0;
+  const failRate = total ? 100 - passRate : 0;
+
+  document.getElementById("statExams").textContent   = total;
+  document.getElementById("statPass").textContent    = passRate + "%";
+  document.getElementById("statFail").textContent    = failRate + "%";
+  document.getElementById("statPassSub").innerHTML   =
+    `<span class="stat-dot" style="background:var(--pass);"></span>${passed} passed`;
+  document.getElementById("statFailSub").innerHTML   =
+    `<span class="stat-dot" style="background:var(--fail);"></span>${failed} failed`;
+
+  renderResults(allResults);
+}
+
+
+// ─────────────────────────────────────────
+// FILTER RESULTS  — new client-side filter
+// ─────────────────────────────────────────
+function filterResults(){
+  const q      = document.getElementById("searchInput").value.trim().toLowerCase();
+  const status = document.getElementById("statusFilter").value;
+
+  let filtered = allResults;
+
+  if(q){
+    filtered = filtered.filter(r =>
+      (r.user_name  || "").toLowerCase().includes(q) ||
+      (r.cdcnumber  || "").toLowerCase().includes(q)
+    );
+  }
+
+  if(status === "pass") filtered = filtered.filter(r =>  r.passed);
+  if(status === "fail") filtered = filtered.filter(r => !r.passed);
+
+  renderResults(filtered);
+}
+
+
+// ─────────────────────────────────────────
+// RENDER RESULTS TABLE
+// ─────────────────────────────────────────
+function renderResults(results){
+  if(!results.length){
+    document.getElementById("resultsTable").innerHTML =
+      `<tr><td colspan="9" class="no-results">No results found.</td></tr>`;
+    return;
+  }
 
   let html = "";
-
-  data.results.forEach(result => {
+  results.forEach(result => {
+    const score     = parseFloat(result.score) || 0;
+    const barColor  = result.passed ? "var(--pass)" : "var(--fail)";
+    const badge     = result.passed
+      ? `<span class="pass-badge">PASS</span>`
+      : `<span class="fail-badge">FAIL</span>`;
 
     html += `
       <tr>
-
-        <td>${result.id}</td>
-
-        <td>${result.user_name}</td>
-
-        <td>${result.rank || '-'}</td>
-
-        <td>${result.cdcnumber || '-'}</td>
-
-        <td>${result.score}%</td>
-
+        <td>${result.user_name || "—"}</td>
+        <td>${result.rank      || "—"}</td>
+        <td>${result.cdcnumber || "—"}</td>
+        <td>
+          <div class="score-wrap">
+            <div class="score-bar">
+              <div class="score-fill" style="width:${score}%;background:${barColor};"></div>
+            </div>
+            <span>${score}%</span>
+          </div>
+        </td>
         <td>${result.correct}</td>
-
         <td>${result.wrong}</td>
-
         <td>${result.skipped}</td>
-
+        <td>${badge}</td>
         <td>
-
-          ${
-            result.passed
-            ? '<span style="color:green;font-weight:bold">PASS</span>'
-            : '<span style="color:red;font-weight:bold">FAIL</span>'
-          }
-
-        </td>
-
-        <td>
-
-          <button
-            class="action-btn download-btn"
-            onclick="downloadPDF(${result.id})">
-
-            Download PDF
-
+          <button class="btn-pdf" onclick="downloadPDF(${result.id})">
+            <i class="ti ti-download"></i> PDF
           </button>
-
         </td>
-
       </tr>
     `;
-
   });
 
-  document.getElementById('resultsTable').innerHTML = html;
-
+  document.getElementById("resultsTable").innerHTML = html;
 }
 
 
-// ─────────────────────────────
-// DOWNLOAD PDF
-// ─────────────────────────────
-
+// ─────────────────────────────────────────
+// DOWNLOAD PDF  — original workflow kept
+// ─────────────────────────────────────────
 async function downloadPDF(id){
-
-  const res = await fetch(`${API}/api/results`);
-
+  const res  = await fetch(`${API}/api/results`);
   const data = await res.json();
+  const result = (data.results || []).find(r => r.id === id);
 
-  const result = data.results.find(r => r.id === id);
-
-  if(!result){
-
-    alert("Result not found");
-
-    return;
-
-  }
+  if(!result){ alert("Result not found."); return; }
 
   const { jsPDF } = window.jspdf;
-
   const doc = new jsPDF();
 
-  // ─────────────────────────
-  // LOAD LOGO
-  // ─────────────────────────
-
+  // LOGO
   const logo = "2025-07-24-removebg-preview.png";
-
   try{
-
     const img = await loadImage(logo);
-
-    doc.addImage(img,'PNG',14,10,55,20);
-
+    doc.addImage(img,"PNG",14,10,55,20);
   }catch(err){
-
     console.log("Logo not loaded");
-
   }
 
-  // ─────────────────────────
   // COMPANY NAME
-  // ─────────────────────────
-
   doc.setFont("helvetica","bold");
-
   doc.setFontSize(18);
-
   doc.setTextColor(230,90,40);
-
-  doc.text(
-    "Ozellar Marine Pvt. Ltd.",
-    105,
-    18,
-    { align:"center" }
-  );
+  doc.text("Ozellar Marine Pvt. Ltd.",105,18,{align:"center"});
 
   doc.setFont("helvetica","normal");
-
   doc.setFontSize(9);
-
   doc.setTextColor(80);
-
   doc.text(
     "4th Floor, Developed Plots Estate, Anejas Towers, B-Block, Plot No. 4 & 5,",
-    105,
-    25,
-    { align:"center" }
+    105,25,{align:"center"}
   );
+  doc.text("Perungudi, Chennai, Tamil Nadu 600096",105,30,{align:"center"});
 
-  doc.text(
-    "Perungudi, Chennai, Tamil Nadu 600096",
-    105,
-    30,
-    { align:"center" }
-  );
-
-  // ─────────────────────────
-  // TITLE
-  // ─────────────────────────
-
+  // DIVIDER
   doc.setDrawColor(230,90,40);
-
   doc.setLineWidth(0.7);
-
   doc.line(14,38,196,38);
 
+  // TITLE
   doc.setFont("helvetica","bold");
-
   doc.setFontSize(20);
-
   doc.setTextColor(0);
+  doc.text("COMPETENCY REPORT",105,50,{align:"center"});
 
-  doc.text(
-    "COMPETENCY REPORT",
-    105,
-    50,
-    { align:"center" }
-  );
-
-  // ─────────────────────────
   // TABLE
-  // ─────────────────────────
-
   doc.autoTable({
-
     startY:62,
-
-    head:[
-      ['Field','Details']
-    ],
-
+    head:[["Field","Details"]],
     body:[
-
-      ['Candidate Name', result.user_name || '-'],
-
-      ['Rank', result.rank || '-'],
-
-      ['CDC Number', result.cdcnumber || '-'],
-
-      ['Score', result.score + '%'],
-
-      ['Correct Answers', String(result.correct)],
-
-      ['Wrong Answers', String(result.wrong)],
-
-      ['Skipped Questions', String(result.skipped)],
-
-      ['Status', result.passed ? 'PASS' : 'FAIL']
-
+      ["Candidate Name", result.user_name || "—"],
+      ["Rank",           result.rank      || "—"],
+      ["CDC Number",     result.cdcnumber || "—"],
+      ["Score",          result.score + "%"],
+      ["Correct Answers",String(result.correct)],
+      ["Wrong Answers",  String(result.wrong)],
+      ["Skipped Questions",String(result.skipped)],
+      ["Status",         result.passed ? "PASS" : "FAIL"]
     ],
-
-    theme:'grid',
-
-    styles:{
-      fontSize:11,
-      cellPadding:4
-    },
-
-    headStyles:{
-      fillColor:[230,90,40],
-      textColor:255,
-      fontStyle:'bold'
-    },
-
-    alternateRowStyles:{
-      fillColor:[245,245,245]
-    },
-
-    columnStyles:{
-      0:{
-        fontStyle:'bold',
-        cellWidth:60
-      }
-    }
-
+    theme:"grid",
+    styles:{fontSize:11,cellPadding:4},
+    headStyles:{fillColor:[230,90,40],textColor:255,fontStyle:"bold"},
+    alternateRowStyles:{fillColor:[245,245,245]},
+    columnStyles:{0:{fontStyle:"bold",cellWidth:60}}
   });
 
-  // ─────────────────────────
   // STATUS
-  // ─────────────────────────
-
   let finalY = doc.lastAutoTable.finalY + 15;
-
   doc.setFontSize(16);
-
   doc.setFont("helvetica","bold");
-
   if(result.passed){
-
     doc.setTextColor(0,150,0);
-
-    doc.text(
-      "STATUS : PASS",
-      14,
-      finalY
-    );
-
+    doc.text("STATUS : PASS",14,finalY);
   }else{
-
     doc.setTextColor(220,0,0);
-
-    doc.text(
-      "STATUS : FAIL",
-      14,
-      finalY
-    );
-
+    doc.text("STATUS : FAIL",14,finalY);
   }
 
-  // ─────────────────────────
   // FOOTER
-  // ─────────────────────────
-
   doc.setFontSize(9);
-
   doc.setTextColor(120);
+  doc.text("Generated on : " + new Date().toLocaleString(),14,285);
+  doc.text("Ozellar Marine Pvt. Ltd.",196,285,{align:"right"});
 
-  doc.text(
-    "Generated on : " + new Date().toLocaleString(),
-    14,
-    285
-  );
-
-  doc.text(
-    "Ozellar Marine Pvt. Ltd.",
-    196,
-    285,
-    { align:"right" }
-  );
-
-  // ─────────────────────────
-  // SAVE PDF
-  // ─────────────────────────
-
-  doc.save(
-    `Ozellar_Result_${result.user_name}.pdf`
-  );
-
+  doc.save(`Ozellar_Result_${result.user_name}.pdf`);
 }
 
 
-// ─────────────────────────────
-// IMAGE LOADER
-// ─────────────────────────────
-
+// ─────────────────────────────────────────
+// IMAGE LOADER  — original helper kept
+// ─────────────────────────────────────────
 function loadImage(src){
-
   return new Promise((resolve,reject)=>{
-
     const img = new Image();
-
     img.crossOrigin = "Anonymous";
-
     img.onload = function(){
-
       const canvas = document.createElement("canvas");
-
-      canvas.width = img.width;
-
+      canvas.width  = img.width;
       canvas.height = img.height;
-
-      const ctx = canvas.getContext("2d");
-
-      ctx.drawImage(img,0,0);
-
-      resolve(
-        canvas.toDataURL("image/png")
-      );
-
+      canvas.getContext("2d").drawImage(img,0,0);
+      resolve(canvas.toDataURL("image/png"));
     };
-
     img.onerror = reject;
-
     img.src = src;
-
   });
-
 }
 
 
-// ─────────────────────────────
-// LOGOUT
-// ─────────────────────────────
-
+// ─────────────────────────────────────────
+// LOGOUT  — original workflow kept
+// ─────────────────────────────────────────
 function logoutAdmin(){
-
+  sessionStorage.removeItem("adminUser");
   location.reload();
+}
 
+
+// ─────────────────────────────────────────
+// SCROLL HELPER  — sidebar nav links
+// ─────────────────────────────────────────
+function scrollToSection(id){
+  const el = document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:"smooth",block:"start"});
+
+  // update active nav item
+  document.querySelectorAll(".nav-item").forEach(item=>{
+    item.classList.remove("active");
+  });
+  event.currentTarget.classList.add("active");
 }
 
 </script>
-
 </body>
 </html>

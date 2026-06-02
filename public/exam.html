@@ -3,1080 +3,1030 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Exam Portal</title>
+<title>Admin Panel — Ozellar Marine</title>
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- AutoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<!-- Tabler Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+
 <style>
-  * { box-sizing: border-box; }
-  body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; margin: 0; user-select: none; }
-  #examScreen, #res { background: #fff; padding: 30px; border-radius: 10px; max-width: 620px; margin: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-  #qtxt { font-size: 18px; margin-bottom: 20px; line-height: 1.5; }
-  .opt { padding: 12px 16px; margin: 8px 0; border: 2px solid #ddd; cursor: pointer; border-radius: 8px; transition: all 0.15s; font-size: 15px; }
-  .opt:hover { border-color: #3b82f6; background: #eff6ff; }
-  .opt.sel { background: #3b82f6; color: #fff; border-color: #3b82f6; }
-  .nav-btns { margin-top: 20px; display: flex; gap: 10px; }
-  .nav-btns button, #submitBtn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; }
-  .nav-btns button { background: #e5e7eb; color: #010c5d; }
-  .nav-btns button:hover { background: #d1d5db; }
-  #submitBtn { display: none; margin-top: 20px; background: #ef4444; color: white; width: 100%; padding: 12px; font-size: 16px; }
-  #submitBtn:hover { background: #dc2626; }
-  #timerBox { text-align: right; font-size: 18px; font-weight: bold; color: #ef4444; margin-bottom: 10px; }
-  #timerBox.warning { color: #f97316; animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
-  #progressBar { height: 6px; background: #e5e7eb; border-radius: 3px; margin-bottom: 20px; }
-  #progressFill { height: 100%; background: #3b82f6; border-radius: 3px; transition: width 0.3s; }
-  #res h2 { color: #1e3a5f; }
-  .stat-row { display: flex; gap: 15px; margin-top: 15px; }
-  .stat-box { flex: 1; padding: 15px; border-radius: 8px; text-align: center; font-weight: bold; }
-  .correct { background: #dcfce7; color: #166534; }
-  .wrong { background: #fee2e2; color: #991b1b; }
-  .skipped { background: #fef9c3; color: #854d0e; }
-  #scoreCircle { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; color: white; margin: 20px auto; }
-  #kickedOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 9999; justify-content: center; align-items: center; }
-  #kickedOverlay.show { display: flex; }
-  #kickedBox { background: white; padding: 40px; border-radius: 12px; text-align: center; max-width: 380px; }
-  #camPreview { position: fixed; bottom: 10px; right: 10px; width: 180px; height: 120px; border: 2px solid #3b82f6; border-radius: 10px; background: black; z-index: 999; }
-  #faceOverlay { position: fixed; bottom: 10px; right: 10px; width: 180px; height: 120px; z-index: 1000; pointer-events: none; }
+*{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --navy:#0f2044;
+  --navy-mid:#1a3360;
+  --navy-light:#243d72;
+  --accent:#e65a28;
+  --accent-hover:#c94d20;
+  --surface:#f4f6fb;
+  --card:#ffffff;
+  --border:rgba(15,32,68,0.12);
+  --text-1:#0f2044;
+  --text-2:#4a5a7a;
+  --text-3:#8a96b0;
+  --pass:#1d9e75;
+  --fail:#e24b4a;
+  --pass-bg:#e1f5ee;
+  --pass-border:#5dcaa5;
+  --fail-bg:#fcebeb;
+  --fail-border:#f09595;
+}
+
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--surface);
+  min-height:100vh;
+}
+
+/* ── SIDEBAR LAYOUT ── */
+.app-shell{
+  display:flex;
+  min-height:100vh;
+}
+
+.sidebar{
+  width:230px;
+  background:var(--navy);
+  display:flex;
+  flex-direction:column;
+  position:fixed;
+  top:0;left:0;
+  height:100vh;
+  z-index:100;
+}
+
+.main-area{
+  margin-left:230px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+
+/* ── SIDEBAR INTERNALS ── */
+.logo-area{
+  padding:22px 20px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.logo-name{
+  font-family:'Syne',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  color:#fff;
+  line-height:1.3;
+}
+.logo-sub{
+  font-size:10px;
+  color:rgba(255,255,255,0.4);
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  margin-top:3px;
+}
+
+.admin-chip{
+  margin:14px 14px 8px;
+  background:rgba(255,255,255,0.07);
+  border-radius:9px;
+  padding:10px 12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.admin-avatar{
+  width:34px;height:34px;
+  border-radius:50%;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;
+  flex-shrink:0;
+  font-family:'Syne',sans-serif;
+}
+.admin-name{font-size:12px;font-weight:600;color:#fff;}
+.admin-role{font-size:10px;color:rgba(255,255,255,0.4);}
+
+nav{padding:8px 10px;flex:1;}
+.nav-section{
+  font-size:9px;color:rgba(255,255,255,0.3);
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:14px 10px 5px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:8px;
+  cursor:pointer;font-size:13px;
+  color:rgba(255,255,255,0.58);
+  transition:background 0.15s,color 0.15s;
+  margin-bottom:2px;
+}
+.nav-item i{font-size:17px;}
+.nav-item.active{background:var(--accent);color:#fff;}
+.nav-item:not(.active):hover{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.9);}
+
+.sidebar-footer{padding:12px 14px;}
+.logout-btn{
+  width:100%;padding:9px 12px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:8px;color:rgba(255,255,255,0.55);
+  font-size:12px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:background 0.15s,color 0.15s;
+}
+.logout-btn:hover{background:rgba(255,255,255,0.12);color:#fff;}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:var(--card);
+  border-bottom:0.5px solid var(--border);
+  padding:0 28px;
+  height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+}
+.page-title{
+  font-family:'Syne',sans-serif;
+  font-size:16px;font-weight:700;
+  color:var(--text-1);
+}
+.topbar-right{
+  display:flex;align-items:center;gap:14px;
+}
+.portal-label{
+  font-size:11px;color:var(--text-3);
+  background:var(--surface);
+  padding:4px 10px;border-radius:20px;
+  border:0.5px solid var(--border);
+}
+
+/* ── CONTENT ── */
+.content{
+  padding:24px 28px;
+  display:flex;flex-direction:column;gap:22px;
+}
+
+/* ── STAT CARDS ── */
+.stats-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+.stat-card{
+  background:var(--card);
+  border-radius:10px;
+  border:0.5px solid var(--border);
+  padding:16px 18px;
+}
+.stat-label{
+  font-size:10px;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:0.6px;
+  margin-bottom:8px;
+}
+.stat-val{
+  font-family:'Syne',sans-serif;
+  font-size:26px;font-weight:700;
+  color:var(--text-1);
+  line-height:1;
+}
+.stat-sub{font-size:11px;color:var(--text-3);margin-top:5px;}
+.stat-dot{
+  display:inline-block;width:7px;height:7px;
+  border-radius:50%;margin-right:4px;
+  vertical-align:middle;
+}
+
+/* ── PANELS ROW ── */
+.panels-row{
+  display:grid;
+  grid-template-columns:340px 1fr;
+  gap:18px;
+  align-items:start;
+}
+
+/* ── CARD PANEL ── */
+.panel{
+  background:var(--card);
+  border-radius:10px;
+  border:0.5px solid var(--border);
+  overflow:hidden;
+}
+.panel-header{
+  padding:14px 20px;
+  border-bottom:0.5px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.panel-title{
+  font-family:'Syne',sans-serif;
+  font-size:13px;font-weight:700;
+  color:var(--text-1);
+  display:flex;align-items:center;gap:7px;
+}
+.panel-title i{font-size:15px;color:var(--accent);}
+.panel-count{font-size:11px;color:var(--text-3);}
+
+/* ── CREATE USER FORM ── */
+.form-body{padding:18px 20px;}
+.form-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:10px;
+}
+.form-group{display:flex;flex-direction:column;gap:4px;}
+.form-label{
+  font-size:10px;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:0.6px;
+}
+.form-input,
+.form-select{
+  padding:9px 11px;
+  border:0.5px solid var(--border);
+  border-radius:7px;
+  font-size:12px;
+  color:var(--text-1);
+  background:var(--surface);
+  font-family:'DM Sans',sans-serif;
+  outline:none;
+  transition:border-color 0.15s;
+  width:100%;
+}
+.form-input:focus,
+.form-select:focus{border-color:var(--navy-light);}
+.form-input::placeholder{color:var(--text-3);}
+
+.btn-create{
+  margin-top:4px;
+  width:100%;padding:10px;
+  background:var(--navy);
+  border:none;border-radius:8px;
+  color:#fff;font-size:13px;font-weight:600;
+  cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:background 0.15s;
+}
+.btn-create:hover{background:var(--navy-mid);}
+.btn-create i{font-size:15px;}
+
+/* ── USERS TABLE ── */
+.users-table{width:100%;border-collapse:collapse;font-size:12px;}
+.users-table th{
+  background:var(--surface);
+  color:var(--text-3);
+  font-size:10px;text-transform:uppercase;letter-spacing:0.6px;
+  padding:9px 14px;text-align:left;font-weight:600;
+  border-bottom:0.5px solid var(--border);
+}
+.users-table td{
+  padding:10px 14px;
+  border-bottom:0.5px solid var(--border);
+  color:var(--text-1);vertical-align:middle;
+}
+.users-table tr:last-child td{border-bottom:none;}
+.users-table tr:hover td{background:#fafbff;}
+
+.user-cell{display:flex;align-items:center;gap:9px;}
+.u-avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--navy-light);
+  color:#fff;font-size:9px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-family:'Syne',sans-serif;
+}
+
+.btn-reset{
+  padding:4px 9px;border-radius:5px;
+  font-size:10px;font-weight:600;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  background:#fff3e0;color:#b45309;
+  border:0.5px solid #f0a950;
+  transition:opacity 0.15s;
+}
+.btn-del{
+  padding:4px 9px;border-radius:5px;
+  font-size:10px;font-weight:600;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  background:var(--fail-bg);color:#a32d2d;
+  border:0.5px solid var(--fail-border);
+  transition:opacity 0.15s;
+}
+.btn-reset:hover,.btn-del:hover{opacity:0.75;}
+
+/* ── RESULTS SECTION ── */
+.results-panel{
+  background:var(--card);
+  border-radius:10px;
+  border:0.5px solid var(--border);
+  overflow:hidden;
+}
+.results-toolbar{
+  padding:13px 20px;
+  border-bottom:0.5px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+  flex-wrap:wrap;
+}
+.search-wrap{flex:1;min-width:160px;position:relative;}
+.search-icon{
+  position:absolute;left:10px;top:50%;
+  transform:translateY(-50%);
+  font-size:15px;color:var(--text-3);pointer-events:none;
+}
+.search-input{
+  width:100%;
+  padding:8px 10px 8px 32px;
+  border:0.5px solid var(--border);
+  border-radius:7px;font-size:12px;
+  background:var(--surface);
+  font-family:'DM Sans',sans-serif;
+  color:var(--text-1);outline:none;
+  transition:border-color 0.15s;
+}
+.search-input:focus{border-color:var(--navy-light);}
+.search-input::placeholder{color:var(--text-3);}
+
+.filter-select{
+  padding:8px 10px;
+  border:0.5px solid var(--border);
+  border-radius:7px;font-size:12px;
+  background:var(--surface);
+  font-family:'DM Sans',sans-serif;
+  color:var(--text-1);outline:none;
+  min-width:120px;
+}
+
+.results-table{width:100%;border-collapse:collapse;font-size:12px;}
+.results-table th{
+  background:var(--navy);
+  color:rgba(255,255,255,0.75);
+  font-size:10px;text-transform:uppercase;letter-spacing:0.6px;
+  padding:10px 14px;text-align:left;font-weight:600;
+}
+.results-table td{
+  padding:11px 14px;
+  border-bottom:0.5px solid var(--border);
+  color:var(--text-1);vertical-align:middle;
+}
+.results-table tr:last-child td{border-bottom:none;}
+.results-table tr:hover td{background:#fafbff;}
+
+.score-wrap{display:flex;align-items:center;gap:8px;}
+.score-bar{
+  width:52px;height:5px;
+  background:var(--surface);
+  border-radius:99px;overflow:hidden;
+  border:0.5px solid var(--border);
+}
+.score-fill{height:100%;border-radius:99px;}
+
+.pass-badge{
+  background:var(--pass-bg);color:#0f6e56;
+  font-size:10px;font-weight:700;
+  padding:3px 9px;border-radius:20px;
+  border:0.5px solid var(--pass-border);
+}
+.fail-badge{
+  background:var(--fail-bg);color:#a32d2d;
+  font-size:10px;font-weight:700;
+  padding:3px 9px;border-radius:20px;
+  border:0.5px solid var(--fail-border);
+}
+
+.btn-pdf{
+  padding:5px 10px;
+  background:var(--accent);
+  border:none;border-radius:6px;
+  color:#fff;font-size:10px;font-weight:600;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+  display:inline-flex;align-items:center;gap:5px;
+  transition:background 0.15s;
+}
+.btn-pdf:hover{background:var(--accent-hover);}
+.btn-pdf i{font-size:12px;}
+
+.no-results{
+  padding:30px;text-align:center;
+  color:var(--text-3);font-size:13px;
+}
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .panels-row{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:640px){
+  .sidebar{width:0;overflow:hidden;}
+  .main-area{margin-left:0;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+}
 </style>
-<script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 </head>
 <body>
 
-<div id="kickedOverlay">
-  <div id="kickedBox">
-    <h3>⚠️ Session Expired</h3>
-    <p>Your account was logged in from another device.</p>
-    <button onclick="goToLogin()">Back to Login</button>
-  </div>
-</div>
 
-<div id="res" style="display:none;">
-  <h2>Exam Submitted Successfully</h2>
-  <p><strong>Company:</strong> Ozellar Marine</p>
-  <p><strong>Name:</strong> <span id="rname"></span></p>
-  <p><strong>Rank:</strong> <span id="rrank"></span></p>
-  <div id="scoreCircle">0%</div>
-  <div class="stat-row">
-    <div class="stat-box correct">Correct<div id="rcorrect">0</div></div>
-    <div class="stat-box wrong">Wrong<div id="rwrong">0</div></div>
-    <div class="stat-box skipped">Skipped<div id="rskipped">0</div></div>
-  </div>
-  <h3 id="rmsg" style="margin-top:20px;"></h3>
-</div>
+<!-- ═══════════════════════════════════════
+     MAIN APP SHELL
+════════════════════════════════════════ -->
+<div class="app-shell" id="appShell">
 
-<div id="examScreen">
-  <div id="timerBox">⏱ <span id="timeLeft">--:--</span></div>
-  <div id="progressBar"><div id="progressFill" style="width:0%"></div></div>
-  <h2 id="qtxt">Loading...</h2>
-  <div id="optsEl"></div>
-  <div class="nav-btns">
-    <button onclick="go(-1)">◀ Prev</button>
-    <button onclick="go(1)">Next ▶</button>
-  </div>
-  <button id="submitBtn" onclick="confirmSubmit()">Submit Exam</button>
-</div>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo-area">
+      <div class="logo-name">Ozellar Marine<br>Pvt. Ltd.</div>
+      <div class="logo-sub">Admin Console</div>
+    </div>
 
-<video id="camPreview" autoplay muted playsinline></video>
+    <div class="admin-chip">
+      <div class="admin-avatar" id="sidebarAvatar">AD</div>
+      <div>
+        <div class="admin-name" id="sidebarName">Administrator</div>
+        <div class="admin-role">Super Admin</div>
+      </div>
+    </div>
+
+    <nav>
+      <div class="nav-section">Main</div>
+<div class="nav-item active" onclick="scrollToSection('statsSection', this)">        <i class="ti ti-layout-dashboard"></i> Dashboard
+      </div>
+<div class="nav-item" onclick="scrollToSection('usersSection', this)">        <i class="ti ti-users"></i> Manage Users
+      </div>
+      <div class="nav-item" onclick="scrollToSection('resultsSection')">
+        <i class="ti ti-clipboard-list"></i> Results
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="logoutAdmin()">
+        <i class="ti ti-logout" style="font-size:15px;"></i> Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN AREA -->
+  <div class="main-area">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="page-title">Admin Panel</div>
+      <div class="topbar-right">
+        <span class="portal-label">Ozellar Competency Portal</span>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- STAT CARDS -->
+      <div id="statsSection" class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Total Seafarers</div>
+          <div class="stat-val" id="statUsers">—</div>
+          <div class="stat-sub">registered users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Exams Taken</div>
+          <div class="stat-val" id="statExams">—</div>
+          <div class="stat-sub">results recorded</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pass Rate</div>
+          <div class="stat-val" id="statPass" style="color:var(--pass)">—</div>
+          <div class="stat-sub" id="statPassSub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Fail Rate</div>
+          <div class="stat-val" id="statFail" style="color:var(--fail)">—</div>
+          <div class="stat-sub" id="statFailSub"></div>
+        </div>
+      </div>
+
+      <!-- CREATE + USERS ROW -->
+      <div class="panels-row" id="usersSection">
+
+        <!-- CREATE USER -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="ti ti-user-plus"></i> Create Seafarer
+            </div>
+          </div>
+          <div class="form-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" id="name" class="form-input" placeholder="e.g. Rahul Sharma"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="••••••••"/>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Rank</label>
+                <select id="rank" class="form-select">
+                  <option value="">Select rank…</option>
+                  
+                  <option>Master</option>
+<option>Chief officer</option>
+<option>Second officer</option>
+<option>Third officer</option>
+<option>Deck cadet</option>
+<option>Chief engineer</option>
+<option>Second engineer</option>
+<option>Third engineer</option>
+<option>Electrotechnicl officer</option>
+<option>Electrical Officer</option>
+<option>Tr.EO</option>
+<option>Electrical Cadet</option>
+<option>Engine cadet</option>
+<option>Bosun</option>
+<option>Able bodied seamen</option>
+<option>Ordinary sailor</option>
+<option>Fitter</option>
+<option>Oiler</option>
+<option>Chief cook</option>
+<option>Tr.Gs</option>
+<option>Tr.Wiper</option>
+<option>Tr.Fitter</option>
+<option>Tr.Os</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">CDC Number</label>
+                <input type="text" id="cdcNumber" class="form-input" placeholder="e.g. CDC-20241"/>
+              </div>
+            </div>
+            <button class="btn-create" onclick="createUser()">
+              <i class="ti ti-plus"></i> Create User
+            </button>
+          </div>
+        </div>
+
+        <!-- USERS TABLE -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="ti ti-users"></i> Registered Users
+            </div>
+            <span class="panel-count" id="usersCount"></span>
+          </div>
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Rank</th>
+                <th>CDC</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTable"></tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- RESULTS -->
+      <div class="results-panel" id="resultsSection">
+        <div class="results-toolbar">
+          <div class="panel-title" style="white-space:nowrap;">
+            <i class="ti ti-clipboard-list" style="color:var(--accent);font-size:15px;"></i> Exam Results
+          </div>
+          <div class="search-wrap">
+            <i class="ti ti-search search-icon"></i>
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Search by name or CDC…"
+              oninput="filterResults()"
+            />
+          </div>
+          <select id="statusFilter" class="filter-select" onchange="filterResults()">
+            <option value="">All Status</option>
+            <option value="pass">Pass</option>
+            <option value="fail">Fail</option>
+          </select>
+        </div>
+
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Rank</th>
+              <th>CDC</th>
+              <th>Score</th>
+              <th>Correct</th>
+              <th>Wrong</th>
+              <th>Skipped</th>
+              <th>Status</th>
+              <th>PDF</th>
+              
+            </tr>
+          </thead>
+          <tbody id="resultsTable"></tbody>
+        </table>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main-area -->
+</div><!-- /app-shell -->
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
 
-const questionBank = {
+// ─────────────────────────────────────────
+// CONFIG
+// ─────────────────────────────────────────
+const API = "http://localhost:3005";
 
-  able_bodied_seaman: [
-    { q: "What does the helm order \"Midships\" mean?", opts: ["Turn the wheel fully to port","Keep the ship steady on course","Bring the rudder to zero position","Stop the steering gear"], ans: 2 },
-    { q: "Which is the primary duty of a lookout?", opts: ["Leave bridge periodically","Maintain lookout by sight, hearing & all available means","Follow daylight procedures","Depend only on radar"], ans: 1 }
-  ],
+let adminName     = "";
+let adminPassword = "";
+let allResults    = [];   // cache for client-side filter
 
-  tr_eo: [
-      {
-            "q": "The main function of a UPS onboard critical equipment is to:",
-            "opts": [
-                  "Increase voltage",
-                  "Provide uninterrupted power during supply failure",
-                  "Reduce current consumption",
-                  "Charge batteries faster"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Which type of motor is commonly used for steering gear pumps?",
-            "opts": [
-                  "DC motor",
-                  "Synchronous motor",
-                  "Induction motor",
-                  "Stepper motor"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "In a large two-stroke marine engine, what is the chief function of the turbocharger?",
-            "opts": [
-                  "To increase piston cooling efficiency",
-                  "To supply high-pressure fuel for injection",
-                  "To enhance lubrication oil flow",
-                  "To provide scavenge air for combustion and scavenging"
-            ],
-            "ans": 3
-      },
-      {
-            "q": "Which of the following frequencies is typically found in shipboard electrical supply systems?",
-            "opts": [
-                  "25 Hz",
-                  "50 Hz",
-                  "100 Hz",
-                  "60 Hz"
-            ],
-            "ans": 3
-      },
-      {
-            "q": "What is the primary consequence of operating shipboard electrical equipment at a low power factor?",
-            "opts": [
-                  "Lower generator output voltage",
-                  "Higher current flow and increased energy losses",
-                  "Reduced cable heating",
-                  "Improved system efficiency"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Which safety concern is most critical when working inside a ship's battery room?",
-            "opts": [
-                  "Hydrogen gas explosion risk",
-                  "Strong air drafts",
-                  "Excessive noise",
-                  "High humidity levels"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "Which source is primarily used to supply power to a ship's emergency switchboard during a blackout?",
-            "opts": [
-                  "Main switchboard",
-                  "Shaft generator",
-                  "Emergency generator",
-                  "Shore supply"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "The synchronous speed of a motor depends on:",
-            "opts": [
-                  "Voltage",
-                  "Number of poles and frequency",
-                  "Current",
-                  "Loading"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "On a UMS (Unmanned Machinery Space) vessel, what is the main system used for engine room alarm monitoring and response?",
-            "opts": [
-                  "Mechanical safety interlocks on each piece of equipment",
-                  "Alarm repeater panels located only on the bridge",
-                  "Centralized control room with alarm logging and automatic shutdown features",
-                  "Routine manual inspections by engineers"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "What is the purpose of a circuit breaker?",
-            "opts": [
-                  "Regulate voltage",
-                  "Protect against overload and short circuit",
-                  "Increase power",
-                  "Maintain power factor"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Which method is most effective in minimizing galvanic corrosion on a ship's hull?",
-            "opts": [
-                  "Coating with varnish",
-                  "Using only freshwater washdowns",
-                  "Painting without anodes",
-                  "Applying sacrificial anodes"
-            ],
-            "ans": 3
-      },
-      {
-            "q": "What is the first action when an electrical shock victim is found?",
-            "opts": [
-                  "Give CPR immediately",
-                  "Remove victim from source safely",
-                  "Pour water to cool skin",
-                  "Call office"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Which onboard system is most likely to be critically affected by a sudden loss of electrical power?",
-            "opts": [
-                  "Radar and ECDIS",
-                  "Bilge pump",
-                  "Freshwater generator",
-                  "Accommodation lights"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "What is the primary advantage of installing a shaft generator on a ship?",
-            "opts": [
-                  "Improves the vessel's maneuverability",
-                  "Lowers the ship's overall voltage",
-                  "Reduces fuel consumption by utilizing main engine power for electricity generation",
-                  "Increases the electrical load on auxiliary generators"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "What is the most likely cause of frequent tripping of an Earth Fault Relay in a 440V system?",
-            "opts": [
-                  "Loose neutral connection",
-                  "High humidity in distribution panels",
-                  "Balanced three-phase load",
-                  "Incorrect frequency"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "When synchronizing generators, which parameter is MOST critical to match exactly?",
-            "opts": [
-                  "Voltage",
-                  "Frequency",
-                  "Phase sequence",
-                  "Phase angle"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "A motor is observed to draw excessive current at startup but does not rotate. What is the most likely reason for this behavior?",
-            "opts": [
-                  "Reverse rotation",
-                  "Single phasing",
-                  "Over-lubrication",
-                  "High power factor"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Which method provides the most accurate assessment of the state of charge in a lead-acid battery?",
-            "opts": [
-                  "Load test",
-                  "Short circuit test",
-                  "Open circuit voltage check",
-                  "Specific gravity measurement"
-            ],
-            "ans": 3
-      },
-      {
-            "q": "What is the effect of high harmonic distortion on generators?",
-            "opts": [
-                  "Load sharing improves",
-                  "Generator runs cooler",
-                  "Excess heating of windings",
-                  "Reduced copper losses"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "Which symptom is most commonly observed when a diode in a ship's alternator rectifier fails?",
-            "opts": [
-                  "Excessive vibration",
-                  "Irregular output voltage from the alternator",
-                  "High power factor",
-                  "Reduced fuel consumption"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "What is the primary reason for connecting a ship's shaft generator to the electrical system via a frequency converter?",
-            "opts": [
-                  "To increase the generator's voltage",
-                  "To maintain constant frequency output regardless of main engine speed variations",
-                  "To bypass the Automatic Voltage Regulator (AVR)",
-                  "To reduce the vessel's fuel consumption"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "What is a common effect of using Variable Frequency Drives (VFDs) in shipboard electrical systems?",
-            "opts": [
-                  "They reduce inrush current to zero.",
-                  "They eliminate all harmonics from the supply.",
-                  "They introduce harmonic distortion and can cause overheating.",
-                  "They always improve the system's power factor."
-            ],
-            "ans": 2
-      },
-      {
-            "q": "What is the effect of reverse power flow to a running generator?",
-            "opts": [
-                  "It becomes a motor",
-                  "It stops immediately",
-                  "AVR shuts down",
-                  "Main engine shuts down"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "The emergency generator fails to start automatically. What is the FIRST check?",
-            "opts": [
-                  "Fuel filter",
-                  "Starting battery voltage",
-                  "Governing system",
-                  "AVR"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Upon noticing smoke coming from a ship's main switchboard, what should be your immediate response?",
-            "opts": [
-                  "Pour CO2 directly into the switchboard",
-                  "Open the switchboard door wide to investigate",
-                  "Switch off the ventilation to prevent smoke spread",
-                  "Remain nearby and observe the situation"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "During a Power Management System (PMS) failure on a ship, which parameters must be matched manually to safely synchronize two generators?",
-            "opts": [
-                  "Frequency only",
-                  "Frequency, voltage, and phase sequence",
-                  "Voltage only",
-                  "Load"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Which test is most commonly used to assess the insulation integrity of high voltage motors onboard ships?",
-            "opts": [
-                  "Megger test",
-                  "IR test during running",
-                  "Clamp meter test",
-                  "Hipot test (High potential test)"
-            ],
-            "ans": 3
-      },
-      {
-            "q": "Two Alternators are running in parallel, If the field of one of the alternator is adjusted, it will",
-            "opts": [
-                  "Reduce its speed",
-                  "Change its load",
-                  "Change its power factor",
-                  "Change its frequency"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "The Frequency of voltage generated by an alternator having 4-poles and rotating at 1800rpm is____HZ",
-            "opts": [
-                  "60hz",
-                  "50hz",
-                  "80hz",
-                  "120hz"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "A 60Hz Alternator will run at the 900rpm if it is wound for________poles.",
-            "opts": [
-                  "2",
-                  "6",
-                  "4",
-                  "8"
-            ],
-            "ans": 3
-      },
-      {
-            "q": "Galley Hot plate the rating will be 440Volts, 3Kw, 60Hz if the same hot plate connected to shore supply in dry dock with 440Volt and 50Hz then the rate of change of heat will be,",
-            "opts": [
-                  "Decrease",
-                  "Same",
-                  "Increase",
-                  "None of the above"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Which resistor will be physically larger in size?",
-            "opts": [
-                  "10 ohms, 50w",
-                  "100 ohms, 10w",
-                  "1 Kohm, 1w",
-                  "10 Mohm, 1/2w"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "When current flows through heater coil it glows but supply wire does not glow because",
-            "opts": [
-                  "Supply wire is covered with insulation layer",
-                  "Current through supply line flows at slower speed",
-                  "Supply wires arc made of superior material",
-                  "Resistance of heater coil is more than that supply wires"
-            ],
-            "ans": 3
-      },
-      {
-            "q": "Electronic soft starters are used for motors to",
-            "opts": [
-                  "Achieve variable speed",
-                  "Provide smooth start and stop",
-                  "Improve the loading",
-                  "None of the above"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Which of the following is the output of a thermocouple?",
-            "opts": [
-                  "Alternating Current",
-                  "Direct Current",
-                  "AC Voltage",
-                  "DC Voltage"
-            ],
-            "ans": 3
-      },
-      {
-            "q": "Electronic Variable Frequency Drive (VFD) connected to motors",
-            "opts": [
-                  "Provide variable speed with high efficiency",
-                  "Induces eddy-current in the secondary member of the clutch mechanism",
-                  "It is not suitable for variable torque load",
-                  "Does not provide variable speed and has low-efficiency"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "The power factor of an alternator is determined by its",
-            "opts": [
-                  "Speed",
-                  "Load",
-                  "Excitation",
-                  "Prime Mover"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Which of the substances listed should be applied to battery terminals to help prevent corrosion?",
-            "opts": [
-                  "Naval Jelly",
-                  "Grease",
-                  "Petroleum Jelly",
-                  "Lead peroxide"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "What are the different types of 3-phase transformer connections?",
-            "opts": [
-                  "Star Connection",
-                  "Star Connection and Delta Connection",
-                  "Delta Connection",
-                  "Single Phase Connection"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Ideal Transformer do not have",
-            "opts": [
-                  "Mag. Leakage",
-                  "Low Efficiency",
-                  "Losses",
-                  "All of the above"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "A Single Phase Rectifier has________diodes.",
-            "opts": [
-                  "2",
-                  "4",
-                  "6",
-                  "8"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "A Diode is used in_______",
-            "opts": [
-                  "Amplifiers",
-                  "Oscillators",
-                  "Modem",
-                  "None Of These"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "If any motor starter panel push the start button, the contactor gets energised and gets closed. Even after the push button release also the contactor gets closes how?",
-            "opts": [
-                  "Looping process",
-                  "Latching Relay Circuit",
-                  "Main Contactor",
-                  "None of the above"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "How can the direction of rotation of the motor be reversed?",
-            "opts": [
-                  "By changing over any two phase wires",
-                  "Remove the one phase wire",
-                  "By Changing the relay",
-                  "By Changing the winding wire"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "Emergency mode of boiler firing which all alarms can be bypassed?",
-            "opts": [
-                  "Fuel Oil Temperature",
-                  "1.Low Low Water Level Trip 2.Ignition Failure 3.Flame Failure 4.Steam Pressure High 5.Emergency Stop",
-                  "Air pressure Low",
-                  "None of the above"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Why are iron cores in transformers made laminated?",
-            "opts": [
-                  "To Reduce eddy current losses",
-                  "To Prevent electricity shock",
-                  "To improve the electromagnetic induction",
-                  "Magnetic flux density"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "How does the Emergency Generator start automatically?",
-            "opts": [
-                  "Activated by a timer",
-                  "Signal Goes through MSB",
-                  "It is activated by a under voltage relay",
-                  "24VDC Relay"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "Is the field current in an Alternator AC or DC?",
-            "opts": [
-                  "AC",
-                  "AC and DC",
-                  "DC",
-                  "None of the above"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "Is the Alternator connected Star or Delta?",
-            "opts": [
-                  "Delta",
-                  "Normally Star",
-                  "Star/Delta",
-                  "3-phases"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Batteries Replacement procedure of PLC?",
-            "opts": [
-                  "Switched Off AC Power Supply",
-                  "Switched Off DC Power Supply",
-                  "Switched of both AC & DC",
-                  "To Replace the battery with the controller power must be on (no memory loss)"
-            ],
-            "ans": 3
-      },
-      {
-            "q": "What is the name of the winding to which supply is given?",
-            "opts": [
-                  "Field Winding",
-                  "Secondary Winding",
-                  "Stator Winding",
-                  "Primary Winding"
-            ],
-            "ans": 3
-      },
-      {
-            "q": "What are the sources of electrical power on ship?",
-            "opts": [
-                  "440 Volt and 220 Volt Transformer",
-                  "Main generator",
-                  "1.Main generator 2.Emergency Generator 3.Emergency Batteries 4.Shore Power",
-                  "Main Generator"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "What is the main role of an Automatic Voltage Regulator (AVR) in a ship's generator system?",
-            "opts": [
-                  "Control engine cooling water flow",
-                  "Synchronize generator frequency",
-                  "Monitor lubricating oil temperature",
-                  "Regulate generator excitation to maintain output voltage"
-            ],
-            "ans": 3
-      },
-      {
-            "q": "(Read the following paragraph thoroughly and answer the questions below)\\nDetective glories tend to glorify crime. Murderers, gangsters and crooks all kinds are described as tough, cunning and courageous individuals who\\nknow how to take care of themselves and how to get what they want. In James McCain's \"The Postman Always Rings twice\" , for instance the villain is\\nmuch more a impressive character than his victim. He is casual brave smart and successful with women. It is true that he finally gets caught. But he is\\npunished for a crime that he did not commit, so that his conviction is hardly a triumph of justice. Besides, looking back over the exciting life of the\\ncriminal, the reader might conclude that it was worth the risk.\\n\\nAccording to the passage, how are murderers, gangsters, and crooks typically depicted in detective stories?",
-            "opts": [
-                  "They know how to escape from law",
-                  "They always manage to get away",
-                  "They are often glorified in detective stories",
-                  "They are wiser than their victims"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "(Read the following paragraph thoroughly and answer the questions below)\\nDetective glories tend to glorify crime. Murderers, gangsters and crooks all kinds are described as tough, cunning and courageous individuals who\\nknow how to take care of themselves and how to get what they want. In James McCain's \"The Postman Always Rings twice\" , for instance the villain is\\nmuch more a impressive character than his victim. He is casual brave smart and successful with women. It is true that he finally gets caught. But he is\\npunished for a crime that he did not commit, so that his conviction is hardly a triumph of justice. Besides, looking back over the exciting life of the\\ncriminal, the reader might conclude that it was worth the risk.\\n\\nAccording to the passage, how is the villain in James McCain's 'The Postman Always Rings Twice'\\nportrayed?",
-            "opts": [
-                  "As a casual, brave, smart, and successful character",
-                  "As a law-abiding citizen",
-                  "As a victim of injustice",
-                  "As a weak and timid individual"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "(Read the following paragraph thoroughly and answer the questions below)\\nDetective glories tend to glorify crime. Murderers, gangsters and crooks all kinds are described as tough, cunning and courageous individuals who\\nknow how to take care of themselves and how to get what they want. In James McCain's \"The Postman Always Rings twice\" , for instance the villain is\\nmuch more a impressive character than his victim. He is casual brave smart and successful with women. It is true that he finally gets caught. But he is\\npunished for a crime that he did not commit, so that his conviction is hardly a triumph of justice. Besides, looking back over the exciting life of the\\ncriminal, the reader might conclude that it was worth the risk.\\n\\nBased on the passage, why is the villain in 'The Postman Always Rings Twice' ultimately punished?",
-            "opts": [
-                  "For a crime he did not actually commit",
-                  "Because the police are exceptionally clever",
-                  "Because he confesses to all his crimes",
-                  "Due to his lack of intelligence"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "(Read the following paragraph thoroughly and answer the questions below)\\nDetective glories tend to glorify crime. Murderers, gangsters and crooks all kinds are described as tough, cunning and courageous individuals who\\nknow how to take care of themselves and how to get what they want. In James McCain's \"The Postman Always Rings twice\" , for instance the villain is\\nmuch more a impressive character than his victim. He is casual brave smart and successful with women. It is true that he finally gets caught. But he is\\npunished for a crime that he did not commit, so that his conviction is hardly a triumph of justice. Besides, looking back over the exciting life of the\\ncriminal, the reader might conclude that it was worth the risk.\\n\\nWhat conclusion might a reader draw about the life of a criminal after reading the passage?",
-            "opts": [
-                  "It is rarely described as interesting.",
-                  "It is always presented negatively.",
-                  "It is exciting and may seem worth the risk.",
-                  "It ends in a clear triumph of justice."
-            ],
-            "ans": 2
-      },
-      {
-            "q": "(Read the following paragraph thoroughly and answer the questions below)\\nDetective glories tend to glorify crime. Murderers, gangsters and crooks all kinds are described as tough, cunning and courageous individuals who\\nknow how to take care of themselves and how to get what they want. In James McCain's \"The Postman Always Rings twice\" , for instance the villain is\\nmuch more a impressive character than his victim. He is casual brave smart and successful with women. It is true that he finally gets caught. But he is\\npunished for a crime that he did not commit, so that his conviction is hardly a triumph of justice. Besides, looking back over the exciting life of the\\ncriminal, the reader might conclude that it was worth the risk.\\n\\nWhat impression do detective stories often give about crime and punishment, according to the passage?",
-            "opts": [
-                  "They focus only on the victims' perspectives.",
-                  "They tend to create a misleading view of crime and its consequences.",
-                  "They make crime seem uninteresting.",
-                  "They always discourage criminal behavior."
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Life at sea promises adventure, learning, and discipline\"”but for many deck cadets, the journey begins not with mentorship, but vulnerability.\\nHarassment faced by cadets often goes unreported due to fear, hierarchical pressure, or unclear grievance procedures. From verbal intimidation to being tasked with unsafe or humiliating duties, the lines between training and exploitation blur. In several cases, cadets have endured psychological distress when they were excluded from basic operational learning, denied rest, or subjected to derogatory treatment.\\n\\nIdentify the part of the following sentence that contains a grammatical error: 'Each of the officers have been instructed to submit their documents by Monday.'",
-            "opts": [
-                  "c) to submit their documents",
-                  "a) Each of the officers",
-                  "d) by Monday",
-                  "b) have been instructed"
-            ],
-            "ans": 3
-      },
-      {
-            "q": "Life at sea promises adventure, learning, and discipline\"”but for many deck cadets, the journey begins not with mentorship, but vulnerability.\\nHarassment faced by cadets often goes unreported due to fear, hierarchical pressure, or unclear grievance procedures. From verbal intimidation to being tasked with unsafe or humiliating duties, the lines between training and exploitation blur. In several cases, cadets have endured psychological distress when they were excluded from basic operational learning, denied rest, or subjected to derogatory treatment.\\n\\nComplete the sentence: The employee who was caught falsifying records had to ______.",
-            "opts": [
-                  "take a vacation",
-                  "face disciplinary action",
-                  "ignore the mistake",
-                  "receive a promotion"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Life at sea promises adventure, learning, and discipline\"”but for many deck cadets, the journey begins not with mentorship, but vulnerability.\\nHarassment faced by cadets often goes unreported due to fear, hierarchical pressure, or unclear grievance procedures. From verbal intimidation to being tasked with unsafe or humiliating duties, the lines between training and exploitation blur. In several cases, cadets have endured psychological distress when they were excluded from basic operational learning, denied rest, or subjected to derogatory treatment.\\n\\nWhat does the idiom 'take something with a pinch of salt' mean?",
-            "opts": [
-                  "To act quickly in a risky situation",
-                  "To accept something without question",
-                  "To regard something as possibly untrue or exaggerated",
-                  "To celebrate a small achievement"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "Life at sea promises adventure, learning, and discipline\"”but for many deck cadets, the journey begins not with mentorship, but vulnerability.\\nHarassment faced by cadets often goes unreported due to fear, hierarchical pressure, or unclear grievance procedures. From verbal intimidation to being tasked with unsafe or humiliating duties, the lines between training and exploitation blur. In several cases, cadets have endured psychological distress when they were excluded from basic operational learning, denied rest, or subjected to derogatory treatment.\\n\\nWhich revision best improves the following sentence? 'The students were asked to write an essay on the Ganga, its cultural significance, and how to preserve it.'",
-            "opts": [
-                  "write an essay on the Ganga, its cultural significance, and preservation",
-                  "write essay on the Ganga and how it can be preserved",
-                  "write an essay about the Ganga and preservation",
-                  "write essay about the Ganga, its culture, and preservation"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "Life at sea promises adventure, learning, and discipline\"”but for many deck cadets, the journey begins not with mentorship, but vulnerability.\\nHarassment faced by cadets often goes unreported due to fear, hierarchical pressure, or unclear grievance procedures. From verbal intimidation to being tasked with unsafe or humiliating duties, the lines between training and exploitation blur. In several cases, cadets have endured psychological distress when they were excluded from basic operational learning, denied rest, or subjected to derogatory treatment.\\n\\nWith great efforts his son succeeded in convincing him not to donate his entire wealth to an orphanage ______.",
-            "opts": [
-                  "and lead the life of a wealthy merchant",
-                  "but to a home for the forsaken children",
-                  "and make an orphan of himself",
-                  "as the orphanage needed a lot of donations"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "Life at sea promises adventure, learning, and discipline\"”but for many deck cadets, the journey begins not with mentorship, but vulnerability.\\nHarassment faced by cadets often goes unreported due to fear, hierarchical pressure, or unclear grievance procedures. From verbal intimidation to being tasked with unsafe or humiliating duties, the lines between training and exploitation blur. In several cases, cadets have endured psychological distress when they were excluded from basic operational learning, denied rest, or subjected to derogatory treatment.\\n\\nIn the context of the Prime Minister's statement on India's Blue Economy, what does the term 'sustainable' most closely refer to?",
-            "opts": [
-                  "Rapid and aggressive",
-                  "Short-term but profitable",
-                  "Environmentally balanced and lasting",
-                  "Temporary but effective"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "If the length and breadth of a rectangle are both increased by 20%, what is the percentage increase in its area?",
-            "opts": [
-                  "0.4",
-                  "0.42",
-                  "0.44",
-                  "0.46"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "A person needs to walk from one corner of a square park to the opposite corner. If he walks along the edges, he covers the length of two sides, but if he walks diagonally, he takes the shortest route. Approximately what percentage of distance does he save by walking diagonally instead of along the edges?",
-            "opts": [
-                  "0.29",
-                  "0.24",
-                  "0.33",
-                  "0.2"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "Two boats are anchored on opposite sides of a 100 m tall lighthouse. From the boats, the angles of elevation to the top of the lighthouse are 30° and 45° respectively. What is the distance between the two boats?",
-            "opts": [
-                  "273 m",
-                  "173 m",
-                  "200 m",
-                  "300 m"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "A cylindrical iron pipe is 21 cm long with an external diameter of 8 cm and a wall thickness of 1 cm. If the density of iron is 8 g/cm³, what is the mass of the pipe?",
-            "opts": [
-                  "3.6 kg",
-                  "36 kg",
-                  "3.696 kg",
-                  "36.9 kg"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "A bag contains 2 red, 3 green, and 2 blue balls. If two balls are drawn at random, what is the probability that neither ball drawn is blue?",
-            "opts": [
-                  "10/21",
-                  "10/7",
-                  "5/21",
-                  "5/7"
-            ],
-            "ans": 1
-      },
-      {
-            "q": "Two students appeared for an exam. One scored 9 marks more than the other, and his marks were 56% of the total marks obtained by both. What are their marks?",
-            "opts": [
-                  "42,33",
-                  "39,30",
-                  "41,32",
-                  "43,34"
-            ],
-            "ans": 0
-      },
-      {
-            "q": "A and B can complete a task together in 30 days. After A works alone for 16 days, B completes the remaining work in 44 days. How long would it take B to finish the entire work alone?",
-            "opts": [
-                  "40 days",
-                  "30 days",
-                  "60 days",
-                  "70 days"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "A vessel has traveled 1856 nautical miles at a speed of 18 knots, consuming 545 tons of fuel oil. The remaining distance to the next port is 1978 nautical miles. If the vessel increases speed to 22 knots for the rest of the journey, how much fuel will be consumed to reach the port? Select the correct amount of fuel required for the remaining voyage.",
-            "opts": [
-                  "772 tons",
-                  "690 tons",
-                  "868 tons",
-                  "710 tons"
-            ],
-            "ans": 2
-      },
-      {
-            "q": "Which term describes the pressure measured relative to a perfect vacuum? Select the correct term for this type of pressure.",
-            "opts": [
-                  "Absolute pressure",
-                  "Differential pressure",
-                  "Gauge pressure",
-                  "Atmospheric pressure"
-            ],
-            "ans": 0
-      }
-]
-
+window.onload = function(){
+  showPanel("Administrator");
 };
 
-let questions = [];
-let answers = [];
-let cur = 0;
-let correct = 0;
-let wrong = 0;
-let skipped = 0;
-let totalTime = 3600;
-let timerInterval;
-let pingInterval;
-let submitted = false;
-let user = null;
-let warningCount = 0;
 
-function el(id) { return document.getElementById(id); }
 
-function normalizeRank(raw) {
-  return (raw || "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+function showPanel(name){
+  document.getElementById("loginOverlay").style.display = "none";
+  document.getElementById("appShell").style.display     = "flex";
+
+  // update sidebar avatar + name
+  const initials = name
+    ? name.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2)
+    : "AD";
+  document.getElementById("sidebarAvatar").textContent = initials;
+  document.getElementById("sidebarName").textContent   = name || "Administrator";
+
+  loadUsers();
+  loadResults();
 }
 
-function getAuthHeaders() {
-  return {
-    "Content-Type": "application/json",
-    "x-session-token": user.token || "",
-    "x-user-id": String(user.id || "")
-  };
-}
 
-async function startCamera() {
-  try {
-    await faceapi.nets.tinyFaceDetector.loadFromUri("https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model");
-    await faceapi.nets.faceLandmark68TinyNet.loadFromUri("https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model");
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: "user" }, audio: false });
-    const video = el("camPreview");
-    video.srcObject = stream;
-    await video.play();
-    video.width = 180;
-    video.height = 120;
-    const canvas = document.createElement("canvas");
-    canvas.id = "faceOverlay";
-    canvas.width = 180;
-    canvas.height = 120;
-    document.body.appendChild(canvas);
-    const displaySize = { width: 180, height: 120 };
-    faceapi.matchDimensions(canvas, displaySize);
-    canvas.style.display = "block";
-    video.onloadedmetadata = () => {
-      const ctx = canvas.getContext("2d");
-      let noFaceCount = 0;
-      let multiFaceCount = 0;
-      let awayCount = 0;
-      async function detectFace() {
-        if (submitted) return;
-        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 })).withFaceLandmarks(true);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "rgba(0,0,0,0.7)";
-        ctx.fillRect(0, 0, 180, 24);
-        if (detections.length === 0) {
-          noFaceCount++;
-          ctx.fillStyle = "red";
-          ctx.font = "bold 13px Arial";
-          ctx.fillText("NO FACE DETECTED", 8, 16);
-          if (noFaceCount >= 40) { alert("Face not detected."); submit(); return; }
-        } else if (detections.length > 1) {
-          multiFaceCount++;
-          ctx.fillStyle = "yellow";
-          ctx.font = "bold 13px Arial";
-          ctx.fillText("MULTIPLE FACES", 8, 16);
-          if (multiFaceCount >= 20) { alert("Multiple persons detected."); submit(); return; }
-        } else {
-          noFaceCount = 0;
-          multiFaceCount = 0;
-          const resized = faceapi.resizeResults(detections, displaySize);
-          faceapi.draw.drawDetections(canvas, resized);
-          const detection = resized[0];
-          const box = detection.detection.box;
-          const centerX = box.x + box.width / 2;
-          const centerY = box.y + box.height / 2;
-          const faceCentered = centerX > 50 && centerX < 130 && centerY > 25 && centerY < 95;
-          const landmarks = detection.landmarks;
-          faceapi.draw.drawFaceLandmarks(canvas, resized);
-          const leftEye = landmarks.getLeftEye();
-          const rightEye = landmarks.getRightEye();
-          const eyeAvgX = [...leftEye, ...rightEye].reduce((a, p) => a + p.x, 0) / (leftEye.length + rightEye.length);
-          let direction = "CENTER";
-          if (eyeAvgX < centerX - 10) direction = "LEFT";
-          else if (eyeAvgX > centerX + 10) direction = "RIGHT";
-          ctx.fillStyle = "#00ff00";
-          ctx.font = "bold 12px Arial";
-          ctx.fillText("FACE VERIFIED", 8, 16);
-          ctx.fillStyle = "rgba(0,0,0,0.7)";
-          ctx.fillRect(0, 95, 180, 25);
-          ctx.fillStyle = "#ffffff";
-          ctx.font = "bold 12px Arial";
-          ctx.fillText("LOOKING: " + direction, 8, 112);
-          if (!faceCentered) {
-            awayCount++;
-            ctx.strokeStyle = "red";
-            ctx.lineWidth = 3;
-            ctx.strokeRect(box.x, box.y, box.width, box.height);
-            if (awayCount >= 50) { alert("Please face the screen."); submit(); return; }
-          } else { awayCount = 0; }
-        }
-        requestAnimationFrame(detectFace);
-      }
-      detectFace();
-    };
-  } catch (err) { console.error(err); alert("Camera permission required."); }
-}
-
-function startPing() {
-  pingInterval = setInterval(async () => {
-    if (submitted) return;
-    try {
-      const res = await fetch("/api/ping", { headers: getAuthHeaders() });
-      if (res.status === 401) {
-        clearInterval(timerInterval);
-        clearInterval(pingInterval);
-        el("kickedOverlay").classList.add("show");
-      }
-    } catch (e) { console.warn(e.message); }
-  }, 10000);
-}
-
-function init() {
-  user = JSON.parse(sessionStorage.getItem("examUser"));
-  if (!user || !user.id || !user.token) { alert("No valid session found"); goToLogin(); return; }
-  const rankKey = normalizeRank(user.rank);
-  const rankMap = {
-  
-  able_boiled_seamnan: "able_bodied_seaman",
-  able_bodied_seaman: "able_bodied_seaman",
-  able_seaman: "able_bodied_seaman",
-  ab: "able_bodied_seaman",
-  abs: "able_bodied_seaman",
-  ab_seaman: "able_bodied_seaman",
-
-  electro_technical_officer: "electro_technical_officer",
-  eto: "electro_technical_officer",
-  e_t_o: "electro_technical_officer",
-
-  tr_eo: "tr_eo",
-
-  trainee_eto: "electro_technical_officer",
-  eto_trainee: "electro_technical_officer"
-};
-
-  const finalRank = rankMap[rankKey] || rankKey;
-  questions = questionBank[finalRank] || [];
-  if (!questions.length) { el("qtxt").textContent = `No questions found for rank: ${user.rank}`; return; }
-  answers = new Array(questions.length).fill(null);
-  renderQ();
-  startTimer();
-  startPing();
-  startCamera();
-  if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
-}
-
-function renderQ() {
-  const q = questions[cur];
-  if (!q) { el("qtxt").textContent = "Question not found"; return; }
-  el("qtxt").textContent = `Q${cur + 1} of ${questions.length}: ${q.q}`;
-  el("progressFill").style.width = ((cur + 1) / questions.length * 100) + "%";
-  const box = el("optsEl");
-  box.innerHTML = "";
-  (q.opts || []).forEach((opt, i) => {
-    const div = document.createElement("div");
-    div.className = "opt" + (answers[cur] === i ? " sel" : "");
-    div.textContent = opt;
-    div.onclick = () => { answers[cur] = i; renderQ(); };
-    box.appendChild(div);
-  });
-  el("submitBtn").style.display = cur === questions.length - 1 ? "block" : "none";
-}
-
-window.go = function(d) {
-  const n = cur + d;
-  if (n >= 0 && n < questions.length) { cur = n; renderQ(); }
-};
-
-function startTimer() {
-  updateTimerDisplay();
-  timerInterval = setInterval(() => {
-    totalTime--;
-    updateTimerDisplay();
-    if (totalTime <= 60) el("timerBox").classList.add("warning");
-    if (totalTime <= 0) { clearInterval(timerInterval); submit(); }
-  }, 1000);
-}
-
-function updateTimerDisplay() {
-  const m = String(Math.floor(totalTime / 60)).padStart(2, "0");
-  const s = String(totalTime % 60).padStart(2, "0");
-  el("timeLeft").textContent = `${m}:${s}`;
-}
-
-window.confirmSubmit = function() { if (confirm("Submit exam?")) submit(); };
-
-async function submit() {
-  if (submitted) return;
-  submitted = true;
-  clearInterval(timerInterval);
-  clearInterval(pingInterval);
-  correct = 0; wrong = 0; skipped = 0;
-  questions.forEach((q, i) => {
-    if (answers[i] === null) skipped++;
-    else if (answers[i] === q.ans) correct++;
-    else wrong++;
-  });
-  const score = Math.round((correct / questions.length) * 100);
-  const name = user.name || "N/A";
-  const rank = user.rank || "N/A";
-  try {
-    await fetch("/api/result", {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ user_id: user.id, user_name: name, rank, score, correct, wrong, skipped })
-    });
-  } catch (err) { console.error(err); }
-  el("examScreen").style.display = "none";
-  el("res").style.display = "block";
-  el("rname").textContent = name;
-  el("rrank").textContent = rank;
-  el("rcorrect").textContent = correct;
-  el("rwrong").textContent = wrong;
-  el("rskipped").textContent = skipped;
-  const circle = el("scoreCircle");
-  circle.textContent = score + "%";
-  circle.style.background = score >= 50 ? "#22c55e" : "#ef4444";
-  el("rmsg").textContent = score >= 50 ? "🎉 Congratulations! You PASSED." : "❌ You FAILED.";
-  sessionStorage.removeItem("examUser");
-}
-
-document.addEventListener("fullscreenchange", () => {
-  if (!document.fullscreenElement && !submitted) { alert("Fullscreen required."); document.documentElement.requestFullscreen(); }
-});
-document.addEventListener("contextmenu", e => e.preventDefault());
-document.addEventListener("copy", e => e.preventDefault());
-document.addEventListener("paste", e => e.preventDefault());
-document.addEventListener("cut", e => e.preventDefault());
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden && !submitted) {
-    warningCount++;
-    alert(`Warning ${warningCount}/3`);
-    if (warningCount >= 3) { alert("Exam auto submitted."); submit(); }
+// ─────────────────────────────────────────
+// LOGIN (fallback if no session)
+// ─────────────────────────────────────────
+document.addEventListener("keydown", function(e){
+  if(e.key === "Enter" &&
+     document.getElementById("loginOverlay").style.display !== "none"){
+    doLogin();
   }
 });
-document.addEventListener("keydown", function(e) {
-  if (e.key === "F12") e.preventDefault();
-  if (e.ctrlKey && e.shiftKey && e.key === "I") e.preventDefault();
-  if (e.ctrlKey && e.key === "u") e.preventDefault();
-  if (e.ctrlKey && e.key === "c") e.preventDefault();
-});
 
-init();
 
-});
+// ─────────────────────────────────────────
+// CREATE USER  — original workflow kept
+// ─────────────────────────────────────────
+async function createUser(){
+  const name      = document.getElementById("name").value.trim();
+  const password  = document.getElementById("password").value.trim();
+  const rank      = document.getElementById("rank").value;
+  const cdcNumber = document.getElementById("cdcNumber").value.trim();
+
+  if(!name || !password || !rank || !cdcNumber){
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  const res = await fetch(`${API}/api/users`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({name, password, rank, cdcNumber})
+  });
+  const data = await res.json();
+
+  if(data.success){
+    alert("User created successfully.");
+    document.getElementById("name").value      = "";
+    document.getElementById("password").value  = "";
+    document.getElementById("rank").value      = "";
+    document.getElementById("cdcNumber").value = "";
+    loadUsers();
+  }else{
+    alert(data.message);
+  }
+}
+
+
+// ─────────────────────────────────────────
+// LOAD USERS  — original workflow kept
+// ─────────────────────────────────────────
+async function loadUsers(){
+  const res  = await fetch(`${API}/api/users`);
+  const data = await res.json();
+  const users = data.users || [];
+
+  document.getElementById("usersCount").textContent =
+    users.length + " user" + (users.length !== 1 ? "s" : "");
+
+  // update stat card
+  document.getElementById("statUsers").textContent = users.length;
+
+  let html = "";
+  users.forEach(user => {
+    const initials = user.name
+      ? user.name.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2)
+      : "??";
+    html += `
+      <tr>
+        <td>
+          <div class="user-cell">
+            <div class="u-avatar">${initials}</div>
+            ${user.name}
+          </div>
+        </td>
+        <td>${user.rank || "—"}</td>
+        <td>${user.cdcnumber || "—"}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn-reset" onclick="resetPassword(${user.id})">
+            <i class="ti ti-refresh" style="font-size:11px;vertical-align:-1px;"></i> Reset
+          </button>
+          &nbsp;
+          <button class="btn-del" onclick="deleteUser(${user.id})">
+            <i class="ti ti-trash" style="font-size:11px;vertical-align:-1px;"></i> Delete
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("usersTable").innerHTML =
+    html || `<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--text-3);">No users found.</td></tr>`;
+}
+
+
+// ─────────────────────────────────────────
+// DELETE USER  — original workflow kept
+// ─────────────────────────────────────────
+async function deleteUser(id){
+  if(!confirm("Delete this user?")) return;
+  const res  = await fetch(`${API}/api/users/${id}`,{method:"DELETE"});
+  const data = await res.json();
+  if(data.success){
+    alert("User deleted.");
+    loadUsers();
+  }
+}
+
+
+// ─────────────────────────────────────────
+// RESET PASSWORD  — original workflow kept
+// ─────────────────────────────────────────
+async function resetPassword(id){
+  const newPassword = prompt("Enter new password for this user:");
+  if(!newPassword) return;
+
+  const res = await fetch(`${API}/api/users/${id}/password`,{
+    method:"PATCH",
+    headers:{
+      "Content-Type":"application/json",
+      "x-admin-name":adminName,
+      "x-admin-password":adminPassword
+    },
+    body:JSON.stringify({newPassword})
+  });
+  const data = await res.json();
+  alert(data.message);
+}
+
+
+// ─────────────────────────────────────────
+// LOAD RESULTS  — original workflow kept
+// ─────────────────────────────────────────
+async function loadResults(){
+  const res  = await fetch(`${API}/api/results`);
+  const data = await res.json();
+  allResults = data.results || [];
+
+  // update stat cards
+  const total   = allResults.length;
+  const passed  = allResults.filter(r => r.passed).length;
+  const failed  = total - passed;
+  const passRate = total ? Math.round((passed/total)*100) : 0;
+  const failRate = total ? 100 - passRate : 0;
+
+  document.getElementById("statExams").textContent   = total;
+  document.getElementById("statPass").textContent    = passRate + "%";
+  document.getElementById("statFail").textContent    = failRate + "%";
+  document.getElementById("statPassSub").innerHTML   =
+    `<span class="stat-dot" style="background:var(--pass);"></span>${passed} passed`;
+  document.getElementById("statFailSub").innerHTML   =
+    `<span class="stat-dot" style="background:var(--fail);"></span>${failed} failed`;
+
+  renderResults(allResults);
+}
+
+
+// ─────────────────────────────────────────
+// FILTER RESULTS  — new client-side filter
+// ─────────────────────────────────────────
+function filterResults(){
+  const q      = document.getElementById("searchInput").value.trim().toLowerCase();
+  const status = document.getElementById("statusFilter").value;
+
+  let filtered = allResults;
+
+  if(q){
+    filtered = filtered.filter(r =>
+      (r.user_name  || "").toLowerCase().includes(q) ||
+      (r.cdcnumber  || "").toLowerCase().includes(q)
+    );
+  }
+
+  if(status === "pass") filtered = filtered.filter(r =>  r.passed);
+  if(status === "fail") filtered = filtered.filter(r => !r.passed);
+
+  renderResults(filtered);
+}
+
+
+// ─────────────────────────────────────────
+// RENDER RESULTS TABLE
+// ─────────────────────────────────────────
+function renderResults(results){
+  if(!results.length){
+    document.getElementById("resultsTable").innerHTML =
+      `<tr><td colspan="9" class="no-results">No results found.</td></tr>`;
+    return;
+  }
+
+  let html = "";
+  results.forEach(result => {
+    const score     = parseFloat(result.score) || 0;
+    const barColor  = result.passed ? "var(--pass)" : "var(--fail)";
+    const badge     = result.passed
+      ? `<span class="pass-badge">PASS</span>`
+      : `<span class="fail-badge">FAIL</span>`;
+
+    html += `
+      <tr>
+        <td>${result.user_name || "—"}</td>
+        <td>${result.rank      || "—"}</td>
+        <td>${result.cdcnumber || "—"}</td>
+        <td>
+          <div class="score-wrap">
+            <div class="score-bar">
+              <div class="score-fill" style="width:${score}%;background:${barColor};"></div>
+            </div>
+            <span>${score}%</span>
+          </div>
+        </td>
+        <td>${result.correct}</td>
+        <td>${result.wrong}</td>
+        <td>${result.skipped}</td>
+        <td>${badge}</td>
+        <td>
+          <button class="btn-pdf" onclick="downloadPDF(${result.id})">
+            <i class="ti ti-download"></i> PDF
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("resultsTable").innerHTML = html;
+}
+
+
+// ─────────────────────────────────────────
+// DOWNLOAD PDF  — original workflow kept
+// ─────────────────────────────────────────
+async function downloadPDF(id){
+  const res  = await fetch(`${API}/api/results`);
+  const data = await res.json();
+  const result = (data.results || []).find(r => r.id === id);
+
+  if(!result){ alert("Result not found."); return; }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // LOGO
+  const logo = "2025-07-24-removebg-preview.png";
+  try{
+    const img = await loadImage(logo);
+    doc.addImage(img,"PNG",14,10,55,20);
+  }catch(err){
+    console.log("Logo not loaded");
+  }
+
+  // COMPANY NAME
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(18);
+  doc.setTextColor(230,90,40);
+  doc.text("Ozellar Marine Pvt. Ltd.",105,18,{align:"center"});
+
+  doc.setFont("helvetica","normal");
+  doc.setFontSize(9);
+  doc.setTextColor(80);
+  doc.text(
+    "4th Floor, Developed Plots Estate, Anejas Towers, B-Block, Plot No. 4 & 5,",
+    105,25,{align:"center"}
+  );
+  doc.text("Perungudi, Chennai, Tamil Nadu 600096",105,30,{align:"center"});
+
+  // DIVIDER
+  doc.setDrawColor(230,90,40);
+  doc.setLineWidth(0.7);
+  doc.line(14,38,196,38);
+
+  // TITLE
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(20);
+  doc.setTextColor(0);
+  doc.text("COMPETENCY REPORT",105,50,{align:"center"});
+
+  // TABLE
+  doc.autoTable({
+    startY:62,
+    head:[["Field","Details"]],
+    body:[
+      ["Candidate Name", result.user_name || "—"],
+      ["Rank",           result.rank      || "—"],
+      ["CDC Number",     result.cdcnumber || "—"],
+      ["Score",          result.score + "%"],
+      ["Correct Answers",String(result.correct)],
+      ["Wrong Answers",  String(result.wrong)],
+      ["Skipped Questions",String(result.skipped)],
+      ["Status",         result.passed ? "PASS" : "FAIL"]
+    ],
+    theme:"grid",
+    styles:{fontSize:11,cellPadding:4},
+    headStyles:{fillColor:[230,90,40],textColor:255,fontStyle:"bold"},
+    alternateRowStyles:{fillColor:[245,245,245]},
+    columnStyles:{0:{fontStyle:"bold",cellWidth:60}}
+  });
+
+  // STATUS
+  let finalY = doc.lastAutoTable.finalY + 15;
+  doc.setFontSize(16);
+  doc.setFont("helvetica","bold");
+  if(result.passed){
+    doc.setTextColor(0,150,0);
+    doc.text("STATUS : PASS",14,finalY);
+  }else{
+    doc.setTextColor(220,0,0);
+    doc.text("STATUS : FAIL",14,finalY);
+  }
+
+  // FOOTER
+  doc.setFontSize(9);
+  doc.setTextColor(120);
+  doc.text("Generated on : " + new Date().toLocaleString(),14,285);
+  doc.text("Ozellar Marine Pvt. Ltd.",196,285,{align:"right"});
+
+  doc.save(`Ozellar_Result_${result.user_name}.pdf`);
+}
+
+
+// ─────────────────────────────────────────
+// IMAGE LOADER  — original helper kept
+// ─────────────────────────────────────────
+function loadImage(src){
+  return new Promise((resolve,reject)=>{
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = function(){
+      const canvas = document.createElement("canvas");
+      canvas.width  = img.width;
+      canvas.height = img.height;
+      canvas.getContext("2d").drawImage(img,0,0);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+
+// ─────────────────────────────────────────
+// LOGOUT  — original workflow kept
+// ─────────────────────────────────────────
+function logoutAdmin(){
+  sessionStorage.removeItem("adminUser");
+  location.reload();
+}
+
+
+// ─────────────────────────────────────────
+// SCROLL HELPER  — sidebar nav links
+// ─────────────────────────────────────────
+function scrollToSection(id){
+  const el = document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:"smooth",block:"start"});
+
+  // update active nav item
+  document.querySelectorAll(".nav-item").forEach(item=>{
+    item.classList.remove("active");
+  });
+  event.currentTarget.classList.add("active");
+}
+
 </script>
 </body>
-</html>
+</html> 
