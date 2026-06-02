@@ -640,28 +640,40 @@ nav{padding:8px 10px;flex:1;}
 // ─────────────────────────────────────────
 // CONFIG
 // ─────────────────────────────────────────
-const API = "http://localhost:3005";
-
+// const API = "http://localhost:3005";
+const API = "";
 let adminName     = "";
 let adminPassword = "";
 let allResults    = [];   // cache for client-side filter
 
 window.onload = function(){
+  // Only try to show the panel if we are actually on the page
   showPanel("Administrator");
 };
 
-
-
 function showPanel(name){
-  document.getElementById("loginOverlay").style.display = "none";
-  document.getElementById("appShell").style.display     = "flex";
+  // Check if loginOverlay exists before trying to hide it
+  const overlay = document.getElementById("loginOverlay");
+  if(overlay) {
+    overlay.style.display = "none";
+  }
+
+  // Check if appShell exists before trying to show it
+  const shell = document.getElementById("appShell");
+  if(shell) {
+    shell.style.display = "flex";
+  }
 
   // update sidebar avatar + name
   const initials = name
     ? name.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2)
     : "AD";
-  document.getElementById("sidebarAvatar").textContent = initials;
-  document.getElementById("sidebarName").textContent   = name || "Administrator";
+  
+  const avatar = document.getElementById("sidebarAvatar");
+  const nameDisplay = document.getElementById("sidebarName");
+
+  if(avatar) avatar.textContent = initials;
+  if(nameDisplay) nameDisplay.textContent = name || "Administrator";
 
   loadUsers();
   loadResults();
@@ -672,9 +684,12 @@ function showPanel(name){
 // LOGIN (fallback if no session)
 // ─────────────────────────────────────────
 document.addEventListener("keydown", function(e){
-  if(e.key === "Enter" &&
-     document.getElementById("loginOverlay").style.display !== "none"){
-    doLogin();
+  const overlay = document.getElementById("loginOverlay");
+  // Only trigger login if the overlay is actually visible/exists
+  if(e.key === "Enter" && overlay && overlay.style.display !== "none"){
+    if (typeof doLogin === "function") {
+       doLogin();
+    }
   }
 });
 
