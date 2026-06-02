@@ -648,21 +648,28 @@ let adminPassword = "";
 let allResults    = [];   // cache for client-side filter
 
 window.onload = function(){
-  showPanel("Administrator");
+  // Only call showPanel if the appShell exists
+  if(document.getElementById("appShell")){
+    showPanel("Administrator");
+  }
 };
 
-
-
 function showPanel(name){
-  document.getElementById("loginOverlay").style.display = "none";
-  document.getElementById("appShell").style.display     = "flex";
+  // Check if elements exist before trying to modify them
+  const appShell = document.getElementById("appShell");
+  if(appShell) appShell.style.display = "flex";
 
-  // update sidebar avatar + name
+  // Removed "loginOverlay" line because that ID does not exist in your HTML
+
   const initials = name
     ? name.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2)
     : "AD";
-  document.getElementById("sidebarAvatar").textContent = initials;
-  document.getElementById("sidebarName").textContent   = name || "Administrator";
+  
+  const avatarEl = document.getElementById("sidebarAvatar");
+  const nameEl = document.getElementById("sidebarName");
+  
+  if(avatarEl) avatarEl.textContent = initials;
+  if(nameEl) nameEl.textContent = name || "Administrator";
 
   loadUsers();
   loadResults();
