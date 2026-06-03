@@ -648,10 +648,15 @@ let adminPassword = "";
 let allResults    = [];   // cache for client-side filter
 
 window.onload = function(){
-  // Only call showPanel if the appShell exists
-  if(document.getElementById("appShell")){
-    showPanel("Administrator");
+  const adminData = sessionStorage.getItem("adminUser");
+  if(!adminData){
+    window.location.href = "login.html";
+    return;
   }
+  const admin = JSON.parse(adminData);
+  adminName     = admin.name     || "admin";
+  adminPassword = admin.password || "1998";
+  showPanel("Administrator");
 };
 
 function showPanel(name){
@@ -1017,7 +1022,7 @@ function loadImage(src){
 // ─────────────────────────────────────────
 function logoutAdmin(){
   sessionStorage.removeItem("adminUser");
-  location.reload();
+  window.location.href = "login.html";
 }
 
 
