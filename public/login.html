@@ -309,9 +309,9 @@
       if(res.ok && data.success){
 
         sessionStorage.setItem(
-          "adminUser",
-          JSON.stringify(data.admin)
-        );
+  "adminUser",
+  JSON.stringify({ name: username, password: password })
+);
 
         window.location.href = "admin.html";
 

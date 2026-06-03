@@ -649,7 +649,8 @@ let allResults    = [];   // cache for client-side filter
 
 window.onload = function(){
   const adminData = sessionStorage.getItem("adminUser");
-  if(!adminData){
+  if(!adminData || adminData === "undefined" || adminData === "null"){
+    sessionStorage.removeItem("adminUser");
     window.location.href = "login.html";
     return;
   }
